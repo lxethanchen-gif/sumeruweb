@@ -10,6 +10,7 @@ import 'pages/shizhai.dart';
 import 'pages/video_teaching.dart';
 import 'pages/resource_links.dart';
 import 'pages/buddha_intro.dart';
+import 'translation_service.dart';
 
 void main() {
   runApp(const SumeruApp());
@@ -18,16 +19,21 @@ void main() {
 class SumeruApp extends StatelessWidget {
   const SumeruApp({super.key});
 
+  static final _translationNotifier = TranslationNotifier();
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: '須彌山佛國網',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFFF5C518)),
-        useMaterial3: true,
+    return TranslationScope(
+      notifier: _translationNotifier,
+      child: MaterialApp(
+        title: '須彌山佛國網',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFFF5C518)),
+          useMaterial3: true,
+        ),
+        home: const MainShell(),
       ),
-      home: const MainShell(),
     );
   }
 }
@@ -42,8 +48,17 @@ class MainShell extends StatefulWidget {
 class _MainShellState extends State<MainShell> {
   int _currentIndex = PageIndex.home;
 
+  // ── 目前語言代碼（預設繁體中文）────────────────────────────────
+  String _currentLanguageCode = 'zh-TW';
+
   void _onPageChanged(int index) {
     setState(() => _currentIndex = index);
+  }
+
+  void _onLanguageChanged(String code) {
+    setState(() => _currentLanguageCode = code);
+    // TODO: 通知 TranslationNotifier 切換語言
+    // 例如：TranslationScope.of(context)?.switchLanguage(code);
   }
 
   static const List<Widget> _pages = [
@@ -61,13 +76,12 @@ class _MainShellState extends State<MainShell> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // ── 不使用 appBar 屬性，改用 Stack 讓導覽列浮在畫面上 ──
       backgroundColor: Colors.grey.shade100,
       body: Stack(
         children: [
           // ── 頁面內容，頂部留出導覽列高度 + margin ────────────
           Padding(
-            padding: const EdgeInsets.only(top: 80), // 60 高度 + 20 margin
+            padding: const EdgeInsets.only(top: 80),
             child: IndexedStack(
               index: _currentIndex,
               children: _pages,
@@ -76,12 +90,14 @@ class _MainShellState extends State<MainShell> {
 
           // ── 浮動圓角 AppBar ───────────────────────────────────
           Positioned(
-            top: 12,        // 距離頂部的間距
-            left: 16,       // 左右 margin
+            top: 12,
+            left: 16,
             right: 16,
             child: SumeruAppBar(
               currentIndex: _currentIndex,
               onPageChanged: _onPageChanged,
+              currentLanguageCode: _currentLanguageCode,   // ← 新增
+              onLanguageChanged: _onLanguageChanged,        // ← 新增
             ),
           ),
         ],
