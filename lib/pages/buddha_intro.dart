@@ -103,7 +103,7 @@ class _TitleBlock extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            '淨土獲證・禪宗傳承・佛光普照',
+            '淨土獲證・禪宗傳承',
             style: TextStyle(
               fontSize: subtitleSize,
               color: _goldLight,
