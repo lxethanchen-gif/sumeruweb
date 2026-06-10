@@ -62,11 +62,11 @@ class BuddhaIntroPage extends StatelessWidget {
 // ─────────────────────────────────────────
 // 共用常數
 // ─────────────────────────────────────────
-const _gold = Color(0xFFC9A84C);
-const _goldLight = Color(0xFFE8C96E);
-const _textColor = Color(0xFF8B6914);
+const _gold = Color.fromRGBO(245, 197, 24, 1);
+const _goldLight = Color.fromRGBO(245, 197, 24, 1);
+const _textColor = Color.fromRGBO(245, 197, 24, 1);
 const _bgNav = Color(0xFFFDF8EE);
-const _border = Color(0xFFD4AF6A);
+const _border = Color.fromRGBO(245, 197, 24, 1);
 
 // ─────────────────────────────────────────
 // 共用元件
@@ -76,9 +76,9 @@ class _GoldDivider extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Row(
         children: [
-          Container(width: 4, height: 22, color: _gold,
+          Container(width: 4, height: 22, color: Color.fromRGBO(245, 197, 24, 1),
               margin: const EdgeInsets.only(right: 10)),
-          Expanded(child: Container(height: 1, color: const Color(0xFFEDD98A))),
+          Expanded(child: Container(height: 1, color: const Color.fromRGBO(245, 197, 24, 1))),
         ],
       );
 }
@@ -97,7 +97,7 @@ class _TitleBlock extends StatelessWidget {
             style: TextStyle(
               fontSize: titleSize,
               fontWeight: FontWeight.bold,
-              color: _gold,
+              color: Color.fromRGBO(245, 197, 24, 1),
               letterSpacing: 2,
             ),
           ),
@@ -125,8 +125,8 @@ class _IntroText extends StatelessWidget {
         style: TextStyle(
           fontSize: fontSize,
           fontWeight: FontWeight.bold,
-          color: _textColor,
-          height: 2.1,
+          color: Color.fromRGBO(245, 197, 24, 1),
+          height: 1.5,
         ),
       );
 }
@@ -163,11 +163,11 @@ class _PhotoGrid extends StatelessWidget {
               decoration: BoxDecoration(
                 color: _bgNav,
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: _border),
+                border: Border.all(color: Color.fromRGBO(245, 197, 24, 1)),
               ),
               child: const Center(
                 child: Icon(Icons.image_not_supported_outlined,
-                    color: _gold, size: 32),
+                    color: Color.fromRGBO(245, 197, 24, 1), size: 32),
               ),
             ),
           ),
