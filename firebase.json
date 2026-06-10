@@ -1,0 +1,39 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "sumeruweb",
+          "appId": "1:443158351698:android:f357090a7632d50e58b48b",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "sumeruweb",
+          "configurations": {
+            "android": "1:443158351698:android:f357090a7632d50e58b48b",
+            "ios": "1:443158351698:ios:0e19148eb89ede1f58b48b",
+            "macos": "1:443158351698:ios:0e19148eb89ede1f58b48b",
+            "web": "1:443158351698:web:275cff043feb171958b48b",
+            "windows": "1:443158351698:web:d950e3c183f883c458b48b"
+          }
+        }
+      }
+    }
+  },
+  "hosting": {
+    "public": "build/web",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}

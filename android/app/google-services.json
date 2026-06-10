@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "443158351698",
+    "project_id": "sumeruweb",
+    "storage_bucket": "sumeruweb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:443158351698:android:f357090a7632d50e58b48b",
+        "android_client_info": {
+          "package_name": "com.example.sumeruweb"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCAuyof6kBBDJAyOiG7xgJtARcEAjFEvBM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
