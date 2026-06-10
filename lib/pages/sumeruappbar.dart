@@ -9,7 +9,7 @@ const _kNavItems = [
   (label: '了解佛法', page: PageIndex.dharmaRealize),
   (label: '應世卷', page: PageIndex.yingShiJuan),
   (label: '滅罪卷', page: PageIndex.mieZuiJuan),
-  (label: '機緣道旨', page: PageIndex.jiYuanDaoZhi),
+  (label: '機緣道旨妙法入門卷', page: PageIndex.jiYuanDaoZhi),
   (label: '詩摘', page: PageIndex.shiZhai),
 ];
 
