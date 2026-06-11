@@ -9,7 +9,6 @@ class PageIndex {
   static const int videoTeachings = 6;
   static const int resourceLinks = 7;
   static const int buddhaIntro = 8;
-
   /// 文字開示的子頁面範圍
   static bool isTextTeachings(int index) => index >= 1 && index <= 5;
 }
