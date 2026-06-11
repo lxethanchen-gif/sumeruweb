@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../routes.dart';
 
-// ── 常數 ──────────────────────────────────────────────────────────
+// ── 常數 ─────────────────────────────────────────────────────────
 const Color kPrimaryGold = Color(0xFFF5C518);
 const Color kNavTextOnGold = Colors.white;
 
@@ -13,7 +13,6 @@ const _kNavItems = [
   (label: '詩摘', page: PageIndex.shiZhai),
 ];
 
-// ── 語言清單 ──────────────────────────────────────────────────────
 const _kLanguages = [
   (label: '繁體中文', code: 'zh-TW', flag: '🇹🇼'),
   (label: '简体中文', code: 'zh-CN', flag: '🇨🇳'),
@@ -37,9 +36,52 @@ const _kLanguages = [
   (label: 'Filipino', code: 'fil', flag: '🇵🇭'),
 ];
 
-// ── 工具 ──────────────────────────────────────────────────────────
+// ── 工具 ─────────────────────────────────────────────────────────
 bool _isMobile(BuildContext ctx) => MediaQuery.sizeOf(ctx).width < 600;
 bool _isTablet(BuildContext ctx) => MediaQuery.sizeOf(ctx).width < 1024;
+
+String _langFlag(String code) =>
+    _kLanguages.where((e) => e.code == code).firstOrNull?.flag ?? '🌐';
+String _langLabel(String code) =>
+    _kLanguages.where((e) => e.code == code).firstOrNull?.label ?? '語言';
+
+// ─────────────────────────────────────────────────────────────────
+// _HoverContainer  ── 通用 hover 高亮容器
+// ─────────────────────────────────────────────────────────────────
+class _HoverContainer extends StatefulWidget {
+  final Widget Function(bool highlighted) builder;
+  final VoidCallback onTap;
+  final bool forceHighlight;
+  final VoidCallback? onEnter;
+
+  const _HoverContainer({
+    required this.builder,
+    required this.onTap,
+    this.forceHighlight = false,
+    this.onEnter,
+  });
+
+  @override
+  State<_HoverContainer> createState() => _HoverContainerState();
+}
+
+class _HoverContainerState extends State<_HoverContainer> {
+  bool _hov = false;
+
+  @override
+  Widget build(BuildContext context) => MouseRegion(
+    cursor: SystemMouseCursors.click,
+    onEnter: (_) {
+      setState(() => _hov = true);
+      widget.onEnter?.call();
+    },
+    onExit: (_) => setState(() => _hov = false),
+    child: GestureDetector(
+      onTap: widget.onTap,
+      child: widget.builder(widget.forceHighlight || _hov),
+    ),
+  );
+}
 
 // ─────────────────────────────────────────────────────────────────
 // SumeruLogo
@@ -53,7 +95,6 @@ class SumeruLogo extends StatelessWidget {
     padding: const EdgeInsets.symmetric(horizontal: 14),
     child: Row(
       mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Image.asset(
           'assets/images/logo_with_border.png',
@@ -76,8 +117,7 @@ class SumeruLogo extends StatelessWidget {
                 height: 1.2,
               ),
             ),
-            if (!compact) ...[
-              const SizedBox(height: 2),
+            if (!compact)
               const Text(
                 'Sumeru Mount Buddha Nation',
                 style: TextStyle(
@@ -87,7 +127,6 @@ class SumeruLogo extends StatelessWidget {
                   height: 1.2,
                 ),
               ),
-            ],
           ],
         ),
       ],
@@ -96,16 +135,12 @@ class SumeruLogo extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────
-// SumeruAppBar  ── 入口，依寬度切換佈局
+// SumeruAppBar  ── 入口
 // ─────────────────────────────────────────────────────────────────
 class SumeruAppBar extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onPageChanged;
-
-  /// 目前選取的語言代碼（預設繁體中文）
   final String currentLanguageCode;
-
-  /// 語言切換回調
   final ValueChanged<String> onLanguageChanged;
 
   const SumeruAppBar({
@@ -177,10 +212,10 @@ class _HorizontalAppBar extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     _NavBtn(
-                      '首頁',
-                      compact,
-                      currentIndex == PageIndex.home,
-                      () => onPageChanged(PageIndex.home),
+                      label: '首頁',
+                      compact: compact,
+                      isActive: currentIndex == PageIndex.home,
+                      onTap: () => onPageChanged(PageIndex.home),
                     ),
                     _DropdownBtn(
                       isActive: PageIndex.isTextTeachings(currentIndex),
@@ -188,28 +223,27 @@ class _HorizontalAppBar extends StatelessWidget {
                       compact: compact,
                     ),
                     _NavBtn(
-                      compact ? '影音' : '影音開示',
-                      compact,
-                      currentIndex == PageIndex.videoTeachings,
-                      () => onPageChanged(PageIndex.videoTeachings),
+                      label: compact ? '影音' : '影音開示',
+                      compact: compact,
+                      isActive: currentIndex == PageIndex.videoTeachings,
+                      onTap: () => onPageChanged(PageIndex.videoTeachings),
                     ),
                     _NavBtn(
-                      compact ? '資源' : '資源連結',
-                      compact,
-                      currentIndex == PageIndex.resourceLinks,
-                      () => onPageChanged(PageIndex.resourceLinks),
+                      label: compact ? '資源' : '資源連結',
+                      compact: compact,
+                      isActive: currentIndex == PageIndex.resourceLinks,
+                      onTap: () => onPageChanged(PageIndex.resourceLinks),
                     ),
                     _NavBtn(
-                      compact ? '簡介' : '諦深佛陀簡介',
-                      compact,
-                      currentIndex == PageIndex.buddhaIntro,
-                      () => onPageChanged(PageIndex.buddhaIntro),
+                      label: compact ? '簡介' : '諦深佛陀簡介',
+                      compact: compact,
+                      isActive: currentIndex == PageIndex.buddhaIntro,
+                      onTap: () => onPageChanged(PageIndex.buddhaIntro),
                     ),
                   ],
                 ),
               ),
             ),
-            // ── 語言切換（靠右固定）──
             Container(width: 1, color: Colors.white24),
             _LangDropdownBtn(
               currentCode: currentLanguageCode,
@@ -344,55 +378,44 @@ class _SidebarPanel extends StatelessWidget {
                 ),
               ),
             ),
-            Container(
-              height: 1,
-              color: Colors.white24,
-              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
-            ),
+            _divider(),
             Expanded(
               child: ListView(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 children: [
-                  _SidebarItem(
-                    '首頁',
-                    currentIndex == PageIndex.home,
-                    () => onPageChanged(PageIndex.home),
-                  ),
-                  _SidebarExpand(
+                  _SidebarItem('首頁', currentIndex == PageIndex.home,
+                      () => onPageChanged(PageIndex.home)),
+                  _ExpandGroup(
+                    title: '文字開示',
                     isActive: PageIndex.isTextTeachings(currentIndex),
-                    currentIndex: currentIndex,
-                    onPageChanged: onPageChanged,
+                    initiallyOpen: PageIndex.isTextTeachings(currentIndex),
+                    children: _kNavItems
+                        .map((e) => _SidebarItem(
+                              e.label,
+                              currentIndex == e.page,
+                              () => onPageChanged(e.page),
+                              indent: 16,
+                            ))
+                        .toList(),
                   ),
-                  _SidebarItem(
-                    '影音開示',
-                    currentIndex == PageIndex.videoTeachings,
-                    () => onPageChanged(PageIndex.videoTeachings),
-                  ),
-                  _SidebarItem(
-                    '資源連結',
-                    currentIndex == PageIndex.resourceLinks,
-                    () => onPageChanged(PageIndex.resourceLinks),
-                  ),
-                  _SidebarItem(
-                    '諦深佛陀簡介',
-                    currentIndex == PageIndex.buddhaIntro,
-                    () => onPageChanged(PageIndex.buddhaIntro),
-                  ),
-
-                  // ── 語言選擇 分隔線 ──
-                  Container(
-                    height: 1,
-                    color: Colors.white24,
-                    margin: const EdgeInsets.symmetric(vertical: 8),
-                  ),
-
-                  // ── 語言展開群組 ──
-                  _SidebarLangExpand(
-                    currentCode: currentLanguageCode,
-                    onLanguageChanged: onLanguageChanged,
+                  _SidebarItem('影音開示', currentIndex == PageIndex.videoTeachings,
+                      () => onPageChanged(PageIndex.videoTeachings)),
+                  _SidebarItem('資源連結', currentIndex == PageIndex.resourceLinks,
+                      () => onPageChanged(PageIndex.resourceLinks)),
+                  _SidebarItem('諦深佛陀簡介', currentIndex == PageIndex.buddhaIntro,
+                      () => onPageChanged(PageIndex.buddhaIntro)),
+                  _divider(),
+                  _ExpandGroup(
+                    title: '${_langFlag(currentLanguageCode)}  ${_langLabel(currentLanguageCode)}',
+                    isActive: false,
+                    children: _kLanguages
+                        .map((e) => _SidebarLangItem(
+                              flag: e.flag,
+                              label: e.label,
+                              isActive: currentLanguageCode == e.code,
+                              onTap: () => onLanguageChanged(e.code),
+                            ))
+                        .toList(),
                   ),
                 ],
               ),
@@ -404,10 +427,16 @@ class _SidebarPanel extends StatelessWidget {
   );
 }
 
+Widget _divider() => Container(
+  height: 1,
+  color: Colors.white24,
+  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+);
+
 // ─────────────────────────────────────────────────────────────────
-// _SidebarItem  ── hover / active → 白底金字，撐滿寬
+// _SidebarItem
 // ─────────────────────────────────────────────────────────────────
-class _SidebarItem extends StatefulWidget {
+class _SidebarItem extends StatelessWidget {
   final String label;
   final bool isActive;
   final VoidCallback onTap;
@@ -415,85 +444,114 @@ class _SidebarItem extends StatefulWidget {
   const _SidebarItem(this.label, this.isActive, this.onTap, {this.indent = 0});
 
   @override
-  State<_SidebarItem> createState() => _SidebarItemState();
-}
-
-class _SidebarItemState extends State<_SidebarItem> {
-  bool _hov = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final hl = widget.isActive || _hov;
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      onEnter: (_) => setState(() => _hov = true),
-      onExit: (_) => setState(() => _hov = false),
-      child: GestureDetector(
-        onTap: widget.onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 130),
-          width: double.infinity,
-          margin: const EdgeInsets.symmetric(vertical: 2),
-          padding: EdgeInsets.only(
-            left: 16 + widget.indent,
-            right: 16,
-            top: 12,
-            bottom: 12,
-          ),
-          decoration: BoxDecoration(
-            color: hl ? Colors.white : Colors.transparent,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Text(
-            widget.label,
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
-              color: hl ? kPrimaryGold : kNavTextOnGold,
-            ),
-          ),
+  Widget build(BuildContext context) => _HoverContainer(
+    forceHighlight: isActive,
+    onTap: onTap,
+    builder: (hl) => AnimatedContainer(
+      duration: const Duration(milliseconds: 130),
+      width: double.infinity,
+      margin: const EdgeInsets.symmetric(vertical: 2),
+      padding: EdgeInsets.only(
+          left: 16 + indent, right: 16, top: 12, bottom: 12),
+      decoration: BoxDecoration(
+        color: hl ? Colors.white : Colors.transparent,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontSize: 15,
+          fontWeight: FontWeight.w600,
+          color: hl ? kPrimaryGold : kNavTextOnGold,
         ),
       ),
-    );
-  }
+    ),
+  );
 }
 
 // ─────────────────────────────────────────────────────────────────
-// _SidebarExpand  ── 「文字開示」可展開群組
+// _SidebarLangItem
 // ─────────────────────────────────────────────────────────────────
-class _SidebarExpand extends StatefulWidget {
+class _SidebarLangItem extends StatelessWidget {
+  final String flag, label;
   final bool isActive;
-  final int currentIndex;
-  final ValueChanged<int> onPageChanged;
-  const _SidebarExpand({
+  final VoidCallback onTap;
+  const _SidebarLangItem({
+    required this.flag,
+    required this.label,
     required this.isActive,
-    required this.currentIndex,
-    required this.onPageChanged,
+    required this.onTap,
   });
 
   @override
-  State<_SidebarExpand> createState() => _SidebarExpandState();
+  Widget build(BuildContext context) => _HoverContainer(
+    forceHighlight: isActive,
+    onTap: onTap,
+    builder: (hl) => AnimatedContainer(
+      duration: const Duration(milliseconds: 130),
+      width: double.infinity,
+      margin: const EdgeInsets.symmetric(vertical: 2),
+      padding: const EdgeInsets.only(left: 32, right: 16, top: 10, bottom: 10),
+      decoration: BoxDecoration(
+        color: hl ? Colors.white : Colors.transparent,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        children: [
+          Text(flag, style: const TextStyle(fontSize: 16)),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: hl ? kPrimaryGold : kNavTextOnGold,
+              ),
+            ),
+          ),
+          if (isActive)
+            Icon(Icons.check_rounded,
+                size: 16, color: hl ? kPrimaryGold : kNavTextOnGold),
+        ],
+      ),
+    ),
+  );
 }
 
-class _SidebarExpandState extends State<_SidebarExpand>
+// ─────────────────────────────────────────────────────────────────
+// _ExpandGroup  ── 通用側欄展開群組
+// ─────────────────────────────────────────────────────────────────
+class _ExpandGroup extends StatefulWidget {
+  final String title;
+  final bool isActive;
+  final bool initiallyOpen;
+  final List<Widget> children;
+  const _ExpandGroup({
+    required this.title,
+    required this.isActive,
+    this.initiallyOpen = false,
+    required this.children,
+  });
+
+  @override
+  State<_ExpandGroup> createState() => _ExpandGroupState();
+}
+
+class _ExpandGroupState extends State<_ExpandGroup>
     with SingleTickerProviderStateMixin {
   late bool _open;
   late final AnimationController _ctrl;
-  late final Animation<double> _rot;
 
   @override
   void initState() {
     super.initState();
-    _open = widget.isActive;
+    _open = widget.initiallyOpen;
     _ctrl = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 200),
       value: _open ? 1.0 : 0.0,
     );
-    _rot = Tween<double>(
-      begin: 0,
-      end: 0.5,
-    ).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOut));
   }
 
   @override
@@ -528,7 +586,7 @@ class _SidebarExpandState extends State<_SidebarExpand>
             children: [
               Expanded(
                 child: Text(
-                  '文字開示',
+                  widget.title,
                   style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
@@ -537,12 +595,11 @@ class _SidebarExpandState extends State<_SidebarExpand>
                 ),
               ),
               RotationTransition(
-                turns: _rot,
-                child: const Icon(
-                  Icons.keyboard_arrow_down,
-                  size: 20,
-                  color: kNavTextOnGold,
+                turns: Tween<double>(begin: 0, end: 0.5).animate(
+                  CurvedAnimation(parent: _ctrl, curve: Curves.easeOut),
                 ),
+                child: const Icon(Icons.keyboard_arrow_down,
+                    size: 20, color: kNavTextOnGold),
               ),
             ],
           ),
@@ -551,513 +608,83 @@ class _SidebarExpandState extends State<_SidebarExpand>
       AnimatedSize(
         duration: const Duration(milliseconds: 220),
         curve: Curves.easeOutCubic,
-        child: _open
-            ? Column(
-                children: _kNavItems
-                    .map(
-                      (e) => _SidebarItem(
-                        e.label,
-                        widget.currentIndex == e.page,
-                        () => widget.onPageChanged(e.page),
-                        indent: 16,
-                      ),
-                    )
-                    .toList(),
-              )
-            : const SizedBox.shrink(),
+        child: _open ? Column(children: widget.children) : const SizedBox.shrink(),
       ),
     ],
   );
 }
 
 // ─────────────────────────────────────────────────────────────────
-// _SidebarLangExpand  ── 側欄語言展開群組
+// _NavBtn  ── 橫向導覽按鈕
 // ─────────────────────────────────────────────────────────────────
-class _SidebarLangExpand extends StatefulWidget {
-  final String currentCode;
-  final ValueChanged<String> onLanguageChanged;
-  const _SidebarLangExpand({
-    required this.currentCode,
-    required this.onLanguageChanged,
-  });
-
-  @override
-  State<_SidebarLangExpand> createState() => _SidebarLangExpandState();
-}
-
-class _SidebarLangExpandState extends State<_SidebarLangExpand>
-    with SingleTickerProviderStateMixin {
-  bool _open = false;
-  late final AnimationController _ctrl;
-  late final Animation<double> _rot;
-
-  @override
-  void initState() {
-    super.initState();
-    _ctrl = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 200),
-      value: 0.0,
-    );
-    _rot = Tween<double>(
-      begin: 0,
-      end: 0.5,
-    ).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOut));
-  }
-
-  @override
-  void dispose() {
-    _ctrl.dispose();
-    super.dispose();
-  }
-
-  void _toggle() {
-    setState(() => _open = !_open);
-    _open ? _ctrl.forward() : _ctrl.reverse();
-  }
-
-  String get _currentFlag {
-    final match = _kLanguages.where((e) => e.code == widget.currentCode);
-    return match.isNotEmpty ? match.first.flag : '🌐';
-  }
-
-  String get _currentLabel {
-    final match = _kLanguages.where((e) => e.code == widget.currentCode);
-    return match.isNotEmpty ? match.first.label : '語言';
-  }
-
-  @override
-  Widget build(BuildContext context) => Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      GestureDetector(
-        onTap: _toggle,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 130),
-          width: double.infinity,
-          margin: const EdgeInsets.symmetric(vertical: 2),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          decoration: BoxDecoration(
-            color: Colors.transparent,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Row(
-            children: [
-              Text(
-                '$_currentFlag  $_currentLabel',
-                style: const TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                  color: kNavTextOnGold,
-                ),
-              ),
-              const Spacer(),
-              RotationTransition(
-                turns: _rot,
-                child: const Icon(
-                  Icons.keyboard_arrow_down,
-                  size: 20,
-                  color: kNavTextOnGold,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-      AnimatedSize(
-        duration: const Duration(milliseconds: 220),
-        curve: Curves.easeOutCubic,
-        child: _open
-            ? Column(
-                children: _kLanguages.map((e) {
-                  final isActive = widget.currentCode == e.code;
-                  return _SidebarLangItem(
-                    flag: e.flag,
-                    label: e.label,
-                    isActive: isActive,
-                    onTap: () => widget.onLanguageChanged(e.code),
-                  );
-                }).toList(),
-              )
-            : const SizedBox.shrink(),
-      ),
-    ],
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────
-// _SidebarLangItem  ── 側欄語言選項（含旗幟）
-// ─────────────────────────────────────────────────────────────────
-class _SidebarLangItem extends StatefulWidget {
-  final String flag, label;
-  final bool isActive;
+class _NavBtn extends StatelessWidget {
+  final String label;
+  final bool compact, isActive;
   final VoidCallback onTap;
-  const _SidebarLangItem({
-    required this.flag,
+  const _NavBtn({
     required this.label,
+    required this.compact,
     required this.isActive,
     required this.onTap,
   });
 
   @override
-  State<_SidebarLangItem> createState() => _SidebarLangItemState();
-}
-
-class _SidebarLangItemState extends State<_SidebarLangItem> {
-  bool _hov = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final hl = widget.isActive || _hov;
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      onEnter: (_) => setState(() => _hov = true),
-      onExit: (_) => setState(() => _hov = false),
-      child: GestureDetector(
-        onTap: widget.onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 130),
-          width: double.infinity,
-          margin: const EdgeInsets.symmetric(vertical: 2),
-          padding: const EdgeInsets.only(
-            left: 32,
-            right: 16,
-            top: 10,
-            bottom: 10,
-          ),
-          decoration: BoxDecoration(
-            color: hl ? Colors.white : Colors.transparent,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Row(
-            children: [
-              Text(widget.flag, style: const TextStyle(fontSize: 16)),
-              const SizedBox(width: 10),
-              Text(
-                widget.label,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: hl ? kPrimaryGold : kNavTextOnGold,
-                ),
-              ),
-              if (widget.isActive) ...[
-                const Spacer(),
-                Icon(
-                  Icons.check_rounded,
-                  size: 16,
-                  color: hl ? kPrimaryGold : kNavTextOnGold,
-                ),
-              ],
-            ],
+  Widget build(BuildContext context) => _HoverContainer(
+    forceHighlight: isActive,
+    onTap: onTap,
+    builder: (hl) => Center(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        margin: EdgeInsets.symmetric(
+            horizontal: compact ? 3 : 4, vertical: 8),
+        padding: EdgeInsets.symmetric(
+            horizontal: compact ? 10 : 14, vertical: 6),
+        decoration: BoxDecoration(
+          color: hl ? Colors.white : Colors.transparent,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: compact ? 13 : 14,
+            fontWeight: FontWeight.w600,
+            color: hl ? kPrimaryGold : kNavTextOnGold,
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
 }
 
 // ─────────────────────────────────────────────────────────────────
-// _NavBtn  ── AppBar 橫向導覽按鈕（Desktop/Tablet）
+// _FloatingMenu  ── 通用 Overlay 浮層（文字開示 & 語言共用）
 // ─────────────────────────────────────────────────────────────────
-class _NavBtn extends StatefulWidget {
-  final String label;
-  final bool compact, isActive;
-  final VoidCallback onTap;
-  const _NavBtn(this.label, this.compact, this.isActive, this.onTap);
-
-  @override
-  State<_NavBtn> createState() => _NavBtnState();
-}
-
-class _NavBtnState extends State<_NavBtn> {
-  bool _hov = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final hl = widget.isActive || _hov;
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      onEnter: (_) => setState(() => _hov = true),
-      onExit: (_) => setState(() => _hov = false),
-      child: GestureDetector(
-        onTap: widget.onTap,
-        child: Center(
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 150),
-            margin: EdgeInsets.symmetric(
-              horizontal: widget.compact ? 3 : 4,
-              vertical: 8,
-            ),
-            padding: EdgeInsets.symmetric(
-              horizontal: widget.compact ? 10 : 14,
-              vertical: 6,
-            ),
-            decoration: BoxDecoration(
-              color: hl ? Colors.white : Colors.transparent,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Text(
-              widget.label,
-              style: TextStyle(
-                fontSize: widget.compact ? 13 : 14,
-                fontWeight: FontWeight.w600,
-                color: hl ? kPrimaryGold : kNavTextOnGold,
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────
-// _DropdownBtn  ── 「文字開示」下拉觸發鈕
-// ─────────────────────────────────────────────────────────────────
-class _DropdownBtn extends StatefulWidget {
-  final bool isActive, compact;
-  final ValueChanged<int> onPageChanged;
-  const _DropdownBtn({
-    required this.isActive,
-    required this.onPageChanged,
-    this.compact = false,
-  });
-
-  @override
-  State<_DropdownBtn> createState() => _DropdownBtnState();
-}
-
-class _DropdownBtnState extends State<_DropdownBtn> {
-  bool _hov = false, _open = false;
-  OverlayEntry? _entry;
-
-  void _show() {
-    if (_entry != null) return;
-    final box = context.findRenderObject() as RenderBox;
-    final ovlBox = Overlay.of(context).context.findRenderObject() as RenderBox;
-    final origin = box.localToGlobal(Offset.zero, ancestor: ovlBox);
-    _entry = OverlayEntry(
-      builder: (_) => _DropdownOverlay(
-        origin: origin,
-        triggerHeight: box.size.height,
-        onSelected: (idx) {
-          _hide();
-          widget.onPageChanged(idx);
-        },
-        onDismiss: _hide,
-      ),
-    );
-    setState(() => _open = true);
-    Overlay.of(context).insert(_entry!);
-  }
-
-  void _hide() {
-    _entry?.remove();
-    _entry = null;
-    if (mounted) setState(() => _open = false);
-  }
-
-  @override
-  void dispose() {
-    _entry?.remove();
-    _entry = null;
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final hl = widget.isActive || _hov || _open;
-    return GestureDetector(
-      onTap: () => _open ? _hide() : _show(),
-      child: MouseRegion(
-        cursor: SystemMouseCursors.click,
-        onEnter: (_) {
-          setState(() => _hov = true);
-          _show();
-        },
-        onExit: (_) => setState(() => _hov = false),
-        child: Center(
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 150),
-            margin: EdgeInsets.symmetric(
-              horizontal: widget.compact ? 3 : 4,
-              vertical: 8,
-            ),
-            padding: EdgeInsets.symmetric(
-              horizontal: widget.compact ? 10 : 14,
-              vertical: 6,
-            ),
-            decoration: BoxDecoration(
-              color: hl ? Colors.white : Colors.transparent,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  '文字開示',
-                  style: TextStyle(
-                    fontSize: widget.compact ? 13 : 14,
-                    fontWeight: FontWeight.w600,
-                    color: hl ? kPrimaryGold : kNavTextOnGold,
-                  ),
-                ),
-                const SizedBox(width: 4),
-                Icon(
-                  Icons.keyboard_arrow_down,
-                  size: 18,
-                  color: hl ? kPrimaryGold : kNavTextOnGold,
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────
-// _LangDropdownBtn  ── 語言切換觸發鈕（靠右固定）
-// ─────────────────────────────────────────────────────────────────
-class _LangDropdownBtn extends StatefulWidget {
-  final String currentCode;
-  final ValueChanged<String> onLanguageChanged;
-  final bool compact;
-  const _LangDropdownBtn({
-    required this.currentCode,
-    required this.onLanguageChanged,
-    this.compact = false,
-  });
-
-  @override
-  State<_LangDropdownBtn> createState() => _LangDropdownBtnState();
-}
-
-class _LangDropdownBtnState extends State<_LangDropdownBtn> {
-  bool _hov = false, _open = false;
-  OverlayEntry? _entry;
-
-  String get _currentFlag {
-    final match = _kLanguages.where((e) => e.code == widget.currentCode);
-    return match.isNotEmpty ? match.first.flag : '🌐';
-  }
-
-  void _show() {
-    if (_entry != null) return;
-    final box = context.findRenderObject() as RenderBox;
-    final ovlBox = Overlay.of(context).context.findRenderObject() as RenderBox;
-    final origin = box.localToGlobal(Offset.zero, ancestor: ovlBox);
-    _entry = OverlayEntry(
-      builder: (_) => _LangDropdownOverlay(
-        origin: origin,
-        triggerWidth: box.size.width,
-        triggerHeight: box.size.height,
-        currentCode: widget.currentCode,
-        onSelected: (code) {
-          _hide();
-          widget.onLanguageChanged(code);
-        },
-        onDismiss: _hide,
-      ),
-    );
-    setState(() => _open = true);
-    Overlay.of(context).insert(_entry!);
-  }
-
-  void _hide() {
-    _entry?.remove();
-    _entry = null;
-    if (mounted) setState(() => _open = false);
-  }
-
-  @override
-  void dispose() {
-    _entry?.remove();
-    _entry = null;
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final hl = _hov || _open;
-    return GestureDetector(
-      onTap: () => _open ? _hide() : _show(),
-      child: MouseRegion(
-        cursor: SystemMouseCursors.click,
-        onEnter: (_) {
-          setState(() => _hov = true);
-          _show();
-        },
-        onExit: (_) => setState(() => _hov = false),
-        child: Center(
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 150),
-            margin: EdgeInsets.symmetric(
-              horizontal: widget.compact ? 3 : 6,
-              vertical: 8,
-            ),
-            padding: EdgeInsets.symmetric(
-              horizontal: widget.compact ? 8 : 12,
-              vertical: 6,
-            ),
-            decoration: BoxDecoration(
-              color: hl ? Colors.white : Colors.transparent,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  _currentFlag,
-                  style: TextStyle(fontSize: widget.compact ? 14 : 16),
-                ),
-                const SizedBox(width: 4),
-                Icon(
-                  Icons.keyboard_arrow_down,
-                  size: 18,
-                  color: hl ? kPrimaryGold : kNavTextOnGold,
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────
-// _LangDropdownOverlay  ── 語言浮層選單（右對齊）
-// ─────────────────────────────────────────────────────────────────
-class _LangDropdownOverlay extends StatefulWidget {
+class _FloatingMenu extends StatefulWidget {
   final Offset origin;
-  final double triggerWidth, triggerHeight;
-  final String currentCode;
-  final ValueChanged<String> onSelected;
+  final double triggerHeight;
+  final double? rightAlignAt; // 非 null 時右對齊
+  final double menuWidth;
+  final List<Widget> children;
   final VoidCallback onDismiss;
-  const _LangDropdownOverlay({
+
+  const _FloatingMenu({
     required this.origin,
-    required this.triggerWidth,
     required this.triggerHeight,
-    required this.currentCode,
-    required this.onSelected,
+    this.rightAlignAt,
+    required this.menuWidth,
+    required this.children,
     required this.onDismiss,
   });
 
   @override
-  State<_LangDropdownOverlay> createState() => _LangDropdownOverlayState();
+  State<_FloatingMenu> createState() => _FloatingMenuState();
 }
 
-class _LangDropdownOverlayState extends State<_LangDropdownOverlay>
+class _FloatingMenuState extends State<_FloatingMenu>
     with SingleTickerProviderStateMixin {
   late final AnimationController _ctrl;
   late final Animation<double> _fade;
   late final Animation<Offset> _slide;
-
-  // 選單寬度固定
-  static const double _menuWidth = 170;
 
   @override
   void initState() {
@@ -1067,10 +694,8 @@ class _LangDropdownOverlayState extends State<_LangDropdownOverlay>
       duration: const Duration(milliseconds: 160),
     )..forward();
     _fade = CurvedAnimation(parent: _ctrl, curve: Curves.easeOut);
-    _slide = Tween(
-      begin: const Offset(0, -0.04),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOut));
+    _slide = Tween(begin: const Offset(0, -0.04), end: Offset.zero)
+        .animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOut));
   }
 
   @override
@@ -1081,8 +706,9 @@ class _LangDropdownOverlayState extends State<_LangDropdownOverlay>
 
   @override
   Widget build(BuildContext context) {
-    // 右對齊：選單右邊 = 觸發鈕右邊
-    final left = widget.origin.dx + widget.triggerWidth - _menuWidth;
+    final left = widget.rightAlignAt != null
+        ? widget.rightAlignAt! - widget.menuWidth
+        : widget.origin.dx;
 
     return Stack(
       children: [
@@ -1107,35 +733,23 @@ class _LangDropdownOverlayState extends State<_LangDropdownOverlay>
                   color: Colors.transparent,
                   borderRadius: BorderRadius.circular(14),
                   child: Container(
-                    width: _menuWidth,
+                    width: widget.menuWidth,
                     decoration: BoxDecoration(
                       color: kPrimaryGold,
                       borderRadius: BorderRadius.circular(14),
                       boxShadow: const [
                         BoxShadow(
-                          color: Colors.black26,
-                          blurRadius: 16,
-                          offset: Offset(0, 6),
-                        ),
+                            color: Colors.black26,
+                            blurRadius: 16,
+                            offset: Offset(0, 6)),
                       ],
                     ),
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 8,
-                    ),
+                        horizontal: 8, vertical: 8),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: _kLanguages
-                          .map(
-                            (e) => _LangDropdownRow(
-                              flag: e.flag,
-                              label: e.label,
-                              isActive: widget.currentCode == e.code,
-                              onTap: () => widget.onSelected(e.code),
-                            ),
-                          )
-                          .toList(),
+                      children: widget.children,
                     ),
                   ),
                 ),
@@ -1149,216 +763,172 @@ class _LangDropdownOverlayState extends State<_LangDropdownOverlay>
 }
 
 // ─────────────────────────────────────────────────────────────────
-// _LangDropdownRow  ── 語言下拉選單列（含旗幟 + 勾選）
+// _MenuRow  ── 通用下拉選單列（文字開示 & 語言共用）
 // ─────────────────────────────────────────────────────────────────
-class _LangDropdownRow extends StatefulWidget {
-  final String flag, label;
+class _MenuRow extends StatelessWidget {
+  final String? flag;
+  final String label;
   final bool isActive;
   final VoidCallback onTap;
-  const _LangDropdownRow({
-    required this.flag,
+  final double width;
+
+  const _MenuRow({
+    this.flag,
     required this.label,
-    required this.isActive,
+    this.isActive = false,
     required this.onTap,
+    required this.width,
   });
 
   @override
-  State<_LangDropdownRow> createState() => _LangDropdownRowState();
+  Widget build(BuildContext context) => _HoverContainer(
+    forceHighlight: isActive,
+    onTap: onTap,
+    builder: (hl) => AnimatedContainer(
+      duration: const Duration(milliseconds: 120),
+      width: width,
+      height: 44,
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      decoration: BoxDecoration(
+        color: hl ? Colors.white : Colors.transparent,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        children: [
+          if (flag != null) ...[
+            Text(flag!, style: const TextStyle(fontSize: 16)),
+            const SizedBox(width: 8),
+          ],
+          Expanded(
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: flag != null ? 13 : 14,
+                fontWeight: FontWeight.w500,
+                color: hl ? kPrimaryGold : kNavTextOnGold,
+              ),
+            ),
+          ),
+          if (isActive)
+            Icon(Icons.check_rounded,
+                size: 15, color: hl ? kPrimaryGold : kNavTextOnGold),
+        ],
+      ),
+    ),
+  );
 }
 
-class _LangDropdownRowState extends State<_LangDropdownRow> {
-  bool _hov = false;
+// ─────────────────────────────────────────────────────────────────
+// _OverlayTrigger mixin  ── Overlay 生命週期管理
+// ─────────────────────────────────────────────────────────────────
+mixin _OverlayTrigger<T extends StatefulWidget> on State<T> {
+  OverlayEntry? _entry;
+  bool overlayOpen = false;
+
+  void showOverlay(OverlayEntry entry) {
+    if (_entry != null) return;
+    _entry = entry;
+    setState(() => overlayOpen = true);
+    Overlay.of(context).insert(_entry!);
+  }
+
+  void hideOverlay() {
+    _entry?.remove();
+    _entry = null;
+    if (mounted) setState(() => overlayOpen = false);
+  }
 
   @override
-  Widget build(BuildContext context) {
-    final hl = _hov || widget.isActive;
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      onEnter: (_) => setState(() => _hov = true),
-      onExit: (_) => setState(() => _hov = false),
-      child: GestureDetector(
-        onTap: widget.onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 120),
-          height: 44,
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          decoration: BoxDecoration(
-            color: hl ? Colors.white : Colors.transparent,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Row(
-            children: [
-              Text(widget.flag, style: const TextStyle(fontSize: 16)),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  widget.label,
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
-                    color: hl ? kPrimaryGold : kNavTextOnGold,
-                  ),
-                ),
-              ),
-              if (widget.isActive)
-                Icon(
-                  Icons.check_rounded,
-                  size: 15,
-                  color: hl ? kPrimaryGold : kNavTextOnGold,
-                ),
-            ],
-          ),
-        ),
-      ),
+  void dispose() {
+    _entry?.remove();
+    _entry = null;
+    super.dispose();
+  }
+
+  OverlayEntry buildEntry(WidgetBuilder builder) =>
+      OverlayEntry(builder: builder);
+
+  (Offset origin, double w, double h) triggerMetrics() {
+    final box = context.findRenderObject() as RenderBox;
+    final ovlBox =
+        Overlay.of(context).context.findRenderObject() as RenderBox;
+    return (
+      box.localToGlobal(Offset.zero, ancestor: ovlBox),
+      box.size.width,
+      box.size.height,
     );
   }
 }
 
 // ─────────────────────────────────────────────────────────────────
-// _DropdownOverlay  ── 文字開示浮層選單
+// _DropdownBtn  ── 「文字開示」觸發鈕
 // ─────────────────────────────────────────────────────────────────
-class _DropdownOverlay extends StatefulWidget {
-  final Offset origin;
-  final double triggerHeight;
-  final ValueChanged<int> onSelected;
-  final VoidCallback onDismiss;
-  const _DropdownOverlay({
-    required this.origin,
-    required this.triggerHeight,
-    required this.onSelected,
-    required this.onDismiss,
+class _DropdownBtn extends StatefulWidget {
+  final bool isActive, compact;
+  final ValueChanged<int> onPageChanged;
+  const _DropdownBtn({
+    required this.isActive,
+    required this.onPageChanged,
+    this.compact = false,
   });
 
   @override
-  State<_DropdownOverlay> createState() => _DropdownOverlayState();
+  State<_DropdownBtn> createState() => _DropdownBtnState();
 }
 
-class _DropdownOverlayState extends State<_DropdownOverlay>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _ctrl;
-  late final Animation<double> _fade;
-  late final Animation<Offset> _slide;
-
-  @override
-  void initState() {
-    super.initState();
-    _ctrl = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 160),
-    )..forward();
-    _fade = CurvedAnimation(parent: _ctrl, curve: Curves.easeOut);
-    _slide = Tween(
-      begin: const Offset(0, -0.04),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOut));
+class _DropdownBtnState extends State<_DropdownBtn>
+    with _OverlayTrigger<_DropdownBtn> {
+  void _show() {
+    final (origin, _, h) = triggerMetrics();
+    showOverlay(buildEntry((_) => _FloatingMenu(
+      origin: origin,
+      triggerHeight: h,
+      menuWidth: 130,
+      onDismiss: hideOverlay,
+      children: _kNavItems
+          .map((e) => _MenuRow(
+                label: e.label,
+                onTap: () {
+                  hideOverlay();
+                  widget.onPageChanged(e.page);
+                },
+                width: 130,
+              ))
+          .toList(),
+    )));
   }
 
   @override
-  void dispose() {
-    _ctrl.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) => Stack(
-    children: [
-      Positioned.fill(
-        child: GestureDetector(
-          onTap: widget.onDismiss,
-          behavior: HitTestBehavior.translucent,
-          child: const SizedBox.expand(),
+  Widget build(BuildContext context) => _HoverContainer(
+    forceHighlight: widget.isActive || overlayOpen,
+    onTap: () => overlayOpen ? hideOverlay() : _show(),
+    onEnter: _show,
+    builder: (hl) => Center(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        margin: EdgeInsets.symmetric(
+            horizontal: widget.compact ? 3 : 4, vertical: 8),
+        padding: EdgeInsets.symmetric(
+            horizontal: widget.compact ? 10 : 14, vertical: 6),
+        decoration: BoxDecoration(
+          color: hl ? Colors.white : Colors.transparent,
+          borderRadius: BorderRadius.circular(20),
         ),
-      ),
-      Positioned(
-        top: widget.origin.dy + widget.triggerHeight + 10,
-        left: widget.origin.dx,
-        child: FadeTransition(
-          opacity: _fade,
-          child: SlideTransition(
-            position: _slide,
-            child: MouseRegion(
-              onExit: (_) => widget.onDismiss(),
-              child: Material(
-                elevation: 10,
-                color: Colors.transparent,
-                borderRadius: BorderRadius.circular(14),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: kPrimaryGold,
-                    borderRadius: BorderRadius.circular(14),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Colors.black26,
-                        blurRadius: 16,
-                        offset: Offset(0, 6),
-                      ),
-                    ],
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 8,
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: _kNavItems
-                        .map(
-                          (e) => _DropdownRow(
-                            label: e.label,
-                            onTap: () => widget.onSelected(e.page),
-                          ),
-                        )
-                        .toList(),
-                  ),
-                ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              '文字開示',
+              style: TextStyle(
+                fontSize: widget.compact ? 13 : 14,
+                fontWeight: FontWeight.w600,
+                color: hl ? kPrimaryGold : kNavTextOnGold,
               ),
             ),
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────
-// _DropdownRow  ── 文字開示下拉選單列
-// ─────────────────────────────────────────────────────────────────
-class _DropdownRow extends StatefulWidget {
-  final String label;
-  final VoidCallback onTap;
-  const _DropdownRow({required this.label, required this.onTap});
-
-  @override
-  State<_DropdownRow> createState() => _DropdownRowState();
-}
-
-class _DropdownRowState extends State<_DropdownRow> {
-  bool _hov = false;
-
-  @override
-  Widget build(BuildContext context) => MouseRegion(
-    cursor: SystemMouseCursors.click,
-    onEnter: (_) => setState(() => _hov = true),
-    onExit: (_) => setState(() => _hov = false),
-    child: GestureDetector(
-      onTap: widget.onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 120),
-        width: 130,
-        height: 44,
-        padding: const EdgeInsets.symmetric(horizontal: 12),
-        decoration: BoxDecoration(
-          color: _hov ? Colors.white : Colors.transparent,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        alignment: Alignment.centerLeft,
-        child: Text(
-          widget.label,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: _hov ? kPrimaryGold : kNavTextOnGold,
-          ),
+            const SizedBox(width: 4),
+            Icon(Icons.keyboard_arrow_down,
+                size: 18, color: hl ? kPrimaryGold : kNavTextOnGold),
+          ],
         ),
       ),
     ),
@@ -1366,41 +936,99 @@ class _DropdownRowState extends State<_DropdownRow> {
 }
 
 // ─────────────────────────────────────────────────────────────────
-// _IconBtn  ── Hamburger / Close，hover 白底圓圈
+// _LangDropdownBtn  ── 語言切換觸發鈕
 // ─────────────────────────────────────────────────────────────────
-class _IconBtn extends StatefulWidget {
+class _LangDropdownBtn extends StatefulWidget {
+  final String currentCode;
+  final ValueChanged<String> onLanguageChanged;
+  final bool compact;
+  const _LangDropdownBtn({
+    required this.currentCode,
+    required this.onLanguageChanged,
+    this.compact = false,
+  });
+
+  @override
+  State<_LangDropdownBtn> createState() => _LangDropdownBtnState();
+}
+
+class _LangDropdownBtnState extends State<_LangDropdownBtn>
+    with _OverlayTrigger<_LangDropdownBtn> {
+  void _show() {
+    final (origin, w, h) = triggerMetrics();
+    showOverlay(buildEntry((_) => _FloatingMenu(
+      origin: origin,
+      triggerHeight: h,
+      rightAlignAt: origin.dx + w,
+      menuWidth: 170,
+      onDismiss: hideOverlay,
+      children: _kLanguages
+          .map((e) => _MenuRow(
+                flag: e.flag,
+                label: e.label,
+                isActive: widget.currentCode == e.code,
+                onTap: () {
+                  hideOverlay();
+                  widget.onLanguageChanged(e.code);
+                },
+                width: 170,
+              ))
+          .toList(),
+    )));
+  }
+
+  @override
+  Widget build(BuildContext context) => _HoverContainer(
+    forceHighlight: overlayOpen,
+    onTap: () => overlayOpen ? hideOverlay() : _show(),
+    onEnter: _show,
+    builder: (hl) => Center(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        margin: EdgeInsets.symmetric(
+            horizontal: widget.compact ? 3 : 6, vertical: 8),
+        padding: EdgeInsets.symmetric(
+            horizontal: widget.compact ? 8 : 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: hl ? Colors.white : Colors.transparent,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(_langFlag(widget.currentCode),
+                style: TextStyle(fontSize: widget.compact ? 14 : 16)),
+            const SizedBox(width: 4),
+            Icon(Icons.keyboard_arrow_down,
+                size: 18, color: hl ? kPrimaryGold : kNavTextOnGold),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────
+// _IconBtn  ── Hamburger / Close
+// ─────────────────────────────────────────────────────────────────
+class _IconBtn extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
   const _IconBtn(this.icon, this.onTap);
 
   @override
-  State<_IconBtn> createState() => _IconBtnState();
-}
-
-class _IconBtnState extends State<_IconBtn> {
-  bool _hov = false;
-
-  @override
-  Widget build(BuildContext context) => MouseRegion(
-    cursor: SystemMouseCursors.click,
-    onEnter: (_) => setState(() => _hov = true),
-    onExit: (_) => setState(() => _hov = false),
-    child: GestureDetector(
-      onTap: widget.onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 130),
-        width: 40,
-        height: 40,
-        decoration: BoxDecoration(
-          color: _hov ? Colors.white : Colors.transparent,
-          shape: BoxShape.circle,
-        ),
-        child: Icon(
-          widget.icon,
-          color: _hov ? kPrimaryGold : kNavTextOnGold,
-          size: 26,
-        ),
+  Widget build(BuildContext context) => _HoverContainer(
+    onTap: onTap,
+    builder: (hl) => AnimatedContainer(
+      duration: const Duration(milliseconds: 130),
+      width: 40,
+      height: 40,
+      decoration: BoxDecoration(
+        color: hl ? Colors.white : Colors.transparent,
+        shape: BoxShape.circle,
       ),
+      child: Icon(icon,
+          color: hl ? kPrimaryGold : kNavTextOnGold, size: 26),
     ),
   );
 }

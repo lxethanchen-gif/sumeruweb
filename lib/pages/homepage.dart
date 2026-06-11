@@ -1,102 +1,101 @@
 import 'package:flutter/material.dart';
-import 'package:youtube_player_iframe/youtube_player_iframe.dart';
-import 'package:url_launcher/url_launcher.dart'; // 記得在 pubspec.yaml 加入此套件
+import 'package:url_launcher/url_launcher.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+
+// ─────────────────────────────────────────────
+// 資料模型
+// ─────────────────────────────────────────────
+
+class LinkItem {
+  const LinkItem({required this.title, required this.url});
+  final String title;
+  final String url;
+}
+
+// ─────────────────────────────────────────────
+// 常數集中管理
+// ─────────────────────────────────────────────
+
+abstract class AppConstants {
+  static const String liveUrl =
+      'https://www.youtube.com/live/gj4mSg0ElRA?si=UWBx-Au9RXucP5nQ';
+  static const String fallbackVideoId = 'gj4mSg0ElRA';
+  static const Color gold = Color.fromARGB(255, 246, 214, 30);
+  static const double maxContentWidth = 1000.0;
+  static const double mobileBreakpoint = 600.0;
+  static const double desktopBreakpoint = 1100.0;
+}
+
+// ─────────────────────────────────────────────
+// 頁籤資料
+// ─────────────────────────────────────────────
+
+abstract class TabData {
+  static const List<String> titles = [
+    '最新消息',
+    '影音開示',
+    '應世卷',
+    '滅罪卷',
+    '機緣道旨',
+    '詩摘',
+  ];
+
+  static const Map<String, List<LinkItem>> content = {
+    '最新消息': [
+      LinkItem(title: '2026年5月最新開示公告', url: 'https://example.com'),
+      LinkItem(title: '近期修持活動說明', url: 'https://example.com'),
+    ],
+    '影音開示': [
+      LinkItem(title: '諦深佛陀開示影片集錦（一）', url: 'https://youtube.com'),
+      LinkItem(title: '諦深佛陀開示影片集錦（二）', url: 'https://youtube.com'),
+    ],
+    '應世卷': [
+      LinkItem(title: '應世卷第一章', url: 'https://example.com'),
+      LinkItem(title: '應世卷第二章', url: 'https://example.com'),
+    ],
+    '滅罪卷': [
+      LinkItem(title: '滅罪卷導讀（上）', url: 'https://example.com'),
+      LinkItem(title: '滅罪卷導讀（下）', url: 'https://example.com'),
+    ],
+    '機緣道旨': [
+      LinkItem(title: '機緣道旨要義（一）', url: 'https://example.com'),
+      LinkItem(title: '機緣道旨要義（二）', url: 'https://example.com'),
+    ],
+    '詩摘': [
+      LinkItem(title: '諦深佛陀詩集選讀（上）', url: 'https://example.com'),
+      LinkItem(title: '諦深佛陀詩集選讀（下）', url: 'https://example.com'),
+    ],
+  };
+}
+
+// ─────────────────────────────────────────────
+// HomePage
+// ─────────────────────────────────────────────
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
-// 定義連結資料模型
-class LinkItem {
-  final String title;
-  final String url;
-  LinkItem(this.title, this.url);
-}
-
 class _HomePageState extends State<HomePage> {
-  final String _url =
-      'https://www.youtube.com/live/gj4mSg0ElRA?si=UWBx-Au9RXucP5nQ';
-  late YoutubePlayerController _ytController;
-  final Color _gold = const Color.fromARGB(255, 246, 214, 30);
-  final List<String> _tabs = ['最新消息', '影音開示', '應世卷', '滅罪卷', '機緣道旨', '詩摘'];
-
-  // 模擬各頁籤的資料
-  final Map<String, List<LinkItem>> _tabContent = {
-    '最新消息': [
-      LinkItem('2026年5月最新開示公告', 'https://example.com'),
-      LinkItem('近期修持活動說明', 'https://example.com'),
-      LinkItem('近期修持活動說明', 'https://example.com'),
-      LinkItem('近期修持活動說明', 'https://example.com'),
-      LinkItem('近期修持活動說明', 'https://example.com'),
-      LinkItem('近期修持活動說明', 'https://example.com'),
-      LinkItem('近期修持活動說明', 'https://example.com'),
-      LinkItem('近期修持活動說明', 'https://example.com'),
-      LinkItem('近期修持活動說明', 'https://example.com'),
-      LinkItem('近期修持活動說明', 'https://example.com'),
-    ],
-    '影音開示': [
-      LinkItem('諦深佛陀開示影片集錦', 'https://youtube.com'),
-      LinkItem('諦深佛陀開示影片集錦', 'https://youtube.com'),
-      LinkItem('諦深佛陀開示影片集錦', 'https://youtube.com'),
-      LinkItem('諦深佛陀開示影片集錦', 'https://youtube.com'),
-      LinkItem('諦深佛陀開示影片集錦', 'https://youtube.com'),
-      LinkItem('諦深佛陀開示影片集錦', 'https://youtube.com'),
-      LinkItem('諦深佛陀開示影片集錦', 'https://youtube.com'),
-      LinkItem('諦深佛陀開示影片集錦', 'https://youtube.com'),
-    ],
-    '應世卷': [
-      LinkItem('應世卷第一章', 'https://example.com'),
-      LinkItem('應世卷第一章', 'https://example.com'),
-      LinkItem('應世卷第一章', 'https://example.com'),
-      LinkItem('應世卷第一章', 'https://example.com'),
-      LinkItem('應世卷第一章', 'https://example.com'),
-      LinkItem('應世卷第一章', 'https://example.com'),
-      LinkItem('應世卷第一章', 'https://example.com'),
-      LinkItem('應世卷第一章', 'https://example.com'),
-    ],
-    '滅罪卷': [
-      LinkItem('滅罪卷導讀', 'https://example.com'),
-      LinkItem('滅罪卷導讀', 'https://example.com'),
-      LinkItem('滅罪卷導讀', 'https://example.com'),
-      LinkItem('滅罪卷導讀', 'https://example.com'),
-      LinkItem('滅罪卷導讀', 'https://example.com'),
-      LinkItem('滅罪卷導讀', 'https://example.com'),
-      LinkItem('滅罪卷導讀', 'https://example.com'),
-      LinkItem('滅罪卷導讀', 'https://example.com'),
-    ],
-    '機緣道旨': [
-      LinkItem('機緣道旨要義', 'https://example.com'),
-      LinkItem('機緣道旨要義', 'https://example.com'),
-      LinkItem('機緣道旨要義', 'https://example.com'),
-      LinkItem('機緣道旨要義', 'https://example.com'),
-      LinkItem('機緣道旨要義', 'https://example.com'),
-      LinkItem('機緣道旨要義', 'https://example.com'),
-      LinkItem('機緣道旨要義', 'https://example.com'),
-      LinkItem('機緣道旨要義', 'https://example.com'),
-    ],
-    '詩摘': [
-      LinkItem('諦深佛陀詩集選讀', 'https://example.com'),
-      LinkItem('諦深佛陀詩集選讀', 'https://example.com'),
-      LinkItem('諦深佛陀詩集選讀', 'https://example.com'),
-      LinkItem('諦深佛陀詩集選讀', 'https://example.com'),
-      LinkItem('諦深佛陀詩集選讀', 'https://example.com'),
-      LinkItem('諦深佛陀詩集選讀', 'https://example.com'),
-      LinkItem('諦深佛陀詩集選讀', 'https://example.com'),
-      LinkItem('諦深佛陀詩集選讀', 'https://example.com'),
-    ],
-  };
+  late final YoutubePlayerController _ytController;
 
   @override
   void initState() {
     super.initState();
+    final videoId =
+        YoutubePlayerController.convertUrlToId(AppConstants.liveUrl) ??
+        AppConstants.fallbackVideoId;
+
     _ytController = YoutubePlayerController.fromVideoId(
-      videoId: YoutubePlayerController.convertUrlToId(_url) ?? 'gj4mSg0ElRA',
+      videoId: videoId,
       autoPlay: false,
       params: const YoutubePlayerParams(
         showControls: true,
         showFullscreenButton: true,
+        strictRelatedVideos: true,
       ),
     );
   }
@@ -107,153 +106,261 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-  // 點擊開啟連結的方法
   Future<void> _launchURL(String url) async {
-    final Uri uri = Uri.parse(url);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri);
+    final uri = Uri.parse(url);
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+      debugPrint('無法開啟網址：$url');
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final double w = MediaQuery.of(context).size.width;
+    return DefaultTabController(
+      length: TabData.titles.length,
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: SafeArea(
+          child: YoutubePlayerScaffold(
+            controller: _ytController,
+            builder: (context, player) {
+              return LayoutBuilder(
+                builder: (context, constraints) {
+                  final w = constraints.maxWidth;
+                  final contentWidth = w > AppConstants.desktopBreakpoint
+                      ? AppConstants.maxContentWidth
+                      : w * 0.95;
+                  final isMobile = w < AppConstants.mobileBreakpoint;
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: DefaultTabController(
-        length: _tabs.length,
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            return SingleChildScrollView(
-              clipBehavior: Clip.none,
-              child: ConstrainedBox(
-                constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                child: IntrinsicHeight(
-                  child: Container(
-                    padding: const EdgeInsets.all(24.0),
-                    alignment: Alignment.center,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          '諦深佛陀 2026年5月29日 現場直播開示',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: w > 600 ? 32 : 24,
-                            fontWeight: FontWeight.bold,
-                            color: _gold,
-                            letterSpacing: 1.0,
-                          ),
+                  return SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 32,
+                    ),
+                    child: Center(
+                      child: SizedBox(
+                        width: contentWidth,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            // ── 標題 ──
+                            _PageTitle(isMobile: isMobile),
+                            const SizedBox(height: 32),
+
+                            // ── 播放器 ──
+                            _VideoCard(player: player),
+                            const SizedBox(height: 48),
+
+                            // ── 頁籤區 ──
+                            _TabSection(
+                              isMobile: isMobile,
+                              onLinkTap: _launchURL,
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 35),
-                        Container(
-                          width: w > 1100 ? 1000 : w * 0.95,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(16.0),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                blurRadius: 20,
-                                offset: const Offset(0, 8),
-                              ),
-                            ],
-                          ),
-                          clipBehavior: Clip.antiAlias,
-                          child: YoutubePlayer(
-                            controller: _ytController,
-                            aspectRatio: 16 / 9,
-                          ),
-                        ),
-                        const SizedBox(height: 50),
-                        SizedBox(
-                          width: w > 1100 ? 1000 : w * 0.95,
-                          child: Column(
-                            children: [
-                              TabBar(
-                                isScrollable: w < 600,
-                                tabAlignment: w < 600
-                                    ? TabAlignment.start
-                                    : TabAlignment.center,
-                                dividerColor: Colors.transparent,
-                                labelColor: Colors.white,
-                                unselectedLabelColor: _gold,
-                                indicator: BoxDecoration(
-                                  color: _gold,
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
-                                overlayColor: WidgetStateProperty.all(
-                                  Colors.transparent,
-                                ),
-                                tabs: _tabs
-                                    .map(
-                                      (title) => Tab(
-                                        child: Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 16,
-                                            vertical: 8,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: _gold.withOpacity(0.05),
-                                            border: Border.all(
-                                              color: _gold,
-                                              width: 1.5,
-                                            ),
-                                            borderRadius: BorderRadius.circular(
-                                              8.0,
-                                            ),
-                                          ),
-                                          child: Text(title),
-                                        ),
-                                      ),
-                                    )
-                                    .toList(),
-                              ),
-                              const SizedBox(height: 25),
-                              SizedBox(
-                                height: 300,
-                                child: TabBarView(
-                                  children: _tabs.map((tabTitle) {
-                                    final items = _tabContent[tabTitle] ?? [];
-                                    return ListView.builder(
-                                      itemCount: items.length,
-                                      itemBuilder: (context, index) {
-                                        final item = items[index];
-                                        return InkWell(
-                                          onTap: () => _launchURL(item.url),
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                              vertical: 12,
-                                              horizontal: 8,
-                                            ),
-                                            child: Text(
-                                              item.title,
-                                              style: TextStyle(
-                                                color: _gold,
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.w500,
-                                                decoration: TextDecoration.none,
-                                              ),
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                    );
-                                  }).toList(),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────
+// 子元件：頁面標題
+// ─────────────────────────────────────────────
+
+class _PageTitle extends StatelessWidget {
+  const _PageTitle({required this.isMobile});
+  final bool isMobile;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      '諦深佛陀 2026年5月29日\n現場直播開示',
+      textAlign: TextAlign.center,
+      style: TextStyle(
+        fontSize: isMobile ? 22 : 30,
+        fontWeight: FontWeight.bold,
+        color: AppConstants.gold,
+        letterSpacing: 1.5,
+        height: 1.4,
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────
+// 子元件：影片卡片
+// ─────────────────────────────────────────────
+
+class _VideoCard extends StatelessWidget {
+  const _VideoCard({required this.player});
+  final Widget player;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.12),
+            blurRadius: 24,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: player,
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────
+// 子元件：頁籤區塊
+// ─────────────────────────────────────────────
+
+class _TabSection extends StatelessWidget {
+  const _TabSection({
+    required this.isMobile,
+    required this.onLinkTap,
+  });
+
+  final bool isMobile;
+  final ValueChanged<String> onLinkTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        // TabBar
+        TabBar(
+          isScrollable: isMobile,
+          tabAlignment:
+              isMobile ? TabAlignment.start : TabAlignment.center,
+          dividerColor: Colors.transparent,
+          indicatorColor: Colors.transparent,
+          overlayColor: WidgetStateProperty.all(Colors.transparent),
+          tabs: TabData.titles.asMap().entries.map((e) => _GoldTab(title: e.value, index: e.key)).toList(),
+        ),
+        const SizedBox(height: 24),
+
+        // TabBarView — 固定高度避免 unbounded height 問題
+        SizedBox(
+          height: 320,
+          child: TabBarView(
+            children: TabData.titles.map((tabTitle) {
+              final items = TabData.content[tabTitle] ?? [];
+              return _LinkList(items: items, onTap: onLinkTap);
+            }).toList(),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ─────────────────────────────────────────────
+// 子元件：金色頁籤外框（選中/未選中自動切換樣式）
+// ─────────────────────────────────────────────
+
+class _GoldTab extends StatelessWidget {
+  const _GoldTab({required this.title, required this.index});
+  final String title;
+  final int index;
+
+  @override
+  Widget build(BuildContext context) {
+    final tabController = DefaultTabController.of(context);
+    return AnimatedBuilder(
+      animation: tabController,
+      builder: (context, _) {
+        final isSelected = tabController.index == index;
+        return Tab(
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            decoration: BoxDecoration(
+              color: isSelected ? AppConstants.gold : Colors.transparent,
+              border: Border.all(color: AppConstants.gold, width: 1.5),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(
+              title,
+              style: TextStyle(
+                color: isSelected ? Colors.white : AppConstants.gold,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+// ─────────────────────────────────────────────
+// 子元件：連結清單
+// ─────────────────────────────────────────────
+
+class _LinkList extends StatelessWidget {
+  const _LinkList({required this.items, required this.onTap});
+  final List<LinkItem> items;
+  final ValueChanged<String> onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    if (items.isEmpty) {
+      return const Center(
+        child: Text(
+          '尚無內容',
+          style: TextStyle(color: Colors.grey),
+        ),
+      );
+    }
+
+    return ListView.separated(
+      itemCount: items.length,
+      separatorBuilder: (_, __) => Divider(
+        color: AppConstants.gold.withOpacity(0.2),
+        height: 1,
+      ),
+      itemBuilder: (context, index) {
+        final item = items[index];
+        return InkWell(
+          onTap: () => onTap(item.url),
+          borderRadius: BorderRadius.circular(8),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  size: 14,
+                  color: AppConstants.gold,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    item.title,
+                    style: const TextStyle(
+                      color: AppConstants.gold,
+                      fontSize: 17,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 ),
-              ),
-            );
-          },
-        ),
-      ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }
