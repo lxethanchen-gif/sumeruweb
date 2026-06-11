@@ -47,8 +47,6 @@ class MainShell extends StatefulWidget {
 
 class _MainShellState extends State<MainShell> {
   int _currentIndex = PageIndex.home;
-
-  // ── 目前語言代碼（預設繁體中文）────────────────────────────────
   String _currentLanguageCode = 'zh-TW';
 
   void _onPageChanged(int index) {
@@ -57,11 +55,10 @@ class _MainShellState extends State<MainShell> {
 
   void _onLanguageChanged(String code) {
     setState(() => _currentLanguageCode = code);
-    // TODO: 通知 TranslationNotifier 切換語言
-    // 例如：TranslationScope.of(context)?.switchLanguage(code);
   }
 
-  static const List<Widget> _pages = [
+  // ✅ 改成 List<Widget>（非 const），避免 release build 渲染失敗
+  final List<Widget> _pages = [
     HomePage(),             // 0
     DharmaRealizePage(),    // 1
     YingShiJuanPage(),      // 2
@@ -76,10 +73,9 @@ class _MainShellState extends State<MainShell> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey.shade100,
+      backgroundColor: const Color.fromARGB(255, 255, 254, 254),
       body: Stack(
         children: [
-          // ── 頁面內容，頂部留出導覽列高度 + margin ────────────
           Padding(
             padding: const EdgeInsets.only(top: 80),
             child: IndexedStack(
@@ -87,8 +83,6 @@ class _MainShellState extends State<MainShell> {
               children: _pages,
             ),
           ),
-
-          // ── 浮動圓角 AppBar ───────────────────────────────────
           Positioned(
             top: 12,
             left: 16,
@@ -96,8 +90,8 @@ class _MainShellState extends State<MainShell> {
             child: SumeruAppBar(
               currentIndex: _currentIndex,
               onPageChanged: _onPageChanged,
-              currentLanguageCode: _currentLanguageCode,   // ← 新增
-              onLanguageChanged: _onLanguageChanged,        // ← 新增
+              currentLanguageCode: _currentLanguageCode,
+              onLanguageChanged: _onLanguageChanged,
             ),
           ),
         ],
