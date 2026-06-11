@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import '../routes.dart';
@@ -59,22 +61,36 @@ Widget _divider() => Container(
 );
 
 // ── _HoverContainer ───────────────────────────────────────────────
+// 新增 onExit callback，供下拉選單按鈕在滑鼠離開時關閉選單
 class _HoverContainer extends StatefulWidget {
   final Widget Function(bool hl) builder;
   final VoidCallback onTap;
   final bool forceHighlight;
   final VoidCallback? onEnter;
-  const _HoverContainer({required this.builder, required this.onTap,
-      this.forceHighlight = false, this.onEnter});
+  final VoidCallback? onExit; // ← 新增
+  const _HoverContainer({
+    required this.builder,
+    required this.onTap,
+    this.forceHighlight = false,
+    this.onEnter,
+    this.onExit,
+  });
   @override State<_HoverContainer> createState() => _HoverContainerState();
 }
+
 class _HoverContainerState extends State<_HoverContainer> {
   bool _hov = false;
   @override
   Widget build(BuildContext context) => MouseRegion(
     cursor: SystemMouseCursors.click,
-    onEnter: (_) { setState(() => _hov = true); widget.onEnter?.call(); },
-    onExit:  (_) => setState(() => _hov = false),
+    onEnter: (_) {
+      setState(() => _hov = true);
+      widget.onEnter?.call();
+    },
+    onExit: (_) {
+      setState(() => _hov = false);
+      widget.onExit?.call(); // ← 新增
+    },
     child: GestureDetector(
       onTap: widget.onTap,
       child: widget.builder(widget.forceHighlight || _hov),
@@ -112,17 +128,29 @@ class SumeruAppBar extends StatelessWidget {
   final ValueChanged<int> onPageChanged;
   final String currentLanguageCode;
   final ValueChanged<String> onLanguageChanged;
-  const SumeruAppBar({super.key, required this.currentIndex,
-      required this.onPageChanged, this.currentLanguageCode = 'zh-TW',
-      required this.onLanguageChanged});
+  const SumeruAppBar({
+    super.key,
+    required this.currentIndex,
+    required this.onPageChanged,
+    this.currentLanguageCode = 'zh-TW',
+    required this.onLanguageChanged,
+  });
 
   @override
   Widget build(BuildContext context) => _isMobile(context)
-      ? _MobileAppBar(currentIndex: currentIndex, onPageChanged: onPageChanged,
-          currentLanguageCode: currentLanguageCode, onLanguageChanged: onLanguageChanged)
-      : _HorizontalAppBar(currentIndex: currentIndex, onPageChanged: onPageChanged,
-          compact: _isTablet(context), currentLanguageCode: currentLanguageCode,
-          onLanguageChanged: onLanguageChanged);
+      ? _MobileAppBar(
+          currentIndex: currentIndex,
+          onPageChanged: onPageChanged,
+          currentLanguageCode: currentLanguageCode,
+          onLanguageChanged: onLanguageChanged,
+        )
+      : _HorizontalAppBar(
+          currentIndex: currentIndex,
+          onPageChanged: onPageChanged,
+          compact: _isTablet(context),
+          currentLanguageCode: currentLanguageCode,
+          onLanguageChanged: onLanguageChanged,
+        );
 }
 
 // ── _HorizontalAppBar ─────────────────────────────────────────────
@@ -132,8 +160,13 @@ class _HorizontalAppBar extends StatelessWidget {
   final bool compact;
   final String currentLanguageCode;
   final ValueChanged<String> onLanguageChanged;
-  const _HorizontalAppBar({required this.currentIndex, required this.onPageChanged,
-      required this.compact, required this.currentLanguageCode, required this.onLanguageChanged});
+  const _HorizontalAppBar({
+    required this.currentIndex,
+    required this.onPageChanged,
+    required this.compact,
+    required this.currentLanguageCode,
+    required this.onLanguageChanged,
+  });
 
   @override
   Widget build(BuildContext context) => _barMaterial(
@@ -146,16 +179,44 @@ class _HorizontalAppBar extends StatelessWidget {
           scrollDirection: Axis.horizontal,
           padding: const EdgeInsets.symmetric(horizontal: 4),
           child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-            _NavBtn(label: '首頁',               compact: compact, isActive: currentIndex == PageIndex.home,           onTap: () => onPageChanged(PageIndex.home)),
-            _DropdownBtn(isActive: PageIndex.isTextTeachings(currentIndex), onPageChanged: onPageChanged, compact: compact),
-            _NavBtn(label: compact ? '影音' : '影音開示', compact: compact, isActive: currentIndex == PageIndex.videoTeachings, onTap: () => onPageChanged(PageIndex.videoTeachings)),
-            _NavBtn(label: compact ? '資源' : '資源連結', compact: compact, isActive: currentIndex == PageIndex.resourceLinks,   onTap: () => onPageChanged(PageIndex.resourceLinks)),
-            _NavBtn(label: compact ? '簡介' : '諦深佛陀簡介', compact: compact, isActive: currentIndex == PageIndex.buddhaIntro, onTap: () => onPageChanged(PageIndex.buddhaIntro)),
+            _NavBtn(
+              label: '首頁',
+              compact: compact,
+              isActive: currentIndex == PageIndex.home,
+              onTap: () => onPageChanged(PageIndex.home),
+            ),
+            _DropdownBtn(
+              isActive: PageIndex.isTextTeachings(currentIndex),
+              onPageChanged: onPageChanged,
+              compact: compact,
+            ),
+            _NavBtn(
+              label: compact ? '影音' : '影音開示',
+              compact: compact,
+              isActive: currentIndex == PageIndex.videoTeachings,
+              onTap: () => onPageChanged(PageIndex.videoTeachings),
+            ),
+            _NavBtn(
+              label: compact ? '資源' : '資源連結',
+              compact: compact,
+              isActive: currentIndex == PageIndex.resourceLinks,
+              onTap: () => onPageChanged(PageIndex.resourceLinks),
+            ),
+            _NavBtn(
+              label: compact ? '簡介' : '諦深佛陀簡介',
+              compact: compact,
+              isActive: currentIndex == PageIndex.buddhaIntro,
+              onTap: () => onPageChanged(PageIndex.buddhaIntro),
+            ),
           ]),
         ),
       ),
       Container(width: 1, color: Colors.white24),
-      _LangDropdownBtn(currentCode: currentLanguageCode, onLanguageChanged: onLanguageChanged, compact: compact),
+      _LangDropdownBtn(
+        currentCode: currentLanguageCode,
+        onLanguageChanged: onLanguageChanged,
+        compact: compact,
+      ),
       const SizedBox(width: 6),
     ]),
   );
@@ -167,26 +228,55 @@ class _MobileAppBar extends StatelessWidget {
   final ValueChanged<int> onPageChanged;
   final String currentLanguageCode;
   final ValueChanged<String> onLanguageChanged;
-  const _MobileAppBar({required this.currentIndex, required this.onPageChanged,
-      required this.currentLanguageCode, required this.onLanguageChanged});
+  const _MobileAppBar({
+    required this.currentIndex,
+    required this.onPageChanged,
+    required this.currentLanguageCode,
+    required this.onLanguageChanged,
+  });
 
   void _openDrawer(BuildContext ctx) => showGeneralDialog(
-    context: ctx, barrierDismissible: true, barrierLabel: 'Dismiss',
-    barrierColor: Colors.black54, transitionDuration: const Duration(milliseconds: 260),
+    context: ctx,
+    barrierDismissible: true,
+    barrierLabel: 'Dismiss',
+    // ── 修正：barrier 改透明，遮罩由 PointerInterceptor 自行繪製 ──
+    // Flutter 原生 barrierColor 在 Web 上對 iframe 的原生 DOM 事件無效，
+    // 必須用 PointerInterceptor 包裹的 GestureDetector 才能完整攔截。
+    barrierColor: Colors.transparent,
+    transitionDuration: const Duration(milliseconds: 260),
     pageBuilder: (_, __, ___) => const SizedBox.shrink(),
     transitionBuilder: (ctx, anim, _, __) {
       final slide = CurvedAnimation(parent: anim, curve: Curves.easeOutCubic);
       return Stack(children: [
-        GestureDetector(onTap: () => Navigator.of(ctx).pop(), child: const SizedBox.expand()),
+        // ── PointerInterceptor 全螢幕遮罩 ──────────────────────────
+        // 注入真實 HTML 元素，攔截底層 iframe 的原生 DOM 事件（click / pointer）。
+        // AnimatedBuilder 讓背景顏色跟著動畫淡入淡出。
+        Positioned.fill(
+          child: PointerInterceptor(
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () => Navigator.of(ctx).pop(),
+              child: AnimatedBuilder(
+                animation: anim,
+                builder: (_, __) => ColoredBox(
+                  color: Colors.black.withOpacity(0.54 * anim.value),
+                ),
+              ),
+            ),
+          ),
+        ),
+        // ── Sidebar 面板（在遮罩上層） ──────────────────────────────
         SlideTransition(
           position: Tween(begin: const Offset(-1, 0), end: Offset.zero).animate(slide),
-          child: Align(alignment: Alignment.centerLeft,
+          child: Align(
+            alignment: Alignment.centerLeft,
             child: _SidebarPanel(
               currentIndex: currentIndex,
               onPageChanged: (i) { Navigator.of(ctx).pop(); onPageChanged(i); },
               currentLanguageCode: currentLanguageCode,
               onLanguageChanged: (c) { Navigator.of(ctx).pop(); onLanguageChanged(c); },
-            )),
+            ),
+          ),
         ),
       ]);
     },
@@ -203,13 +293,18 @@ class _MobileAppBar extends StatelessWidget {
   );
 }
 
-Widget _barMaterial({required double radius, required double height, required Widget child}) =>
-    Material(
-      elevation: 6, shadowColor: Colors.black38, color: kPrimaryGold,
-      borderRadius: BorderRadius.circular(radius),
-      child: SizedBox(height: height,
-        child: ClipRRect(borderRadius: BorderRadius.circular(radius), child: child)),
-    );
+Widget _barMaterial({
+  required double radius,
+  required double height,
+  required Widget child,
+}) => Material(
+  elevation: 6, shadowColor: Colors.black38, color: kPrimaryGold,
+  borderRadius: BorderRadius.circular(radius),
+  child: SizedBox(
+    height: height,
+    child: ClipRRect(borderRadius: BorderRadius.circular(radius), child: child),
+  ),
+);
 
 // ── _SidebarPanel ─────────────────────────────────────────────────
 class _SidebarPanel extends StatelessWidget {
@@ -217,53 +312,73 @@ class _SidebarPanel extends StatelessWidget {
   final ValueChanged<int> onPageChanged;
   final String currentLanguageCode;
   final ValueChanged<String> onLanguageChanged;
-  const _SidebarPanel({required this.currentIndex, required this.onPageChanged,
-      required this.currentLanguageCode, required this.onLanguageChanged});
+  const _SidebarPanel({
+    required this.currentIndex,
+    required this.onPageChanged,
+    required this.currentLanguageCode,
+    required this.onLanguageChanged,
+  });
 
   @override
   Widget build(BuildContext context) => Material(
     elevation: 16, color: kPrimaryGold,
     borderRadius: const BorderRadius.only(
         topRight: Radius.circular(20), bottomRight: Radius.circular(20)),
-    child: SizedBox(width: 270, height: double.infinity,
-      child: SafeArea(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(0, 12, 8, 4),
-          child: Align(alignment: Alignment.centerRight,
-              child: _IconBtn(Icons.close_rounded, () => Navigator.of(context).pop())),
-        ),
-        _divider(),
-        Expanded(child: ListView(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          children: [
-            _SidebarItem('首頁', currentIndex == PageIndex.home, () => onPageChanged(PageIndex.home)),
-            _ExpandGroup(
-              title: '文字開示',
-              isActive: PageIndex.isTextTeachings(currentIndex),
-              initiallyOpen: PageIndex.isTextTeachings(currentIndex),
-              children: _kNavItems.map((e) => _SidebarItem(e.label, currentIndex == e.page,
-                  () => onPageChanged(e.page), indent: 16)).toList(),
+    child: SizedBox(
+      width: 270,
+      height: double.infinity,
+      child: SafeArea(
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 12, 8, 4),
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: _IconBtn(Icons.close_rounded, () => Navigator.of(context).pop()),
             ),
-            _SidebarItem('影音開示',  currentIndex == PageIndex.videoTeachings, () => onPageChanged(PageIndex.videoTeachings)),
-            _SidebarItem('資源連結',  currentIndex == PageIndex.resourceLinks,   () => onPageChanged(PageIndex.resourceLinks)),
-            _SidebarItem('諦深佛陀簡介', currentIndex == PageIndex.buddhaIntro,  () => onPageChanged(PageIndex.buddhaIntro)),
-            _divider(),
-            _ExpandGroup(
-              title: '${_langFlag(currentLanguageCode)}  ${_langLabel(currentLanguageCode)}',
-              isActive: false,
-              children: _kLanguages.map((e) => _SidebarItem.lang(
-                  flag: e.flag, label: e.label,
+          ),
+          _divider(),
+          Expanded(child: ListView(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            children: [
+              _SidebarItem('首頁', currentIndex == PageIndex.home,
+                  () => onPageChanged(PageIndex.home)),
+              _ExpandGroup(
+                title: '文字開示',
+                isActive: PageIndex.isTextTeachings(currentIndex),
+                initiallyOpen: PageIndex.isTextTeachings(currentIndex),
+                children: _kNavItems.map((e) => _SidebarItem(
+                  e.label,
+                  currentIndex == e.page,
+                  () => onPageChanged(e.page),
+                  indent: 16,
+                )).toList(),
+              ),
+              _SidebarItem('影音開示', currentIndex == PageIndex.videoTeachings,
+                  () => onPageChanged(PageIndex.videoTeachings)),
+              _SidebarItem('資源連結', currentIndex == PageIndex.resourceLinks,
+                  () => onPageChanged(PageIndex.resourceLinks)),
+              _SidebarItem('諦深佛陀簡介', currentIndex == PageIndex.buddhaIntro,
+                  () => onPageChanged(PageIndex.buddhaIntro)),
+              _divider(),
+              _ExpandGroup(
+                title: '${_langFlag(currentLanguageCode)}  ${_langLabel(currentLanguageCode)}',
+                isActive: false,
+                children: _kLanguages.map((e) => _SidebarItem.lang(
+                  flag: e.flag,
+                  label: e.label,
                   isActive: currentLanguageCode == e.code,
-                  onTap: () => onLanguageChanged(e.code))).toList(),
-            ),
-          ],
-        )),
-      ])),
+                  onTap: () => onLanguageChanged(e.code),
+                )).toList(),
+              ),
+            ],
+          )),
+        ]),
+      ),
     ),
   );
 }
 
-// ── _SidebarItem (兼用語言列) ─────────────────────────────────────
+// ── _SidebarItem（兼用語言列） ─────────────────────────────────────
 class _SidebarItem extends StatelessWidget {
   final String label;
   final bool isActive;
@@ -275,13 +390,18 @@ class _SidebarItem extends StatelessWidget {
       : flag = null;
 
   const _SidebarItem.lang({
-    required String flag, required String label,
-    required bool isActive, required VoidCallback onTap,
+    required String flag,
+    required String label,
+    required bool isActive,
+    required VoidCallback onTap,
   }) : this._(label: label, isActive: isActive, onTap: onTap, flag: flag, indent: 16);
 
   const _SidebarItem._({
-    required this.label, required this.isActive,
-    required this.onTap, required this.indent, required this.flag,
+    required this.label,
+    required this.isActive,
+    required this.onTap,
+    required this.indent,
+    required this.flag,
   });
 
   @override
@@ -290,8 +410,11 @@ class _SidebarItem extends StatelessWidget {
     builder: (hl) => AnimatedContainer(
       duration: _dur130, width: double.infinity,
       margin: const EdgeInsets.symmetric(vertical: 2),
-      padding: EdgeInsets.only(left: 16 + indent, right: 16,
-          top: flag != null ? 10 : 12, bottom: flag != null ? 10 : 12),
+      padding: EdgeInsets.only(
+        left: 16 + indent, right: 16,
+        top: flag != null ? 10 : 12,
+        bottom: flag != null ? 10 : 12,
+      ),
       decoration: _pillDeco(hl, r: 10),
       child: flag != null
           ? Row(children: [
@@ -312,11 +435,17 @@ class _ExpandGroup extends StatefulWidget {
   final String title;
   final bool isActive, initiallyOpen;
   final List<Widget> children;
-  const _ExpandGroup({required this.title, required this.isActive,
-      this.initiallyOpen = false, required this.children});
+  const _ExpandGroup({
+    required this.title,
+    required this.isActive,
+    this.initiallyOpen = false,
+    required this.children,
+  });
   @override State<_ExpandGroup> createState() => _ExpandGroupState();
 }
-class _ExpandGroupState extends State<_ExpandGroup> with SingleTickerProviderStateMixin {
+
+class _ExpandGroupState extends State<_ExpandGroup>
+    with SingleTickerProviderStateMixin {
   late bool _open;
   late final AnimationController _ctrl;
 
@@ -324,37 +453,50 @@ class _ExpandGroupState extends State<_ExpandGroup> with SingleTickerProviderSta
   void initState() {
     super.initState();
     _open = widget.initiallyOpen;
-    _ctrl = AnimationController(vsync: this,
-        duration: const Duration(milliseconds: 200), value: _open ? 1.0 : 0.0);
+    _ctrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 200),
+      value: _open ? 1.0 : 0.0,
+    );
   }
+
   @override void dispose() { _ctrl.dispose(); super.dispose(); }
 
-  void _toggle() { setState(() => _open = !_open); _open ? _ctrl.forward() : _ctrl.reverse(); }
+  void _toggle() {
+    setState(() => _open = !_open);
+    _open ? _ctrl.forward() : _ctrl.reverse();
+  }
 
   @override
-  Widget build(BuildContext context) => Column(crossAxisAlignment: CrossAxisAlignment.start,
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      GestureDetector(onTap: _toggle,
+      GestureDetector(
+        onTap: _toggle,
         child: AnimatedContainer(
           duration: _dur130, width: double.infinity,
           margin: const EdgeInsets.symmetric(vertical: 2),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
             color: widget.isActive ? Colors.white.withOpacity(0.2) : Colors.transparent,
-            borderRadius: BorderRadius.circular(10)),
+            borderRadius: BorderRadius.circular(10),
+          ),
           child: Row(children: [
             Expanded(child: Text(widget.title, style: const TextStyle(
                 fontSize: 15, fontWeight: FontWeight.w600, color: kNavTextOnGold))),
             RotationTransition(
               turns: Tween<double>(begin: 0, end: 0.5)
                   .animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOut)),
-              child: const Icon(Icons.keyboard_arrow_down, size: 20, color: kNavTextOnGold)),
+              child: const Icon(Icons.keyboard_arrow_down, size: 20, color: kNavTextOnGold),
+            ),
           ]),
         ),
       ),
       AnimatedSize(
-        duration: const Duration(milliseconds: 220), curve: Curves.easeOutCubic,
-        child: _open ? Column(children: widget.children) : const SizedBox.shrink()),
+        duration: const Duration(milliseconds: 220),
+        curve: Curves.easeOutCubic,
+        child: _open ? Column(children: widget.children) : const SizedBox.shrink(),
+      ),
     ],
   );
 }
@@ -364,8 +506,12 @@ class _NavBtn extends StatelessWidget {
   final String label;
   final bool compact, isActive;
   final VoidCallback onTap;
-  const _NavBtn({required this.label, required this.compact,
-      required this.isActive, required this.onTap});
+  const _NavBtn({
+    required this.label,
+    required this.compact,
+    required this.isActive,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) => _HoverContainer(
@@ -376,8 +522,57 @@ class _NavBtn extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: compact ? 10 : 14, vertical: 6),
       decoration: _pillDeco(hl),
       child: Text(label, style: TextStyle(
-          fontSize: compact ? 13 : 14, fontWeight: FontWeight.w600, color: _hlColor(hl))),
+          fontSize: compact ? 13 : 14,
+          fontWeight: FontWeight.w600,
+          color: _hlColor(hl))),
     )),
+  );
+}
+
+// ── _MenuHoverRegion ──────────────────────────────────────────────
+// 用 onPointerHover 搭配 RenderBox.hitTest 判斷滑鼠是否真的離開選單
+// 範圍，完全不依賴 MouseRegion 的 onExit 冒泡，子 widget 的
+// MouseRegion 不會干擾父層，解決選單閃爍問題。
+class _MenuHoverRegion extends StatefulWidget {
+  final Widget child;
+  final VoidCallback? onEnter;
+  final VoidCallback? onExit;
+  const _MenuHoverRegion({required this.child, this.onEnter, this.onExit});
+  @override
+  State<_MenuHoverRegion> createState() => _MenuHoverRegionState();
+}
+
+class _MenuHoverRegionState extends State<_MenuHoverRegion> {
+  final _key = GlobalKey();
+  bool _inside = false;
+
+  bool _hitTest(Offset global) {
+    final box = _key.currentContext?.findRenderObject() as RenderBox?;
+    if (box == null) return false;
+    final local = box.globalToLocal(global);
+    return box.size.contains(local);
+  }
+
+  void _onPointerEvent(PointerEvent e) {
+    final inside = _hitTest(e.position);
+    if (inside == _inside) return;
+    _inside = inside;
+    if (inside) {
+      widget.onEnter?.call();
+    } else {
+      widget.onExit?.call();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => Listener(
+    onPointerMove:   _onPointerEvent,
+    onPointerHover:  _onPointerEvent,
+    onPointerCancel: (_) {
+      if (_inside) { _inside = false; widget.onExit?.call(); }
+    },
+    behavior: HitTestBehavior.translucent,
+    child: KeyedSubtree(key: _key, child: widget.child),
   );
 }
 
@@ -387,14 +582,27 @@ class _FloatingMenu extends StatefulWidget {
   final double triggerHeight;
   final double? rightAlignAt;
   final double menuWidth;
+  final double? maxHeight;
   final List<Widget> children;
   final VoidCallback onDismiss;
-  const _FloatingMenu({required this.origin, required this.triggerHeight,
-      this.rightAlignAt, required this.menuWidth,
-      required this.children, required this.onDismiss});
+  final VoidCallback? onMenuEnter; // 滑鼠移入選單本體
+  final VoidCallback? onMenuExit;  // 滑鼠移出選單本體
+  const _FloatingMenu({
+    required this.origin,
+    required this.triggerHeight,
+    this.rightAlignAt,
+    required this.menuWidth,
+    this.maxHeight,
+    required this.children,
+    required this.onDismiss,
+    this.onMenuEnter,
+    this.onMenuExit,
+  });
   @override State<_FloatingMenu> createState() => _FloatingMenuState();
 }
-class _FloatingMenuState extends State<_FloatingMenu> with SingleTickerProviderStateMixin {
+
+class _FloatingMenuState extends State<_FloatingMenu>
+    with SingleTickerProviderStateMixin {
   late final AnimationController _ctrl;
   late final Animation<double> _fade;
   late final Animation<Offset> _slide;
@@ -402,50 +610,89 @@ class _FloatingMenuState extends State<_FloatingMenu> with SingleTickerProviderS
   @override
   void initState() {
     super.initState();
-    _ctrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 160))..forward();
+    _ctrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 160),
+    )..forward();
     final curved = CurvedAnimation(parent: _ctrl, curve: Curves.easeOut);
     _fade  = curved;
     _slide = Tween(begin: const Offset(0, -0.04), end: Offset.zero).animate(curved);
   }
+
   @override void dispose() { _ctrl.dispose(); super.dispose(); }
 
   @override
   Widget build(BuildContext context) {
     final left = widget.rightAlignAt != null
-        ? widget.rightAlignAt! - widget.menuWidth : widget.origin.dx;
+        ? widget.rightAlignAt! - widget.menuWidth
+        : widget.origin.dx;
+
     return Stack(children: [
-      // PointerInterceptor 在 Flutter Web 注入真實 HTML 元素，
-      // 完全擋住底下 iframe 的原生 DOM 事件（Listener/GestureDetector 對 iframe 無效）
-      Positioned.fill(child: PointerInterceptor(
-        child: GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: widget.onDismiss,
-          child: const ColoredBox(color: Colors.transparent),
-        ),
-      )),
-      Positioned(
-        top: widget.origin.dy + widget.triggerHeight + 10, left: left,
-        child: FadeTransition(opacity: _fade,
-          child: SlideTransition(position: _slide,
-            child: MouseRegion(onExit: (_) => widget.onDismiss(),
-              child: Material(elevation: 10, color: Colors.transparent,
-                borderRadius: BorderRadius.circular(14),
-                child: Container(
-                  width: widget.menuWidth,
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: kPrimaryGold, borderRadius: BorderRadius.circular(14),
-                    boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 16, offset: Offset(0, 6))]),
-                  child: Column(mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: widget.children),
-                ),
-              ),
-            ),
+      // ── PointerInterceptor 全螢幕背景 ─────────────────────────────
+      // 注入真實 HTML 元素，完整攔截底層 iframe 的原生 DOM 事件。
+      // GestureDetector 單獨處理「點選選單以外空白區域」的關閉邏輯。
+      // 移除原本的 MouseRegion onExit：改由觸發按鈕的 onExit 負責，
+      // 避免滑鼠從按鈕移向選單途中因幾像素空隙而誤關選單。
+      Positioned.fill(
+        child: PointerInterceptor(
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: widget.onDismiss,
+            child: const ColoredBox(color: Colors.transparent),
           ),
         ),
       ),
-    ]);
+      // ── 選單本體（在 PointerInterceptor 上層） ─────────────────────
+      Positioned(
+        top: widget.origin.dy + widget.triggerHeight + 10,
+        left: left,
+        child: FadeTransition(
+          opacity: _fade,
+          child: SlideTransition(
+            position: _slide,
+            // Listener 用全域座標判斷滑鼠是否真的離開選單範圍，
+            // 比 MouseRegion 更穩定——子 widget 的 MouseRegion 不會干擾父層。
+            child: _MenuHoverRegion(
+              onEnter: widget.onMenuEnter,
+              onExit: widget.onMenuExit,
+              child: Material(
+              elevation: 10,
+              color: Colors.transparent,
+              borderRadius: BorderRadius.circular(14),
+              child: Container(
+                width: widget.menuWidth,
+                constraints: widget.maxHeight != null
+                    ? BoxConstraints(maxHeight: widget.maxHeight!)
+                    : const BoxConstraints(),
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: kPrimaryGold,
+                  borderRadius: BorderRadius.circular(14),
+                  boxShadow: const [
+                    BoxShadow(color: Colors.black26, blurRadius: 16, offset: Offset(0, 6)),
+                  ],
+                ),
+                child: widget.maxHeight != null
+                    ? ScrollConfiguration(
+                        behavior: _AllDeviceScrollBehavior(),
+                        child: ListView(
+                          padding: EdgeInsets.zero,
+                          shrinkWrap: true,
+                          children: widget.children,
+                        ),
+                      )
+                    : Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: widget.children,
+                      ),
+              ),
+            ),           // Material
+          ),             // _MenuHoverRegion
+        ),               // SlideTransition
+      ),                 // FadeTransition
+    ),                   // Positioned
+    ]);                  // Stack
   }
 }
 
@@ -456,8 +703,13 @@ class _MenuRow extends StatelessWidget {
   final bool isActive;
   final VoidCallback onTap;
   final double width;
-  const _MenuRow({this.flag, required this.label, this.isActive = false,
-      required this.onTap, required this.width});
+  const _MenuRow({
+    this.flag,
+    required this.label,
+    this.isActive = false,
+    required this.onTap,
+    required this.width,
+  });
 
   @override
   Widget build(BuildContext context) => _HoverContainer(
@@ -468,9 +720,14 @@ class _MenuRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10),
       decoration: _pillDeco(hl, r: 8),
       child: Row(children: [
-        if (flag != null) ...[Text(flag!, style: const TextStyle(fontSize: 16)), const SizedBox(width: 8)],
+        if (flag != null) ...[
+          Text(flag!, style: const TextStyle(fontSize: 16)),
+          const SizedBox(width: 8),
+        ],
         Expanded(child: Text(label, style: TextStyle(
-            fontSize: flag != null ? 13 : 14, fontWeight: FontWeight.w500, color: _hlColor(hl)))),
+            fontSize: flag != null ? 13 : 14,
+            fontWeight: FontWeight.w500,
+            color: _hlColor(hl)))),
         if (isActive) Icon(Icons.check_rounded, size: 15, color: _hlColor(hl)),
       ]),
     ),
@@ -481,25 +738,76 @@ class _MenuRow extends StatelessWidget {
 mixin _OverlayTrigger<T extends StatefulWidget> on State<T> {
   OverlayEntry? _entry;
   bool overlayOpen = false;
+  Timer? _hideTimer;         // 延遲關閉計時器
+  bool _menuHovered = false; // 滑鼠是否在選單本體內
 
   void showOverlay(OverlayEntry e) {
+    _hideTimer?.cancel();
+    _hideTimer = null;
     if (_entry != null) return;
     _entry = e;
     setState(() => overlayOpen = true);
     Overlay.of(context).insert(_entry!);
   }
-  void hideOverlay() {
-    _entry?.remove(); _entry = null;
+
+  void _immediateHide() {
+    _entry?.remove();
+    _entry = null;
+    _menuHovered = false;
     if (mounted) setState(() => overlayOpen = false);
   }
-  @override void dispose() { _entry?.remove(); _entry = null; super.dispose(); }
+
+  void hideOverlay() {
+    _hideTimer?.cancel();
+    _hideTimer = null;
+    _immediateHide();
+  }
+
+  /// 滑鼠離開觸發按鈕時，延遲 120ms 才關閉；
+  /// 若期間滑鼠已移入選單本體（_menuHovered），取消關閉。
+  void scheduledHide() {
+    _hideTimer?.cancel();
+    _hideTimer = Timer(const Duration(milliseconds: 120), () {
+      if (!_menuHovered) _immediateHide();
+    });
+  }
+
+  void onMenuEnter() {
+    _menuHovered = true;
+    _hideTimer?.cancel();
+    _hideTimer = null;
+  }
+
+  void onMenuExit() {
+    // 先把 _menuHovered 設 false，但延遲才真正關閉。
+    // 滑鼠在選單子項目之間移動時，父層 MouseRegion 短暫觸發
+    // onExit → onEnter，這段延遲讓 onEnter 有機會先把
+    // _menuHovered 重新設回 true，取消關閉，避免閃爍。
+    _menuHovered = false;
+    _hideTimer?.cancel();
+    _hideTimer = Timer(const Duration(milliseconds: 80), () {
+      if (!_menuHovered) _immediateHide();
+    });
+  }
+
+  @override
+  void dispose() {
+    _hideTimer?.cancel();
+    _entry?.remove();
+    _entry = null;
+    super.dispose();
+  }
 
   OverlayEntry buildEntry(WidgetBuilder b) => OverlayEntry(builder: b);
 
   (Offset, double, double) triggerMetrics() {
     final box    = context.findRenderObject() as RenderBox;
     final ovlBox = Overlay.of(context).context.findRenderObject() as RenderBox;
-    return (box.localToGlobal(Offset.zero, ancestor: ovlBox), box.size.width, box.size.height);
+    return (
+      box.localToGlobal(Offset.zero, ancestor: ovlBox),
+      box.size.width,
+      box.size.height,
+    );
   }
 }
 
@@ -507,33 +815,58 @@ mixin _OverlayTrigger<T extends StatefulWidget> on State<T> {
 class _DropdownBtn extends StatefulWidget {
   final bool isActive, compact;
   final ValueChanged<int> onPageChanged;
-  const _DropdownBtn({required this.isActive, required this.onPageChanged, this.compact = false});
+  const _DropdownBtn({
+    required this.isActive,
+    required this.onPageChanged,
+    this.compact = false,
+  });
   @override State<_DropdownBtn> createState() => _DropdownBtnState();
 }
-class _DropdownBtnState extends State<_DropdownBtn> with _OverlayTrigger<_DropdownBtn> {
+
+class _DropdownBtnState extends State<_DropdownBtn>
+    with _OverlayTrigger<_DropdownBtn> {
+
   void _show() {
     final (origin, _, h) = triggerMetrics();
     showOverlay(buildEntry((_) => _FloatingMenu(
-      origin: origin, triggerHeight: h, menuWidth: 190, onDismiss: hideOverlay,
+      origin: origin,
+      triggerHeight: h,
+      menuWidth: 190,
+      onDismiss: hideOverlay,
+      onMenuEnter: onMenuEnter,
+      onMenuExit: onMenuExit,
       children: _kNavItems.map((e) => _MenuRow(
-        label: e.label, width: 190,
+        label: e.label,
+        width: 190,
         onTap: () { hideOverlay(); widget.onPageChanged(e.page); },
       )).toList(),
     )));
   }
 
+  void _onEnter() {
+    // 取消任何待執行的延遲關閉
+    _hideTimer?.cancel();
+    _hideTimer = null;
+    // 只有在選單完全關閉時才重新開啟，避免重複插入造成閃爍
+    if (_entry == null) _show();
+  }
+
   @override
   Widget build(BuildContext context) => _HoverContainer(
     forceHighlight: widget.isActive || overlayOpen,
-    onTap: () => overlayOpen ? hideOverlay() : _show(), onEnter: _show,
+    onTap: () => overlayOpen ? hideOverlay() : _show(),
+    onEnter: _onEnter,
+    onExit: scheduledHide,
     builder: (hl) => Center(child: AnimatedContainer(
       duration: _dur150,
       margin: EdgeInsets.symmetric(horizontal: widget.compact ? 3 : 4, vertical: 8),
       padding: EdgeInsets.symmetric(horizontal: widget.compact ? 10 : 14, vertical: 6),
       decoration: _pillDeco(hl),
       child: Row(mainAxisSize: MainAxisSize.min, children: [
-        Text('文字開示', style: TextStyle(fontSize: widget.compact ? 13 : 14,
-            fontWeight: FontWeight.w600, color: _hlColor(hl))),
+        Text('文字開示', style: TextStyle(
+            fontSize: widget.compact ? 13 : 14,
+            fontWeight: FontWeight.w600,
+            color: _hlColor(hl))),
         const SizedBox(width: 4),
         Icon(Icons.keyboard_arrow_down, size: 18, color: _hlColor(hl)),
       ]),
@@ -546,26 +879,50 @@ class _LangDropdownBtn extends StatefulWidget {
   final String currentCode;
   final ValueChanged<String> onLanguageChanged;
   final bool compact;
-  const _LangDropdownBtn({required this.currentCode, required this.onLanguageChanged, this.compact = false});
+  const _LangDropdownBtn({
+    required this.currentCode,
+    required this.onLanguageChanged,
+    this.compact = false,
+  });
   @override State<_LangDropdownBtn> createState() => _LangDropdownBtnState();
 }
-class _LangDropdownBtnState extends State<_LangDropdownBtn> with _OverlayTrigger<_LangDropdownBtn> {
+
+class _LangDropdownBtnState extends State<_LangDropdownBtn>
+    with _OverlayTrigger<_LangDropdownBtn> {
+
   void _show() {
     final (origin, w, h) = triggerMetrics();
     showOverlay(buildEntry((_) => _FloatingMenu(
-      origin: origin, triggerHeight: h,
-      rightAlignAt: origin.dx + w, menuWidth: 170, onDismiss: hideOverlay,
+      origin: origin,
+      triggerHeight: h,
+      rightAlignAt: origin.dx + w,
+      menuWidth: 170,
+      maxHeight: 320,
+      onDismiss: hideOverlay,
+      onMenuEnter: onMenuEnter,
+      onMenuExit: onMenuExit,
       children: _kLanguages.map((e) => _MenuRow(
-        flag: e.flag, label: e.label, isActive: widget.currentCode == e.code, width: 170,
+        flag: e.flag,
+        label: e.label,
+        isActive: widget.currentCode == e.code,
+        width: 170,
         onTap: () { hideOverlay(); widget.onLanguageChanged(e.code); },
       )).toList(),
     )));
   }
 
+  void _onEnter() {
+    _hideTimer?.cancel();
+    _hideTimer = null;
+    if (_entry == null) _show();
+  }
+
   @override
   Widget build(BuildContext context) => _HoverContainer(
     forceHighlight: overlayOpen,
-    onTap: () => overlayOpen ? hideOverlay() : _show(), onEnter: _show,
+    onTap: () => overlayOpen ? hideOverlay() : _show(),
+    onEnter: _onEnter,
+    onExit: scheduledHide,
     builder: (hl) => Center(child: AnimatedContainer(
       duration: _dur150,
       margin: EdgeInsets.symmetric(horizontal: widget.compact ? 3 : 6, vertical: 8),
@@ -586,14 +943,27 @@ class _IconBtn extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
   const _IconBtn(this.icon, this.onTap);
+
   @override
   Widget build(BuildContext context) => _HoverContainer(
     onTap: onTap,
     builder: (hl) => AnimatedContainer(
       duration: _dur130, width: 40, height: 40,
       decoration: BoxDecoration(
-          color: hl ? Colors.white : Colors.transparent, shape: BoxShape.circle),
+          color: hl ? Colors.white : Colors.transparent,
+          shape: BoxShape.circle),
       child: Icon(icon, color: _hlColor(hl), size: 26),
     ),
   );
+}
+
+// ── _AllDeviceScrollBehavior ──────────────────────────────────────
+class _AllDeviceScrollBehavior extends MaterialScrollBehavior {
+  @override
+  Set<PointerDeviceKind> get dragDevices => {
+    PointerDeviceKind.mouse,
+    PointerDeviceKind.touch,
+    PointerDeviceKind.trackpad,
+    PointerDeviceKind.stylus,
+  };
 }
