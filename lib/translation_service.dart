@@ -87,30 +87,54 @@ class AppStrings {
     resourceCompact: '資源',
     buddhaCompact:   '簡介',
   );
+}
 
-  AppStrings copyWith({
-    String? home, String? textTeachings, String? dharmaRealize,
-    String? yingShiJuan, String? mieZuiJuan, String? jiYuanDaoZhi,
-    String? shiZhai, String? videoTeachings, String? resourceLinks,
-    String? buddhaIntro, String? siteTitle, String? siteSubtitle,
-    String? videoCompact, String? resourceCompact, String? buddhaCompact,
-  }) => AppStrings(
-    home:            home            ?? this.home,
-    textTeachings:   textTeachings   ?? this.textTeachings,
-    dharmaRealize:   dharmaRealize   ?? this.dharmaRealize,
-    yingShiJuan:     yingShiJuan     ?? this.yingShiJuan,
-    mieZuiJuan:      mieZuiJuan      ?? this.mieZuiJuan,
-    jiYuanDaoZhi:    jiYuanDaoZhi    ?? this.jiYuanDaoZhi,
-    shiZhai:         shiZhai         ?? this.shiZhai,
-    videoTeachings:  videoTeachings  ?? this.videoTeachings,
-    resourceLinks:   resourceLinks   ?? this.resourceLinks,
-    buddhaIntro:     buddhaIntro     ?? this.buddhaIntro,
-    siteTitle:       siteTitle       ?? this.siteTitle,
-    siteSubtitle:    siteSubtitle    ?? this.siteSubtitle,
-    videoCompact:    videoCompact    ?? this.videoCompact,
-    resourceCompact: resourceCompact ?? this.resourceCompact,
-    buddhaCompact:   buddhaCompact   ?? this.buddhaCompact,
-  );
+// ── Google 翻譯核心服務（用於整頁任意文字動態翻譯） ───────────────────
+class GoogleTranslateService {
+  // ⚠️ 請在編譯時帶入 key，或直接在此貼上你的 Google Cloud Translation API Key
+  static const String _apiKey = String.fromEnvironment('GOOGLE_TRANSLATE_API_KEY', defaultValue: 'YOUR_API_KEY_HERE');
+
+  // 二級快取結構：{ 'en': { '原文': '密文' } }，避免重複翻譯相同內文
+  static final Map<String, Map<String, String>> _dynamicCache = {};
+
+  static Future<String> translateText(String text, String targetLang) async {
+    if (targetLang == 'zh-TW' || text.trim().isEmpty) return text;
+
+    // 將 Flutter 常用的 zh-TW / zh-CN 轉換為 Google API 標準代碼
+    String apiLang = targetLang;
+    if (targetLang == 'zh-CN') apiLang = 'zh-CN';
+
+    final url = Uri.parse('https://translation.googleapis.com/language/translate/v2?key=$_apiKey');
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'q': text,
+          'target': apiLang,
+          'format': 'text', // 使用 text 格式，避免內文中的標點符號被 HTML 轉義（如 ' 變成 &#39;）
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final translatedText = data['data']['translations'][0]['translatedText'] as String;
+
+        // 寫入快取
+        _dynamicCache[targetLang] ??= {};
+        _dynamicCache[targetLang]![text] = translatedText;
+
+        return translatedText;
+      } else {
+        debugPrint('Google API 錯誤: ${response.body}');
+        return text;
+      }
+    } catch (e) {
+      debugPrint('Google 翻譯請求異常: $e');
+      return text;
+    }
+  }
 }
 
 // ── TranslationNotifier ───────────────────────────────────────────
@@ -123,13 +147,12 @@ class TranslationNotifier extends ChangeNotifier {
   String get langCode => _langCode;
   AppStrings get strings => _strings;
   bool get isLoading => _isLoading;
-  String? get error => _error;
 
   SupportedLanguage get currentLang =>
       kSupportedLanguages.firstWhere((l) => l.code == _langCode,
           orElse: () => kSupportedLanguages.first);
 
-  // 快取：避免重複請求同語言
+  // 快取：避免重複請求同語言的 UI 選單
   final Map<String, AppStrings> _cache = {'zh-TW': AppStrings.defaults};
 
   Future<void> setLanguage(String code) async {
@@ -157,6 +180,7 @@ class TranslationNotifier extends ChangeNotifier {
     }
   }
 
+  // 保持你原本的 Claude UI 翻譯架構不變
   Future<AppStrings> _translateViaApi(String targetLang) async {
     final langName = kSupportedLanguages
         .firstWhere((l) => l.code == targetLang,
@@ -186,7 +210,6 @@ class TranslationNotifier extends ChangeNotifier {
       headers: {
         'Content-Type': 'application/json',
         'anthropic-version': '2023-06-01',
-        // API key 由環境變數或安全儲存提供
         'x-api-key': const String.fromEnvironment('ANTHROPIC_API_KEY'),
       },
       body: jsonEncode({
@@ -247,4 +270,48 @@ class TranslationScope extends InheritedNotifier<TranslationNotifier> {
   }
 
   static AppStrings strings(BuildContext context) => of(context).strings;
+}
+
+// ── 💡 核心新增：自動翻譯的 Text 元件 ──────────────────────────────────
+class TranslatableText extends StatelessWidget {
+  final String text;
+  final TextStyle? style;
+  final TextAlign? textAlign;
+  final int? maxLines;
+  final TextOverflow? overflow;
+
+  const TranslatableText(
+    this.text, {
+    super.key,
+    this.style,
+    this.textAlign,
+    this.maxLines,
+    this.overflow,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    // 監聽全域語言變更狀態
+    final currentLang = TranslationScope.of(context).langCode;
+
+    // 如果是繁體中文，不需要浪費網路請求與效能，直接渲染
+    if (currentLang == 'zh-TW') {
+      return Text(text, style: style, textAlign: textAlign, maxLines: maxLines, overflow: overflow);
+    }
+
+    // 其他語言則非同步呼叫 Google 翻譯服務
+    return FutureBuilder<String>(
+      future: GoogleTranslateService.translateText(text, currentLang),
+      initialData: text, // 翻譯尚未成功回傳前，先顯示原本的繁體中文，避免畫面空白
+      builder: (context, snapshot) {
+        return Text(
+          snapshot.data ?? text,
+          style: style,
+          textAlign: textAlign,
+          maxLines: maxLines,
+          overflow: overflow,
+        );
+      },
+    );
+  }
 }

@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 class BuddhaIntroPage extends StatelessWidget {
   const BuddhaIntroPage({super.key});
 
-  static const _gold = Color(0xFFC9A84C);
-  static const _goldLight = Color(0xFFE8C96E);
-  static const _textColor = Color(0xFF8B6914);
+  // static const _gold = Color(0xFFC9A84C);
+  // static const _goldLight = Color(0xFFE8C96E);
+  // static const _textColor = Color(0xFF8B6914);
 
   static const _intro = '''諦深大師俗姓呂，淨土獲證，禪宗傳承。上乘清淨願力為諦，下令眾生世界業障破滅稱深。諦深法號為佛光普照神僧呼喚所得。落髮戒名釋迦妙生，祖籍山東即墨。佛曆2506年11月18日（農曆壬寅年11月18日）生於遼寧省瓦房店，生後至3歲不會說話，會講話後秉性甚憨，家人以為有疾！後因文革風暴，隨父母回遷祖籍。
 
@@ -62,11 +62,8 @@ class BuddhaIntroPage extends StatelessWidget {
 // ─────────────────────────────────────────
 // 共用常數
 // ─────────────────────────────────────────
-const _gold = Color.fromRGBO(245, 197, 24, 1);
-const _goldLight = Color.fromRGBO(245, 197, 24, 1);
-const _textColor = Color.fromRGBO(245, 197, 24, 1);
 const _bgNav = Color(0xFFFDF8EE);
-const _border = Color.fromRGBO(245, 197, 24, 1);
+// const _border = Color.fromRGBO(245, 197, 24, 1);
 
 // ─────────────────────────────────────────
 // 共用元件
@@ -106,7 +103,7 @@ class _TitleBlock extends StatelessWidget {
             '淨土獲證・禪宗傳承',
             style: TextStyle(
               fontSize: subtitleSize,
-              color: _goldLight,
+              color: Color.fromRGBO(245, 197, 24, 1),
               letterSpacing: 1.5,
             ),
           ),

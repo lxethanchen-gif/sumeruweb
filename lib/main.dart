@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'routes.dart';
 import 'pages/sumeruappbar.dart';
 import 'pages/homepage.dart';
@@ -11,8 +12,11 @@ import 'pages/video_teaching.dart';
 import 'pages/resource_links.dart';
 import 'pages/buddha_intro.dart';
 import 'translation_service.dart';
+import 'firebase_options.dart'; // 確認有這個檔案
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const SumeruApp());
 }
 
@@ -47,28 +51,29 @@ class MainShell extends StatefulWidget {
 
 class _MainShellState extends State<MainShell> {
   int _currentIndex = PageIndex.home;
-  String _currentLanguageCode = 'zh-TW';
 
   void _onPageChanged(int index) {
     setState(() => _currentIndex = index);
   }
 
-  void _onLanguageChanged(String code) {
-    setState(() => _currentLanguageCode = code);
-  }
+  // ✅ 移到 build() 裡，確保 Firebase 已初始化
+  late final List<Widget> _pages;
 
-  // ✅ 改成 List<Widget>（非 const），避免 release build 渲染失敗
-  final List<Widget> _pages = [
-    HomePage(),             // 0
-    DharmaRealizePage(),    // 1
-    YingShiJuanPage(),      // 2
-    MieZuiJuanPage(),       // 3
-    JiYuanDaoZhiPage(),     // 4
-    ShiZhaiPage(),          // 5
-    VideoTeachingsPage(),   // 6
-    ResourceLinksPage(),    // 7
-    BuddhaIntroPage(),      // 8
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _pages = [
+      const HomePage(),
+      const DharmaRealizePage(),
+      const YingShiJuanPage(),
+      const MieZuiJuanPage(),
+      const JiYuanDaoZhiPage(),
+      const ShiZhaiPage(),
+      const VideoTeachingsPage(),
+      const ResourceLinksPage(),
+      const BuddhaIntroPage(),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -78,10 +83,7 @@ class _MainShellState extends State<MainShell> {
         children: [
           Padding(
             padding: const EdgeInsets.only(top: 80),
-            child: IndexedStack(
-              index: _currentIndex,
-              children: _pages,
-            ),
+            child: IndexedStack(index: _currentIndex, children: _pages),
           ),
           Positioned(
             top: 12,
@@ -90,8 +92,6 @@ class _MainShellState extends State<MainShell> {
             child: SumeruAppBar(
               currentIndex: _currentIndex,
               onPageChanged: _onPageChanged,
-              currentLanguageCode: _currentLanguageCode,
-              onLanguageChanged: _onLanguageChanged,
             ),
           ),
         ],
