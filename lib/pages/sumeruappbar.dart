@@ -633,7 +633,8 @@ class _FloatingMenuState extends State<_FloatingMenu>
           opacity: _fade,
           child: SlideTransition(
             position: _slide,
-            child: _MenuHoverRegion(
+            child: PointerInterceptor(
+              child: _MenuHoverRegion(
               onEnter: widget.onMenuEnter,
               onExit: widget.onMenuExit,
               child: Material(
@@ -667,13 +668,14 @@ class _FloatingMenuState extends State<_FloatingMenu>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: widget.children,
                       ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    ),
-    ]);
+              ),        // Container
+            ),          // Material
+          ),            // _MenuHoverRegion
+        ),              // PointerInterceptor
+      ),                // SlideTransition
+    ),                  // FadeTransition
+    ),                  // Positioned
+    ]);                 // Stack
   }
 }
 
