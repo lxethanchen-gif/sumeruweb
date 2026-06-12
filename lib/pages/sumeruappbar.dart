@@ -61,13 +61,12 @@ Widget _divider() => Container(
 );
 
 // ── _HoverContainer ───────────────────────────────────────────────
-// 新增 onExit callback，供下拉選單按鈕在滑鼠離開時關閉選單
 class _HoverContainer extends StatefulWidget {
   final Widget Function(bool hl) builder;
   final VoidCallback onTap;
   final bool forceHighlight;
   final VoidCallback? onEnter;
-  final VoidCallback? onExit; // ← 新增
+  final VoidCallback? onExit;
   const _HoverContainer({
     required this.builder,
     required this.onTap,
@@ -89,7 +88,7 @@ class _HoverContainerState extends State<_HoverContainer> {
     },
     onExit: (_) {
       setState(() => _hov = false);
-      widget.onExit?.call(); // ← 新增
+      widget.onExit?.call();
     },
     child: GestureDetector(
       onTap: widget.onTap,
@@ -239,18 +238,12 @@ class _MobileAppBar extends StatelessWidget {
     context: ctx,
     barrierDismissible: true,
     barrierLabel: 'Dismiss',
-    // ── 修正：barrier 改透明，遮罩由 PointerInterceptor 自行繪製 ──
-    // Flutter 原生 barrierColor 在 Web 上對 iframe 的原生 DOM 事件無效，
-    // 必須用 PointerInterceptor 包裹的 GestureDetector 才能完整攔截。
     barrierColor: Colors.transparent,
     transitionDuration: const Duration(milliseconds: 260),
     pageBuilder: (_, __, ___) => const SizedBox.shrink(),
     transitionBuilder: (ctx, anim, _, __) {
       final slide = CurvedAnimation(parent: anim, curve: Curves.easeOutCubic);
       return Stack(children: [
-        // ── PointerInterceptor 全螢幕遮罩 ──────────────────────────
-        // 注入真實 HTML 元素，攔截底層 iframe 的原生 DOM 事件（click / pointer）。
-        // AnimatedBuilder 讓背景顏色跟著動畫淡入淡出。
         Positioned.fill(
           child: PointerInterceptor(
             child: GestureDetector(
@@ -265,7 +258,6 @@ class _MobileAppBar extends StatelessWidget {
             ),
           ),
         ),
-        // ── Sidebar 面板（在遮罩上層） ──────────────────────────────
         SlideTransition(
           position: Tween(begin: const Offset(-1, 0), end: Offset.zero).animate(slide),
           child: Align(
@@ -530,9 +522,6 @@ class _NavBtn extends StatelessWidget {
 }
 
 // ── _MenuHoverRegion ──────────────────────────────────────────────
-// 用 onPointerHover 搭配 RenderBox.hitTest 判斷滑鼠是否真的離開選單
-// 範圍，完全不依賴 MouseRegion 的 onExit 冒泡，子 widget 的
-// MouseRegion 不會干擾父層，解決選單閃爍問題。
 class _MenuHoverRegion extends StatefulWidget {
   final Widget child;
   final VoidCallback? onEnter;
@@ -585,8 +574,8 @@ class _FloatingMenu extends StatefulWidget {
   final double? maxHeight;
   final List<Widget> children;
   final VoidCallback onDismiss;
-  final VoidCallback? onMenuEnter; // 滑鼠移入選單本體
-  final VoidCallback? onMenuExit;  // 滑鼠移出選單本體
+  final VoidCallback? onMenuEnter;
+  final VoidCallback? onMenuExit;
   const _FloatingMenu({
     required this.origin,
     required this.triggerHeight,
@@ -628,11 +617,6 @@ class _FloatingMenuState extends State<_FloatingMenu>
         : widget.origin.dx;
 
     return Stack(children: [
-      // ── PointerInterceptor 全螢幕背景 ─────────────────────────────
-      // 注入真實 HTML 元素，完整攔截底層 iframe 的原生 DOM 事件。
-      // GestureDetector 單獨處理「點選選單以外空白區域」的關閉邏輯。
-      // 移除原本的 MouseRegion onExit：改由觸發按鈕的 onExit 負責，
-      // 避免滑鼠從按鈕移向選單途中因幾像素空隙而誤關選單。
       Positioned.fill(
         child: PointerInterceptor(
           child: GestureDetector(
@@ -642,7 +626,6 @@ class _FloatingMenuState extends State<_FloatingMenu>
           ),
         ),
       ),
-      // ── 選單本體（在 PointerInterceptor 上層） ─────────────────────
       Positioned(
         top: widget.origin.dy + widget.triggerHeight + 10,
         left: left,
@@ -650,8 +633,6 @@ class _FloatingMenuState extends State<_FloatingMenu>
           opacity: _fade,
           child: SlideTransition(
             position: _slide,
-            // Listener 用全域座標判斷滑鼠是否真的離開選單範圍，
-            // 比 MouseRegion 更穩定——子 widget 的 MouseRegion 不會干擾父層。
             child: _MenuHoverRegion(
               onEnter: widget.onMenuEnter,
               onExit: widget.onMenuExit,
@@ -687,12 +668,12 @@ class _FloatingMenuState extends State<_FloatingMenu>
                         children: widget.children,
                       ),
               ),
-            ),           // Material
-          ),             // _MenuHoverRegion
-        ),               // SlideTransition
-      ),                 // FadeTransition
-    ),                   // Positioned
-    ]);                  // Stack
+            ),
+          ),
+        ),
+      ),
+    ),
+    ]);
   }
 }
 
@@ -738,8 +719,8 @@ class _MenuRow extends StatelessWidget {
 mixin _OverlayTrigger<T extends StatefulWidget> on State<T> {
   OverlayEntry? _entry;
   bool overlayOpen = false;
-  Timer? _hideTimer;         // 延遲關閉計時器
-  bool _menuHovered = false; // 滑鼠是否在選單本體內
+  Timer? _hideTimer;
+  bool _menuHovered = false;
 
   void showOverlay(OverlayEntry e) {
     _hideTimer?.cancel();
@@ -763,15 +744,6 @@ mixin _OverlayTrigger<T extends StatefulWidget> on State<T> {
     _immediateHide();
   }
 
-  /// 滑鼠離開觸發按鈕時，延遲 120ms 才關閉；
-  /// 若期間滑鼠已移入選單本體（_menuHovered），取消關閉。
-  void scheduledHide() {
-    _hideTimer?.cancel();
-    _hideTimer = Timer(const Duration(milliseconds: 120), () {
-      if (!_menuHovered) _immediateHide();
-    });
-  }
-
   void onMenuEnter() {
     _menuHovered = true;
     _hideTimer?.cancel();
@@ -779,10 +751,6 @@ mixin _OverlayTrigger<T extends StatefulWidget> on State<T> {
   }
 
   void onMenuExit() {
-    // 先把 _menuHovered 設 false，但延遲才真正關閉。
-    // 滑鼠在選單子項目之間移動時，父層 MouseRegion 短暫觸發
-    // onExit → onEnter，這段延遲讓 onEnter 有機會先把
-    // _menuHovered 重新設回 true，取消關閉，避免閃爍。
     _menuHovered = false;
     _hideTimer?.cancel();
     _hideTimer = Timer(const Duration(milliseconds: 80), () {
@@ -812,6 +780,7 @@ mixin _OverlayTrigger<T extends StatefulWidget> on State<T> {
 }
 
 // ── _DropdownBtn ──────────────────────────────────────────────────
+// 已移除 hover 自動開啟邏輯，改為僅點擊觸發。
 class _DropdownBtn extends StatefulWidget {
   final bool isActive, compact;
   final ValueChanged<int> onPageChanged;
@@ -843,20 +812,11 @@ class _DropdownBtnState extends State<_DropdownBtn>
     )));
   }
 
-  void _onEnter() {
-    // 取消任何待執行的延遲關閉
-    _hideTimer?.cancel();
-    _hideTimer = null;
-    // 只有在選單完全關閉時才重新開啟，避免重複插入造成閃爍
-    if (_entry == null) _show();
-  }
-
   @override
   Widget build(BuildContext context) => _HoverContainer(
     forceHighlight: widget.isActive || overlayOpen,
     onTap: () => overlayOpen ? hideOverlay() : _show(),
-    onEnter: _onEnter,
-    onExit: scheduledHide,
+    // onEnter / onExit 不傳入，取消 hover 自動開啟
     builder: (hl) => Center(child: AnimatedContainer(
       duration: _dur150,
       margin: EdgeInsets.symmetric(horizontal: widget.compact ? 3 : 4, vertical: 8),
@@ -875,6 +835,7 @@ class _DropdownBtnState extends State<_DropdownBtn>
 }
 
 // ── _LangDropdownBtn ──────────────────────────────────────────────
+// 已移除 hover 自動開啟邏輯，改為僅點擊觸發。
 class _LangDropdownBtn extends StatefulWidget {
   final String currentCode;
   final ValueChanged<String> onLanguageChanged;
@@ -911,18 +872,11 @@ class _LangDropdownBtnState extends State<_LangDropdownBtn>
     )));
   }
 
-  void _onEnter() {
-    _hideTimer?.cancel();
-    _hideTimer = null;
-    if (_entry == null) _show();
-  }
-
   @override
   Widget build(BuildContext context) => _HoverContainer(
     forceHighlight: overlayOpen,
     onTap: () => overlayOpen ? hideOverlay() : _show(),
-    onEnter: _onEnter,
-    onExit: scheduledHide,
+    // onEnter / onExit 不傳入，取消 hover 自動開啟
     builder: (hl) => Center(child: AnimatedContainer(
       duration: _dur150,
       margin: EdgeInsets.symmetric(horizontal: widget.compact ? 3 : 6, vertical: 8),
