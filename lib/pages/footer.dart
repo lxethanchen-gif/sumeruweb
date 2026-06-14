@@ -96,8 +96,8 @@ class SumeruFooter extends StatelessWidget {
                 spacing: 8,
                 runSpacing: 6,
                 children: const [
-                  _CreditTag(region: '台灣', name: '智定成', role: '網站開發'),
-                  _CreditTag(region: '香港', name: '智道心', role: '資料收集'),
+                  _CreditTag(region: '台灣', name: '智定成', role: 'Web & App dev'),
+                  _CreditTag(region: '香港', name: '智道心', role: 'Data Collection'),
                 ],
               ),
             ],
