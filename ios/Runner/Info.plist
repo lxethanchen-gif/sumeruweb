@@ -70,5 +70,9 @@
 		<string>直播需要使用相機</string>
 		<key>NSMicrophoneUsageDescription</key>
 		<string>直播需要使用麥克風</string>
+		<key>NSPhotoLibraryAddUsageDescription</key>
+		<string>需要存取相簿以儲存圖片</string>
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>需要存取相簿以儲存圖片</string>
 	</dict>
 </plist>

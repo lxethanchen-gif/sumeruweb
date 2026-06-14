@@ -1,5 +1,47 @@
 import 'package:flutter/material.dart';
 
+// ── 風格常數（與 jiyuandaozhi.dart 一致）────────────────────────
+const _kGold = Color(0xFFF5C518);
+const _kGoldDim = Color(0xFFB8960E);
+const _kGoldBorder = Color(0x59F5C518); // gold @ 35%
+const _kGoldBorderDim = Color(0x26F5C518); // gold @ 15%
+const _kCardShadow = BoxShadow(
+  color: Color(0x14000000),
+  blurRadius: 10,
+  offset: Offset(0, 4),
+);
+const _kCardDecoration = BoxDecoration(
+  color: Colors.white,
+  borderRadius: BorderRadius.all(Radius.circular(16)),
+  border: Border.fromBorderSide(BorderSide(color: _kGoldBorder, width: 1)),
+  boxShadow: [_kCardShadow],
+);
+const _kTitleStyle = TextStyle(
+  fontSize: 16,
+  fontWeight: FontWeight.bold,
+  color: _kGold,
+  height: 1.4,
+);
+const _kBodyStyle = TextStyle(fontSize: 13.5, color: _kGoldDim, height: 1.7);
+const _kTagDeco = BoxDecoration(
+  color: Color(0x0DF5C518), // gold @ 5%
+  border: Border.fromBorderSide(BorderSide(color: _kGoldBorderDim, width: 1)),
+  borderRadius: BorderRadius.all(Radius.circular(6)),
+);
+const _kTagStyle = TextStyle(fontSize: 11, color: _kGoldDim);
+
+// 自定義 ScrollBehavior 以徹底移除捲動軸
+class NoScrollbarBehavior extends ScrollBehavior {
+  @override
+  Widget buildScrollbar(
+    BuildContext context,
+    Widget child,
+    ScrollableDetails details,
+  ) {
+    return child;
+  }
+}
+
 class DharmaRealizePage extends StatefulWidget {
   const DharmaRealizePage({super.key});
 
@@ -83,7 +125,7 @@ C、世間法的特徵
 
 沒接觸過佛法的人，切勿談論有著幾千年文化底蘊的佛法。歸依佛門，剃度出家精進修持，因緣具足或得少分，何況以訛傳訛，演義妄編以為佛法。
 
-中國是一個以佛文化引以為榮的國家，每個人都應了解一點真正的佛法常識。'''
+中國是一個以佛文化引以為榮的國家，每個人都應了解一點真正的佛法常識。''',
     ),
     (
       '第二章 什麼是佛學',
@@ -133,7 +175,7 @@ C、世間法的特徵
 
 佛門不以神通令眾歎服，佛門神通，為引眾出離苦海之一微塵法，當用則用，不當用不用。眾生修行過程，有諸多罪、諸多苦，佛門僅以神通為消災滅苦後能得度眾消灾、滅苦令其出離，不以神通令眾痴迷。所以，佛門大德無有以神通示眾者。
 
-佛門不搞崇拜為什麼燒香磕頭？這就要從佛門的禮節與律儀談起了。磕頭在佛門稱為接足禮，也稱頂禮，是佛門的禮節。這與現代人敬禮的用處是沒有區別的。關於燒香這個問題，事實上與六道眾生的種種習業、種種生存之道有關，嚴淨毗尼，入於禪定自知是等由來。把佛門的燒香與通常普通人燒香燒紙求神求鬼的「迷信」活動聯繫起來實際上是一個錯誤，因為佛門的香火並不是「迷信」。'''
+佛門不搞崇拜為什麼燒香磕頭？這就要從佛門的禮節與律儀談起了。磕頭在佛門稱為接足禮，也稱頂禮，是佛門的禮節。這與現代人敬禮的用處是沒有區別的。關於燒香這個問題，事實上與六道眾生的種種習業、種種生存之道有關，嚴淨毗尼，入於禪定自知是等由來。把佛門的燒香與通常普通人燒香燒紙求神求鬼的「迷信」活動聯繫起來實際上是一個錯誤，因為佛門的香火並不是「迷信」。''',
     ),
     (
       '第三章 末法學佛論',
@@ -151,7 +193,7 @@ C、世間法的特徵
 
 各位有緣善者，入於佛門，是如來所寄，是眾生出離苦海之唯一一門，釋迦牟尼佛留下浩瀚經書，能給有緣善者以無邊智慧、無邊福報，也能令所有入門之人，從此脫離種種苦縛，最後成佛。
 
-南無常住十方佛、南無常住十方法、南無常住十方僧、南無本師釋迦牟尼佛、南無大悲觀世音菩薩、南無大願地藏王菩薩、南無大勢至菩薩、南無大智文殊師利菩薩、南無大行普賢菩薩、南無清淨大海眾菩薩、南無護法韋馱尊天菩薩。'''
+南無常住十方佛、南無常住十方法、南無常住十方僧、南無本師釋迦牟尼佛、南無大悲觀世音菩薩、南無大願地藏王菩薩、南無大勢至菩薩、南無大智文殊師利菩薩、南無大行普賢菩薩、南無清淨大海眾菩薩、南無護法韋馱尊天菩薩。''',
     ),
   ];
 
@@ -160,59 +202,67 @@ C、世間法的特徵
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final isDesktop = constraints.maxWidth >= 1024;
-            final isTablet = constraints.maxWidth >= 600;
-            final hPad = isDesktop ? 48.0 : isTablet ? 32.0 : 16.0;
-            final tabFontSize = isDesktop ? 14.0 : 12.0;
+        child: ScrollConfiguration(
+          behavior: NoScrollbarBehavior(),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final isDesktop = constraints.maxWidth >= 1024;
+              final isTablet = constraints.maxWidth >= 600;
+              final hPad = isDesktop
+                  ? 48.0
+                  : isTablet
+                  ? 32.0
+                  : 16.0;
+              final tabFontSize = isDesktop ? 14.0 : 12.0;
 
-            return Column(
-              children: [
-                _buildNavBar(hPad, tabFontSize),
-                Container(height: 1, color: const Color(0xFFD4AF6A)),
-                Expanded(
-                  child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 300),
-                    child: _ContentBody(
-                      key: ValueKey(_selectedChapter),
-                      title: _chapters[_selectedChapter].$1,
-                      content: _chapters[_selectedChapter].$2,
-                      hPad: hPad,
+              return Column(
+                children: [
+                  _buildNavBar(hPad, tabFontSize),
+                  // 分隔線：使用與卡片一致的金邊色
+                  Container(height: 1, color: _kGoldBorder),
+                  Expanded(
+                    child: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 300),
+                      child: _ContentBody(
+                        key: ValueKey(_selectedChapter),
+                        title: _chapters[_selectedChapter].$1,
+                        content: _chapters[_selectedChapter].$2,
+                        hPad: hPad,
+                      ),
                     ),
                   ),
-                ),
-              ],
-            );
-          },
+                ],
+              );
+            },
+          ),
         ),
       ),
     );
   }
 
   Widget _buildNavBar(double hPad, double fontSize) => Container(
-        color: const Color(0xFFFDF8EE),
-        padding: EdgeInsets.symmetric(horizontal: hPad, vertical: 14),
-        child: Row(
-          children: List.generate(
-            _chapters.length,
-            (i) => Expanded(
-              child: Padding(
-                padding: EdgeInsets.only(left: i == 0 ? 0 : 8),
-                child: _ChapterTab(
-                  title: _chapters[i].$1,
-                  isSelected: _selectedChapter == i,
-                  fontSize: fontSize,
-                  onTap: () => setState(() => _selectedChapter = i),
-                ),
-              ),
+    color: Colors.white,
+    padding: EdgeInsets.symmetric(horizontal: hPad, vertical: 14),
+    child: Row(
+      children: List.generate(
+        _chapters.length,
+        (i) => Expanded(
+          child: Padding(
+            padding: EdgeInsets.only(left: i == 0 ? 0 : 8),
+            child: _ChapterTab(
+              title: _chapters[i].$1,
+              isSelected: _selectedChapter == i,
+              fontSize: fontSize,
+              onTap: () => setState(() => _selectedChapter = i),
             ),
           ),
         ),
-      );
+      ),
+    ),
+  );
 }
 
-// ── 章節 Tab ──
+// ── 章節 Tab ────────────────────────────────────────────────────
 class _ChapterTab extends StatelessWidget {
   const _ChapterTab({
     required this.title,
@@ -228,32 +278,32 @@ class _ChapterTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => GestureDetector(
-        onTap: onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
-          decoration: BoxDecoration(
-            color: isSelected ? const Color(0xFFC9A84C) : Colors.transparent,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: isSelected ? const Color(0xFFC9A84C) : const Color(0xFFD4AF6A),
-              width: isSelected ? 2 : 1,
-            ),
-          ),
-          child: Text(
-            title,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: fontSize,
-              fontWeight: FontWeight.bold,
-              color: isSelected ? Colors.white : const Color(0xFFC9A84C),
-            ),
-          ),
+    onTap: onTap,
+    child: AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+      decoration: BoxDecoration(
+        color: isSelected ? _kGold : Colors.transparent,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: isSelected ? _kGold : _kGoldBorder,
+          width: isSelected ? 2 : 1,
         ),
-      );
+      ),
+      child: Text(
+        title,
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          fontSize: fontSize,
+          fontWeight: FontWeight.bold,
+          color: isSelected ? Colors.white : _kGoldDim,
+        ),
+      ),
+    ),
+  );
 }
 
-// ── 章節內容 ──
+// ── 章節內容（卡片包裝）────────────────────────────────────────
 class _ContentBody extends StatelessWidget {
   const _ContentBody({
     super.key,
@@ -267,32 +317,65 @@ class _ContentBody extends StatelessWidget {
   final double hPad;
 
   @override
-  Widget build(BuildContext context) => SingleChildScrollView(
+  Widget build(BuildContext context) {
+    return ScrollConfiguration(
+      behavior: NoScrollbarBehavior(),
+      child: SingleChildScrollView(
         padding: EdgeInsets.fromLTRB(hPad, 28, hPad, 40),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFFC9A84C),
-                letterSpacing: 1.2,
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 860),
+            child: Container(
+              padding: const EdgeInsets.all(24),
+              decoration: _kCardDecoration,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // 章節標題
+                  Text(
+                    title,
+                    style: _kTitleStyle.copyWith(
+                      fontSize: 20,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  // 底部強調線
+                  Container(
+                    height: 2,
+                    width: 48,
+                    decoration: BoxDecoration(
+                      color: _kGold,
+                      borderRadius: BorderRadius.circular(1),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  // 正文
+                  Text(
+                    content,
+                    style: _kBodyStyle.copyWith(fontSize: 15, height: 2.0),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 6),
-            Container(height: 2, width: 56, color: const Color(0xFFE8C96E)),
-            const SizedBox(height: 20),
-            Text(
-              content,
-              style: const TextStyle(
-                fontSize: 15,
-                color: Color(0xFF8B6914),
-                height: 2.0,
-              ),
-            ),
-          ],
+          ),
         ),
-      );
+      ),
+    );
+  }
+}
+
+// ── Tag 元件（供未來擴充使用）───────────────────────────────────
+class _Tag extends StatelessWidget {
+  final String label;
+  const _Tag(this.label);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: _kTagDeco,
+      child: Text(label, style: _kTagStyle),
+    );
+  }
 }

@@ -1,63 +1,177 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'yingshijuan_data.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 // ── 常數 ────────────────────────────────────────────────────────
-const _kGold     = Color(0xFFF5C518);
-const _kGoldDim  = Color(0xFFB8960E);
-const _kPageSize = 20;
+const _kGold    = Color(0xFFF5C518);
+const _kGoldDim = Color(0xFFB8960E);
+const _kPageSize = 18;
 
-// 預先計算的不透明色（避免 runtime withOpacity 分配）
-const _kGoldBorder     = Color(0x59F5C518); // gold @ 35%
-const _kGoldBorderNav  = Color(0x73F5C518); // gold @ 45%
-const _kGoldBorderDim  = Color(0x26F5C518); // gold @ 15%
-const _kGoldIconDim    = Color(0x40F5C518); // gold @ 25%
-const _kCopyIconColor  = Color(0x99B8960E); // goldDim @ 60%
-const _kDividerColor   = Color(0x33F5C518); // gold @ 20%
+const _kGoldBorder    = Color(0x59F5C518);
+const _kGoldBorderNav = Color(0x73F5C518);
+const _kGoldBorderDim = Color(0x26F5C518);
+const _kGoldIconDim   = Color(0x40F5C518);
+const _kCopyIconColor = Color(0x99B8960E);
+const _kDividerColor  = Color(0x33F5C518);
+const _kNavShadow  = BoxShadow(color: Color(0x0D000000), blurRadius: 6, offset: Offset(0, 2));
+const _kCardShadow = BoxShadow(color: Color(0x14000000), blurRadius: 10, offset: Offset(0, 4));
 
-const _kCardShadow = BoxShadow(
-  color: Color(0x14000000),
-  blurRadius: 10,
-  offset: Offset(0, 4),
-);
+const _kCardDeco = BoxDecoration(color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(16)), boxShadow: [_kCardShadow]);
+const _kCardDecoHi = BoxDecoration(color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(16)), border: Border.fromBorderSide(BorderSide(color: _kGold, width: 2)), boxShadow: [_kCardShadow]);
+const _kCardPad = EdgeInsets.fromLTRB(18, 20, 14, 16);
+const _kSearchDeco = BoxDecoration(color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(12)), boxShadow: [_kNavShadow]);
 
-// 預建靜態裝飾（每次 build 不再重新分配）
-const _kCardDecoration = BoxDecoration(
-  color: Colors.white,
-  borderRadius: BorderRadius.all(Radius.circular(16)),
-  boxShadow: [_kCardShadow],
-);
-const _kCardPadding = EdgeInsets.fromLTRB(18, 20, 14, 16);
-
-// 文字樣式
 const _kBodyStyle   = TextStyle(fontSize: 13.5, color: _kGoldDim, height: 1.7);
 const _kTitleStyle  = TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: _kGold, height: 1.4);
 const _kExpandStyle = TextStyle(fontSize: 12, color: _kGold, fontWeight: FontWeight.w600);
+const _kDateStyle   = TextStyle(fontSize: 11, color: _kGoldBorder, letterSpacing: 1);
+const _kDialogStyle = TextStyle(fontSize: 14, color: _kGoldDim, height: 1.8);
 
-// 靜態 Icon（不依賴狀態，const 化避免重建）
-const _kCheckIcon = Icon(Icons.check_rounded,        key: ValueKey(true),  size: 16, color: _kGold);
-const _kArrowIcon = Icon(Icons.keyboard_arrow_down,  size: 16, color: _kGold);
+const _kCheckIcon = Icon(Icons.check_rounded, key: ValueKey(true), size: 16, color: _kGold);
+const _kArrowIcon = Icon(Icons.keyboard_arrow_down, size: 16, color: _kGold);
+const _kCopyIcon  = Icon(Icons.copy_rounded, key: ValueKey(false), size: 16, color: _kCopyIconColor);
+const _kDivider   = Divider(color: _kDividerColor, height: 1, thickness: 1);
 
 typedef _Card = ({String title, String? date, String body});
 
-// ── RWD 欄數 ────────────────────────────────────────────────────
+// ── 支援語言 ────────────────────────────────────────────────────
+enum AppLang {
+  zhCN, zhTW, en, ja, es, fr, de, ar, hi, ko, th, pt, vi, it, la, id, bo,
+}
+
+extension AppLangX on AppLang {
+  String get label => switch (this) {
+    AppLang.zhCN => '简中',
+    AppLang.zhTW => '繁中',
+    AppLang.en   => 'EN',
+    AppLang.ja   => 'JP',
+    AppLang.es   => 'ES',
+    AppLang.fr   => 'FR',
+    AppLang.de   => 'DE',
+    AppLang.ar   => 'AR',
+    AppLang.hi   => 'HI',
+    AppLang.ko   => 'KO',
+    AppLang.th   => 'TH',
+    AppLang.pt   => 'PT',
+    AppLang.vi   => 'VI',
+    AppLang.it   => 'IT',
+    AppLang.la   => 'LA',
+    AppLang.id   => 'ID',
+    AppLang.bo   => 'BO',
+  };
+  String get fullName => switch (this) {
+    AppLang.zhCN => '简体中文',
+    AppLang.zhTW => '繁體中文',
+    AppLang.en   => 'English',
+    AppLang.ja   => '日本語',
+    AppLang.es   => 'Español',
+    AppLang.fr   => 'Français',
+    AppLang.de   => 'Deutsch',
+    AppLang.ar   => 'العربية',
+    AppLang.hi   => 'हिन्दी',
+    AppLang.ko   => '한국어',
+    AppLang.th   => 'ภาษาไทย',
+    AppLang.pt   => 'Português',
+    AppLang.vi   => 'Tiếng Việt',
+    AppLang.it   => 'Italiano',
+    AppLang.la   => 'Latina',
+    AppLang.id   => 'Bahasa Indonesia',
+    AppLang.bo   => 'བོད་ཡིག',
+  };
+}
+
 int _gridCols(double w) =>
     w < 480 ? 1 : w < 720 ? 2 : w < 960 ? 3 : w < 1200 ? 4 : w < 1440 ? 5 : 6;
+
+// ── 翻譯快取 ──────────────────────────────────────────────────
+class _TranslationCache {
+  static final _cache = <String, String>{};
+
+  static String _key(String text, AppLang lang) => '${lang.name}::$text';
+
+  static String? get(String text, AppLang lang) =>
+      lang == AppLang.zhCN ? text : _cache[_key(text, lang)];
+
+  static void set(String text, AppLang lang, String translated) =>
+      _cache[_key(text, lang)] = translated;
+}
+
+// ── 翻譯服務 ──────────────────────────────────────────────────
+abstract class TranslationService {
+  static Future<String> translate(String text, AppLang target) async {
+    if (target == AppLang.zhCN || text.trim().isEmpty) return text;
+
+    final cached = _TranslationCache.get(text, target);
+    if (cached != null) return cached;
+
+    final targetCode = switch (target) {
+      AppLang.zhCN => 'zh-CN',
+      AppLang.zhTW => 'zh-TW',
+      AppLang.en   => 'en',
+      AppLang.ja   => 'ja',
+      AppLang.es   => 'es',
+      AppLang.fr   => 'fr',
+      AppLang.de   => 'de',
+      AppLang.ar   => 'ar',
+      AppLang.hi   => 'hi',
+      AppLang.ko   => 'ko',
+      AppLang.th   => 'th',
+      AppLang.pt   => 'pt',
+      AppLang.vi   => 'vi',
+      AppLang.it   => 'it',
+      AppLang.la   => 'la',
+      AppLang.id   => 'id',
+      AppLang.bo   => 'bo',
+    };
+
+    try {
+      final uri = Uri.parse(
+        'https://translate.googleapis.com/translate_a/single'
+        '?client=gtx&sl=zh-CN&tl=$targetCode&dt=t&q=${Uri.encodeComponent(text)}',
+      );
+      final res = await http.get(uri);
+      if (res.statusCode != 200) return text;
+
+      final data = jsonDecode(utf8.decode(res.bodyBytes)) as List;
+      final segments = data[0] as List;
+      final translated = segments.map((s) => s[0] as String).join();
+
+      _TranslationCache.set(text, target, translated);
+      return translated;
+    } catch (_) {
+      return text;
+    }
+  }
+}
 
 // ── Page ────────────────────────────────────────────────────────
 class YingShiJuanPage extends StatefulWidget {
   const YingShiJuanPage({super.key});
-
   @override
   State<YingShiJuanPage> createState() => _YingShiJuanPageState();
 }
 
 class _YingShiJuanPageState extends State<YingShiJuanPage> {
   final _scroll = ScrollController();
-  int _currentPage = 0;
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+  int _page = 0;
+  String _query = '';
+  String? _highlight;
+  AppLang _lang = AppLang.zhCN;
 
-  // 只算一次
-  static final int _pageCount = (kYingShiJuanCards.length / _kPageSize).ceil();
+  List<_Card> get _filtered {
+    if (_query.isEmpty) return kYingShiJuanCards;
+    final q = _query.toLowerCase();
+    return kYingShiJuanCards.where((c) =>
+        c.title.toLowerCase().contains(q) ||
+        c.body.toLowerCase().contains(q) ||
+        (c.date?.toLowerCase().contains(q) ?? false)
+    ).toList(growable: false);
+  }
+
+  int _pageCount(int len) => (len / _kPageSize).ceil().clamp(1, double.infinity).toInt();
 
   @override
   void dispose() {
@@ -65,266 +179,399 @@ class _YingShiJuanPageState extends State<YingShiJuanPage> {
     super.dispose();
   }
 
-  void _goToPage(int page) {
-    if (page == _currentPage) return;
-    setState(() => _currentPage = page);
+  void _goToPage(int page, int pageCount) {
+    if (page < 0 || page >= pageCount || page == _page) return;
+    setState(() => _page = page);
     WidgetsBinding.instance.addPostFrameCallback((_) => _scroll.jumpTo(0));
+  }
+
+  void _onSearchChanged(String v) => setState(() { _query = v; _page = 0; });
+
+  void _jumpToCard(_Card card, List<_Card> f) {
+    final idx = f.indexOf(card);
+    if (idx == -1) return;
+    setState(() {
+      _page = idx ~/ _kPageSize;
+      _highlight = card.title;
+    });
+    _scaffoldKey.currentState?.closeDrawer();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _scroll.jumpTo(0));
+    Future.delayed(const Duration(seconds: 2), () {
+      if (mounted) setState(() => _highlight = null);
+    });
+  }
+
+  void _onLangChanged(AppLang lang) {
+    setState(() => _lang = lang);
   }
 
   @override
   Widget build(BuildContext context) {
-    final start = _currentPage * _kPageSize;
-    final end   = (start + _kPageSize).clamp(0, kYingShiJuanCards.length);
+    final filtered = _filtered;
+    final pageCount = _pageCount(filtered.length);
+    final start = (_page * _kPageSize).clamp(0, filtered.length);
+    final items = filtered.sublist(start, (start + _kPageSize).clamp(0, filtered.length));
 
-    return ColoredBox(
-      color: Colors.white,
-      child: LayoutBuilder(
-        builder: (_, constraints) => CustomScrollView(
-          controller: _scroll,
-          // 關閉過度捲動發光效果，減少 GPU layer
-          physics: const ClampingScrollPhysics(),
-          slivers: [
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-              sliver: SliverGrid(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: _gridCols(constraints.maxWidth),
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                  mainAxisExtent: 260,
-                ),
-                delegate: SliverChildBuilderDelegate(
-                  (_, i) => _TeachingCard(
-                    // 傳入穩定 key，讓 Flutter 複用 element 而非重建
-                    key: ValueKey(start + i),
-                    card: kYingShiJuanCards[start + i],
+    return Scaffold(
+      key: _scaffoldKey,
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        scrolledUnderElevation: 0,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: _kGold),
+        titleSpacing: 0,
+        title: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(children: [
+            Expanded(
+              child: Container(
+                height: 40,
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                decoration: _kSearchDeco,
+                child: Row(children: [
+                  const Icon(Icons.search, size: 18, color: _kGold),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: TextField(
+                      onChanged: _onSearchChanged,
+                      style: const TextStyle(fontSize: 14, color: _kGold),
+                      decoration: const InputDecoration(
+                        isDense: true,
+                        border: InputBorder.none,
+                        hintText: '搜尋標題或內容…',
+                        hintStyle: TextStyle(fontSize: 13, color: _kGoldBorder),
+                      ),
+                    ),
                   ),
-                  childCount: end - start,
-                  // 告知 framework 卡片之間彼此獨立，可安全跳過 diff
-                  addRepaintBoundaries: true,
-                  addAutomaticKeepAlives: false,
-                ),
+                ]),
               ),
             ),
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(20, 24, 20, 40),
-              sliver: SliverToBoxAdapter(
-                child: _PageNav(
-                  currentPage: _currentPage,
-                  pageCount: _pageCount,
-                  onChanged: _goToPage,
-                ),
-              ),
-            ),
-          ],
+            const SizedBox(width: 10),
+            _LangSwitcher(current: _lang, onChanged: _onLangChanged),
+          ]),
         ),
       ),
+      drawer: _IndexDrawer(cards: filtered, onSelect: (c) => _jumpToCard(c, filtered)),
+      body: filtered.isEmpty
+          ? Center(child: Text('找不到符合「$_query」的卡片', style: const TextStyle(fontSize: 14, color: _kGoldBorder)))
+          : LayoutBuilder(
+              builder: (_, c) => CustomScrollView(
+                controller: _scroll,
+                physics: const ClampingScrollPhysics(),
+                slivers: [
+                  SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                    sliver: SliverGrid(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: _gridCols(c.maxWidth),
+                        crossAxisSpacing: 16,
+                        mainAxisSpacing: 16,
+                        mainAxisExtent: 260,
+                      ),
+                      delegate: SliverChildBuilderDelegate(
+                        (_, i) => _TeachingCard(
+                          key: ValueKey('${items[i].title}_${_lang.name}'),
+                          card: items[i],
+                          highlighted: items[i].title == _highlight,
+                          lang: _lang,
+                        ),
+                        childCount: items.length,
+                        addRepaintBoundaries: true,
+                        addAutomaticKeepAlives: false,
+                      ),
+                    ),
+                  ),
+                  SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(20, 24, 20, 40),
+                    sliver: SliverToBoxAdapter(
+                      child: _PageNav(page: _page, pageCount: pageCount, onChanged: (p) => _goToPage(p, pageCount)),
+                    ),
+                  ),
+                ],
+              ),
+            ),
     );
   }
+}
+
+// ── 語言切換器 ─────────────────────────────────────────────────
+class _LangSwitcher extends StatelessWidget {
+  const _LangSwitcher({required this.current, required this.onChanged});
+  final AppLang current;
+  final ValueChanged<AppLang> onChanged;
+
+  @override
+  Widget build(BuildContext context) => Container(
+    height: 40,
+    padding: const EdgeInsets.symmetric(horizontal: 4),
+    decoration: _kSearchDeco,
+    child: PopupMenuButton<AppLang>(
+      tooltip: '切換語言',
+      offset: const Offset(0, 44),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      color: Colors.white,
+      initialValue: current,
+      onSelected: onChanged,
+      constraints: const BoxConstraints(maxHeight: 400),
+      itemBuilder: (ctx) => AppLang.values.map((l) => PopupMenuItem(
+        value: l,
+        child: Row(children: [
+          if (l == current) const Padding(padding: EdgeInsets.only(right: 8), child: Icon(Icons.check, size: 16, color: _kGold)),
+          if (l != current) const SizedBox(width: 24),
+          Text(l.fullName, style: TextStyle(fontSize: 13, color: l == current ? _kGold : _kGoldDim, fontWeight: l == current ? FontWeight.bold : FontWeight.normal)),
+        ]),
+      )).toList(),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        child: Row(mainAxisSize: MainAxisSize.min, children: [
+          const Icon(Icons.translate_rounded, size: 16, color: _kGold),
+          const SizedBox(width: 4),
+          Text(current.label, style: const TextStyle(fontSize: 13, color: _kGold, fontWeight: FontWeight.w600)),
+          const Icon(Icons.arrow_drop_down, size: 16, color: _kGold),
+        ]),
+      ),
+    ),
+  );
+}
+
+// ── 目錄側欄 ────────────────────────────────────────────────────
+class _IndexDrawer extends StatelessWidget {
+  const _IndexDrawer({required this.cards, required this.onSelect});
+  final List<_Card> cards;
+  final ValueChanged<_Card> onSelect;
+
+  @override
+  Widget build(BuildContext context) => Drawer(
+    backgroundColor: Colors.white,
+    child: SafeArea(
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+          child: Row(children: [
+            const Icon(Icons.menu_book_rounded, size: 18, color: _kGold),
+            const SizedBox(width: 8),
+            Text('目錄（${cards.length}）', style: const TextStyle(fontSize: 14, color: _kGold)),
+          ]),
+        ),
+        _kDivider,
+        Expanded(
+          child: cards.isEmpty
+              ? const Center(child: Text('無符合項目', style: TextStyle(fontSize: 13, color: _kGoldBorder)))
+              : ListView.builder(
+                  itemCount: cards.length,
+                  itemBuilder: (ctx, i) => ListTile(
+                    dense: true,
+                    title: Text(cards[i].title, style: const TextStyle(fontSize: 14, color: _kGold), maxLines: 1, overflow: TextOverflow.ellipsis),
+                    subtitle: cards[i].date != null ? Text(cards[i].date!, style: _kDateStyle) : null,
+                    onTap: () => onSelect(cards[i]),
+                  ),
+                ),
+        ),
+      ]),
+    ),
+  );
 }
 
 // ── 分頁導覽列 ────────────────────────────────────────────────────
 class _PageNav extends StatelessWidget {
-  const _PageNav({
-    required this.currentPage,
-    required this.pageCount,
-    required this.onChanged,
-  });
-
-  final int currentPage;
-  final int pageCount;
+  const _PageNav({required this.page, required this.pageCount, required this.onChanged});
+  final int page, pageCount;
   final ValueChanged<int> onChanged;
 
   @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Wrap(
-        alignment: WrapAlignment.center,
-        spacing: 8,
-        runSpacing: 8,
-        children: [
-          _NavBtn(
-            icon: Icons.chevron_left_rounded,
-            enabled: currentPage > 0,
-            onTap: () => onChanged(currentPage - 1),
-          ),
-          for (var i = 0; i < pageCount; i++)
-            _PageDot(
-              key: ValueKey(i),
-              index: i,
-              selected: i == currentPage,
-              onTap: () => onChanged(i),
-            ),
-          _NavBtn(
-            icon: Icons.chevron_right_rounded,
-            enabled: currentPage < pageCount - 1,
-            onTap: () => onChanged(currentPage + 1),
-          ),
-        ],
-      ),
-    );
-  }
+  Widget build(BuildContext context) => Center(
+    child: Wrap(alignment: WrapAlignment.center, spacing: 8, runSpacing: 8, children: [
+      _NavBtn(icon: Icons.chevron_left_rounded, enabled: page > 0, onTap: () => onChanged(page - 1)),
+      for (var i = 0; i < pageCount; i++)
+        _PageDot(key: ValueKey(i), index: i, selected: i == page, onTap: () => onChanged(i)),
+      _NavBtn(icon: Icons.chevron_right_rounded, enabled: page < pageCount - 1, onTap: () => onChanged(page + 1)),
+    ]),
+  );
 }
 
-// RepaintBoundary 包住導覽列，避免卡片更新時波及此區
 class _PageDot extends StatelessWidget {
-  const _PageDot({
-    super.key,
-    required this.index,
-    required this.selected,
-    required this.onTap,
-  });
-
+  const _PageDot({super.key, required this.index, required this.selected, required this.onTap});
   final int index;
   final bool selected;
   final VoidCallback onTap;
 
-  // 預建兩套靜態樣式
-  static const _selStyle = TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.white);
-  static const _unselStyle = TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: _kGoldDim);
+  static const _sel = TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.white);
+  static const _unsel = TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: _kGoldDim);
 
   @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 36,
-        height: 36,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: selected ? _kGold : Colors.white,
-          shape: BoxShape.circle,
-          border: Border.all(
-            color: selected ? _kGold : _kGoldBorder,
-            width: 1.2,
-          ),
-        ),
-        child: Text('${index + 1}', style: selected ? _selStyle : _unselStyle),
+  Widget build(BuildContext context) => GestureDetector(
+    onTap: onTap,
+    child: Container(
+      width: 36, height: 36, alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: selected ? _kGold : Colors.white,
+        shape: BoxShape.circle,
+        border: Border.all(color: selected ? _kGold : _kGoldBorder, width: 1.2),
       ),
-    );
-  }
+      child: Text('${index + 1}', style: selected ? _sel : _unsel),
+    ),
+  );
 }
 
 class _NavBtn extends StatelessWidget {
-  const _NavBtn({
-    required this.icon,
-    required this.enabled,
-    required this.onTap,
-  });
-
+  const _NavBtn({required this.icon, required this.enabled, required this.onTap});
   final IconData icon;
   final bool enabled;
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: enabled ? onTap : null,
-      child: Container(
-        width: 36,
-        height: 36,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          shape: BoxShape.circle,
-          border: Border.all(
-            color: enabled ? _kGoldBorderNav : _kGoldBorderDim,
-            width: 1.2,
-          ),
-        ),
-        child: Icon(icon, size: 18, color: enabled ? _kGold : _kGoldIconDim),
+  Widget build(BuildContext context) => GestureDetector(
+    onTap: enabled ? onTap : null,
+    child: Container(
+      width: 36, height: 36, alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        shape: BoxShape.circle,
+        border: Border.all(color: enabled ? _kGoldBorderNav : _kGoldBorderDim, width: 1.2),
       ),
-    );
-  }
+      child: Icon(icon, size: 18, color: enabled ? _kGold : _kGoldIconDim),
+    ),
+  );
 }
 
 // ── 教學卡片 ────────────────────────────────────────────────────
-// RepaintBoundary：卡片展開/複製時只重繪自身，不影響其他卡片
 class _TeachingCard extends StatefulWidget {
-  const _TeachingCard({super.key, required this.card});
-
+  const _TeachingCard({super.key, required this.card, this.highlighted = false, required this.lang});
   final _Card card;
+  final bool highlighted;
+  final AppLang lang;
 
   @override
   State<_TeachingCard> createState() => _TeachingCardState();
 }
 
 class _TeachingCardState extends State<_TeachingCard> {
-  bool _expanded = false;
-  bool _copied   = false;
+  bool _copied = false;
+  bool _loadingTranslation = false;
+  String? _displayTitle;
+  String? _displayBody;
+  String? _displayDate;
+
+  @override
+  void initState() {
+    super.initState();
+    _displayTitle = widget.card.title;
+    _displayBody = widget.card.body;
+    _displayDate = widget.card.date;
+    _loadTranslation();
+  }
+
+  @override
+  void didUpdateWidget(_TeachingCard old) {
+    super.didUpdateWidget(old);
+    if (old.lang != widget.lang || old.card != widget.card) {
+      _loadTranslation();
+    }
+  }
+
+  Future<void> _loadTranslation() async {
+    final c = widget.card;
+    if (widget.lang == AppLang.zhCN) {
+      setState(() {
+        _displayTitle = c.title;
+        _displayBody = c.body;
+        _displayDate = c.date;
+        _loadingTranslation = false;
+      });
+      return;
+    }
+    setState(() => _loadingTranslation = true);
+    final title = await TranslationService.translate(c.title, widget.lang);
+    final body  = await TranslationService.translate(c.body, widget.lang);
+    final date  = c.date != null ? await TranslationService.translate(c.date!, widget.lang) : null;
+    if (!mounted) return;
+    setState(() {
+      _displayTitle = title;
+      _displayBody  = body;
+      _displayDate  = date;
+      _loadingTranslation = false;
+    });
+  }
 
   Future<void> _copy() async {
     if (_copied) return;
-    final c = widget.card;
-    await Clipboard.setData(
-      ClipboardData(
-        text: [if (c.date != null) c.date!, c.title, c.body].join('\n\n'),
-      ),
-    );
+    final date  = _displayDate;
+    final title = _displayTitle ?? widget.card.title;
+    final body  = _displayBody  ?? widget.card.body;
+    await Clipboard.setData(ClipboardData(text: [if (date != null) date, title, body].join('\n\n')));
     if (!mounted) return;
     setState(() => _copied = true);
     await Future.delayed(const Duration(seconds: 2));
     if (mounted) setState(() => _copied = false);
   }
 
-  // 複製圖示（非 copied 狀態）為靜態物件
-  static const _kCopyIcon = Icon(
-    Icons.copy_rounded,
-    key: ValueKey(false),
-    size: 16,
-    color: _kCopyIconColor,
-  );
+  void _showFull() {
+    final title = _displayTitle ?? widget.card.title;
+    final date  = _displayDate;
+    final body  = _displayBody  ?? widget.card.body;
+    showDialog(
+      context: context,
+      builder: (ctx) => Dialog(
+        backgroundColor: Colors.white,
+        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(16))),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 480, maxHeight: 600),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 18, 16, 20),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
+              Row(children: [
+                Expanded(child: Text(title, style: _kTitleStyle)),
+                IconButton(icon: const Icon(Icons.close, color: _kGold, size: 20), onPressed: () => Navigator.of(ctx).pop()),
+              ]),
+              if (date != null) ...[const SizedBox(height: 4), Text(date, style: _kDateStyle)],
+              const SizedBox(height: 12),
+              _kDivider,
+              const SizedBox(height: 14),
+              Flexible(child: SingleChildScrollView(child: Text(body, style: _kDialogStyle))),
+            ]),
+          ),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    final c = widget.card;
-    // RepaintBoundary 隔離卡片重繪範圍
+    final title = _displayTitle ?? widget.card.title;
+    final date  = _displayDate;
+    final body  = _displayBody  ?? widget.card.body;
+
     return RepaintBoundary(
-      child: DecoratedBox(
-        decoration: _kCardDecoration,
-        child: Padding(
-          padding: _kCardPadding,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // 複製按鈕
+      child: GestureDetector(
+        onTap: _showFull,
+        child: DecoratedBox(
+          decoration: widget.highlighted ? _kCardDecoHi : _kCardDeco,
+          child: Padding(
+            padding: _kCardPad,
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               GestureDetector(
                 onTap: _copy,
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 200),
-                  child: _copied ? _kCheckIcon : _kCopyIcon,
-                ),
+                child: AnimatedSwitcher(duration: const Duration(milliseconds: 200), child: _copied ? _kCheckIcon : _kCopyIcon),
               ),
               const SizedBox(height: 8),
-              // 標題：不依賴 state，抽成獨立 const widget 路徑
-              Text(c.title, style: _kTitleStyle),
+              Text(title, style: _kTitleStyle),
+              if (date != null) ...[const SizedBox(height: 4), Text(date, style: _kDateStyle)],
               const SizedBox(height: 12),
-              const Divider(color: _kDividerColor, height: 1, thickness: 1),
+              _kDivider,
               const SizedBox(height: 12),
-              // 內文
               Expanded(
-                child: _expanded
-                    ? SingleChildScrollView(child: Text(c.body, style: _kBodyStyle))
-                    : Text(c.body, maxLines: 4, overflow: TextOverflow.ellipsis, style: _kBodyStyle),
+                child: _loadingTranslation
+                    ? const Center(child: SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: _kGold)))
+                    : Text(body, maxLines: 4, overflow: TextOverflow.ellipsis, style: _kBodyStyle),
               ),
               const SizedBox(height: 12),
-              // 展開 / 收合
-              GestureDetector(
-                onTap: () => setState(() => _expanded = !_expanded),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(_expanded ? '收合' : '閱讀全文', style: _kExpandStyle),
-                    const SizedBox(width: 4),
-                    AnimatedRotation(
-                      turns: _expanded ? 0.5 : 0,
-                      duration: const Duration(milliseconds: 200),
-                      child: _kArrowIcon,
-                    ),
-                  ],
-                ),
-              ),
-            ],
+              Row(mainAxisSize: MainAxisSize.min, children: const [
+                Text('閱讀全文', style: _kExpandStyle),
+                SizedBox(width: 4),
+                _kArrowIcon,
+              ]),
+            ]),
           ),
         ),
       ),

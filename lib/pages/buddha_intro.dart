@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
+// ── 風格常數（與 yingshijuan.dart 一致）────────────────────────
+const _kGold    = Color(0xFFF5C518);
+const _kGoldDim = Color(0xFFB8960E);
+
 class BuddhaIntroPage extends StatelessWidget {
   const BuddhaIntroPage({super.key});
-
-  // static const _gold = Color(0xFFC9A84C);
-  // static const _goldLight = Color(0xFFE8C96E);
-  // static const _textColor = Color(0xFF8B6914);
 
   static const _intro = '''諦深大師俗姓呂，淨土獲證，禪宗傳承。上乘清淨願力為諦，下令眾生世界業障破滅稱深。諦深法號為佛光普照神僧呼喚所得。落髮戒名釋迦妙生，祖籍山東即墨。佛曆2506年11月18日（農曆壬寅年11月18日）生於遼寧省瓦房店，生後至3歲不會說話，會講話後秉性甚憨，家人以為有疾！後因文革風暴，隨父母回遷祖籍。
 
@@ -63,7 +63,6 @@ class BuddhaIntroPage extends StatelessWidget {
 // 共用常數
 // ─────────────────────────────────────────
 const _bgNav = Color(0xFFFDF8EE);
-// const _border = Color.fromRGBO(245, 197, 24, 1);
 
 // ─────────────────────────────────────────
 // 共用元件
@@ -73,9 +72,9 @@ class _GoldDivider extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Row(
         children: [
-          Container(width: 4, height: 22, color: Color.fromRGBO(245, 197, 24, 1),
+          Container(width: 4, height: 22, color: _kGold,
               margin: const EdgeInsets.only(right: 10)),
-          Expanded(child: Container(height: 1, color: const Color.fromRGBO(245, 197, 24, 1))),
+          Expanded(child: Container(height: 1, color: _kGold)),
         ],
       );
 }
@@ -94,7 +93,7 @@ class _TitleBlock extends StatelessWidget {
             style: TextStyle(
               fontSize: titleSize,
               fontWeight: FontWeight.bold,
-              color: Color.fromRGBO(245, 197, 24, 1),
+              color: _kGold,
               letterSpacing: 2,
             ),
           ),
@@ -103,7 +102,7 @@ class _TitleBlock extends StatelessWidget {
             '淨土獲證・禪宗傳承',
             style: TextStyle(
               fontSize: subtitleSize,
-              color: Color.fromRGBO(245, 197, 24, 1),
+              color: _kGoldDim,
               letterSpacing: 1.5,
             ),
           ),
@@ -121,9 +120,9 @@ class _IntroText extends StatelessWidget {
         intro,
         style: TextStyle(
           fontSize: fontSize,
-          fontWeight: FontWeight.bold,
-          color: Color.fromRGBO(245, 197, 24, 1),
-          height: 1.5,
+          fontWeight: FontWeight.normal,
+          color: _kGoldDim,
+          height: 1.7,
         ),
       );
 }
@@ -160,11 +159,11 @@ class _PhotoGrid extends StatelessWidget {
               decoration: BoxDecoration(
                 color: _bgNav,
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: Color.fromRGBO(245, 197, 24, 1)),
+                border: Border.all(color: _kGold),
               ),
               child: const Center(
                 child: Icon(Icons.image_not_supported_outlined,
-                    color: Color.fromRGBO(245, 197, 24, 1), size: 32),
+                    color: _kGold, size: 32),
               ),
             ),
           ),

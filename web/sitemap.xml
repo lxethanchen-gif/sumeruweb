@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <!-- 首頁 / Home -->
+  <url>
+    <loc>https://sumeruweb.web.app/</loc>
+    <lastmod>2026-06-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- 法義體悟 / Dharma Realization -->
+  <url>
+    <loc>https://sumeruweb.web.app/#dharma-realize</loc>
+    <lastmod>2026-06-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- 應世卷 / Ying Shi Juan -->
+  <url>
+    <loc>https://sumeruweb.web.app/#ying-shi-juan</loc>
+    <lastmod>2026-06-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- 滅罪卷 / Mie Zui Juan -->
+  <url>
+    <loc>https://sumeruweb.web.app/#mie-zui-juan</loc>
+    <lastmod>2026-06-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- 機緣道指 / Ji Yuan Dao Zhi -->
+  <url>
+    <loc>https://sumeruweb.web.app/#ji-yuan-dao-zhi</loc>
+    <lastmod>2026-06-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- 施齋 / Shi Zhai -->
+  <url>
+    <loc>https://sumeruweb.web.app/#shi-zhai</loc>
+    <lastmod>2026-06-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- 影音開示 / Video Teachings -->
+  <url>
+    <loc>https://sumeruweb.web.app/#video-teachings</loc>
+    <lastmod>2026-06-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- 資源連結 / Resource Links -->
+  <url>
+    <loc>https://sumeruweb.web.app/#resource-links</loc>
+    <lastmod>2026-06-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- 佛陀介紹 / Buddha Introduction -->
+  <url>
+    <loc>https://sumeruweb.web.app/#buddha-intro</loc>
+    <lastmod>2026-06-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- 直播 / Live Stream -->
+  <url>
+    <loc>https://sumeruweb.web.app/#live-stream</loc>
+    <lastmod>2026-06-14</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+</urlset>

@@ -1,61 +1,87 @@
 <!doctype html>
-<html>
+<html lang="zh-Hant">
   <head>
-    <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
-
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
-
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
     <base href="$FLUTTER_BASE_HREF" />
 
     <meta charset="UTF-8" />
     <meta content="IE=Edge" http-equiv="X-UA-Compatible" />
-    <meta name="description" content="A new Flutter project." />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!-- iOS meta tags & icons -->
+    <!-- ══ 基本 SEO ══════════════════════════════════════════════ -->
+    <title>須彌山佛國網 | 諦深大師法義開示</title>
+    <meta name="description" content="須彌山佛國網，收錄諦深大師法義開示、應世卷、滅罪卷、機緣道旨妙法入門卷、詩摘、影音開示及多國語言佛法資源。" />
+    <meta name="keywords" content="須彌山佛國網, 諦深大師, 佛法開示, 應世卷, 滅罪卷, 影音開示, 佛教, 淨土, 禪宗" />
+    <meta name="author" content="須彌山佛國網" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://sumeruweb.web.app/" />
+
+    <!-- ══ Google Search Console 驗證 ══════════════════════════ -->
+    <meta name="google-site-verification" content="4ydd4nUzgGWcU-eEczGhxSOKsmShwQtWPTnzicBziaw" />
+
+    <!-- ══ Open Graph（社群分享）══════════════════════════════════ -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="須彌山佛國網" />
+    <meta property="og:title" content="須彌山佛國網 | 諦深大師法義開示" />
+    <meta property="og:description" content="收錄諦深大師法義開示、應世卷、滅罪卷、機緣道旨妙法入門卷、詩摘、影音開示及多國語言佛法資源。" />
+    <meta property="og:url" content="https://sumeruweb.web.app/" />
+    <meta property="og:image" content="https://sumeruweb.web.app/icons/logo_with_border.png" />
+    <meta property="og:locale" content="zh_TW" />
+
+    <!-- ══ Twitter Card ══════════════════════════════════════════ -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="須彌山佛國網 | 諦深大師法義開示" />
+    <meta name="twitter:description" content="收錄諦深大師法義開示、應世卷、滅罪卷、機緣道旨妙法入門卷、詩摘、影音開示及多國語言佛法資源。" />
+    <meta name="twitter:image" content="https://sumeruweb.web.app/icons/logo_with_border.png" />
+
+    <!-- ══ iOS / PWA ══════════════════════════════════════════════ -->
     <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black" />
-    <meta name="apple-mobile-web-app-title" content="sumeruweb" />
-    <meta
-      name="google-site-verification"
-      content="4ydd4nUzgGWcU-eEczGhxSOKsmShwQtWPTnzicBziaw"
-    />
+    <meta name="apple-mobile-web-app-title" content="須彌山佛國網" />
     <link rel="apple-touch-icon" href="icons/logo_with_border.png" />
 
-    <!-- Favicon -->
+    <!-- ══ Favicon & Manifest ═════════════════════════════════════ -->
     <link rel="icon" type="image/png" href="favicon.png" />
-
-    <title>sumeruweb</title>
     <link rel="manifest" href="manifest.json" />
+
+    <!-- ══ 結構化資料 JSON-LD（幫助 Google 理解網站內容）══════════ -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "須彌山佛國網",
+      "alternateName": "Sumeru Mount Buddha Nation",
+      "url": "https://sumeruweb.web.app/",
+      "description": "收錄諦深大師法義開示、應世卷、滅罪卷、機緣道旨妙法入門卷、詩摘、影音開示及多國語言佛法資源。",
+      "inLanguage": ["zh-TW", "zh-CN", "en", "ja"],
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://sumeruweb.web.app/",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "諦深大師",
+      "alternateName": "釋迦妙生",
+      "description": "淨土獲證、禪宗傳承，法號諦深，佛光普照神僧呼喚所得。",
+      "url": "https://sumeruweb.web.app/buddha_intro"
+    }
+    </script>
+
+    <!-- ══ YouTube IFrame API ══════════════════════════════════════ -->
     <script src="https://www.youtube.com/iframe_api"></script>
   </head>
   <body>
-    <!--
-    You can customize the "flutter_bootstrap.js" script.
-    This is useful to provide a custom configuration to the Flutter loader
-    or to give the user feedback during the initialization process.
-
-    For more details:
-    * https://docs.flutter.dev/platform-integration/web/initialization
-  -->
     <script src="flutter_bootstrap.js" async></script>
     <script type="module">
-      // Import the functions you need from the SDKs you need
       import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
       import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-analytics.js";
-      // TODO: Add SDKs for Firebase products that you want to use
-      // https://firebase.google.com/docs/web/setup#available-libraries
 
-      // Your web app's Firebase configuration
-      // For Firebase JS SDK v7.20.0 and later, measurementId is optional
       const firebaseConfig = {
         apiKey: "AIzaSyA_G4R_Ah0XuNFK0W3wt_HJIGaaVHr4Zls",
         authDomain: "sumeruweb.firebaseapp.com",
@@ -66,7 +92,6 @@
         measurementId: "G-ZG8D9KEEPZ",
       };
 
-      // Initialize Firebase
       const app = initializeApp(firebaseConfig);
       const analytics = getAnalytics(app);
     </script>

@@ -1,11 +1,21 @@
 import 'package:flutter/material.dart';
 
+// ── 風格常數（與 yingshijuan.dart 一致）────────────────────────
+const _kGold     = Color(0xFFF5C518);
+const _kGoldDim  = Color(0xFFB8960E);
+const _kGoldBorderDim = Color(0x26F5C518); // gold @ 15%
+const _kHeaderBorder  = Color(0x4DF5C518); // gold @ 30%
+const _kTagDeco = BoxDecoration(
+  border: Border.fromBorderSide(BorderSide(color: _kGoldBorderDim, width: 1)),
+  borderRadius: BorderRadius.all(Radius.circular(20)),
+);
+const _kTagStyle = TextStyle(fontSize: 11, color: _kGoldDim, letterSpacing: 0.5);
+const _kSectionTitleStyle = TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: _kGold, height: 1.7);
+const _kBodyStyle = TextStyle(fontSize: 15, color: _kGold, height: 2.0);
+const _kHeaderTitleStyle = TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: _kGold, height: 1.5);
+
 class MieZuiJuanPage extends StatelessWidget {
   const MieZuiJuanPage({super.key});
-
-  static const _gold = Color(0xFFF5C518);
-  static const _goldMuted = Color(0xFFC8A43A);
-  static const _tagColor = Color(0xFFB8941A);
 
   @override
   Widget build(BuildContext context) {
@@ -28,20 +38,15 @@ class MieZuiJuanPage extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(24, 48, 24, 20),
       decoration: const BoxDecoration(
         border: Border(
-          bottom: BorderSide(color: Color(0x4DF5C518), width: 1),
+          bottom: BorderSide(color: _kHeaderBorder, width: 1),
         ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            '諦深大師開示　滅自己執見',
-            style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-              color: Color.fromRGBO(245, 197, 24, 1),
-              height: 1.5,
-            ),
+            '諦深大師開示滅自己執見',
+            style: _kHeaderTitleStyle,
           ),
           const SizedBox(height: 12),
           Wrap(
@@ -66,12 +71,7 @@ class MieZuiJuanPage extends StatelessWidget {
         children: [
           const Text(
             '二、滅自己執見　滅諸邪魔外道侵染罪',
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.bold,
-              color: _gold,
-              height: 1.7,
-            ),
+            style: _kSectionTitleStyle,
           ),
           const SizedBox(height: 16),
           _para('開悟滅諸漏，開悟稱漏盡。凡夫未悟時，亦有滅漏法，其稱諸戒律。對於諸修行，卻漏戒中來。'),
@@ -90,7 +90,7 @@ class MieZuiJuanPage extends StatelessWidget {
         child: Text(
           text,
           textAlign: TextAlign.justify,
-          style: const TextStyle(fontSize: 15, color: _gold, height: 2.0),
+          style: _kBodyStyle,
         ),
       );
 }
@@ -103,13 +103,10 @@ class _Tag extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-      decoration: BoxDecoration(
-        border: Border.all(color: const Color(0xFFB8941A).withOpacity(0.4)),
-        borderRadius: BorderRadius.circular(20),
-      ),
+      decoration: _kTagDeco,
       child: Text(
         label,
-        style: const TextStyle(fontSize: 11, color: Color(0xFFB8941A), letterSpacing: 0.5),
+        style: _kTagStyle,
       ),
     );
   }
@@ -125,11 +122,11 @@ class _SectionLabel extends StatelessWidget {
       children: [
         Text(
           text,
-          style: const TextStyle(fontSize: 11, color: Color(0xFFB8941A), letterSpacing: 2),
+          style: const TextStyle(fontSize: 11, color: _kGoldDim, letterSpacing: 2),
         ),
         const SizedBox(width: 8),
         Expanded(
-          child: Container(height: 0.5, color: const Color(0xFFF5C518).withOpacity(0.25)),
+          child: Container(height: 0.5, color: _kGoldBorderDim),
         ),
       ],
     );
@@ -146,7 +143,7 @@ class _Ellipsis extends StatelessWidget {
       child: Center(
         child: Text(
           '· · ·',
-          style: TextStyle(fontSize: 18, color: Color(0xFFC8A43A), letterSpacing: 8),
+          style: TextStyle(fontSize: 18, color: _kGoldDim, letterSpacing: 8),
         ),
       ),
     );
