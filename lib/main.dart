@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'routes.dart';
 import 'pages/sumeruappbar.dart';
 import 'pages/homepage.dart';
@@ -74,14 +75,44 @@ class SumeruApp extends StatelessWidget {
 }
 
 // ── MainShell ──────────────────────────────────────────────────────
-class MainShell extends StatelessWidget {
+class MainShell extends StatefulWidget {
   final String location;
   final Widget child;
   const MainShell({super.key, required this.location, required this.child});
 
   @override
+  State<MainShell> createState() => _MainShellState();
+}
+
+class _MainShellState extends State<MainShell> {
+  late final AudioPlayer _player;
+  bool _isPlaying = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _player = AudioPlayer();
+    _player.setReleaseMode(ReleaseMode.loop); // 循環播放
+  }
+
+  @override
+  void dispose() {
+    _player.dispose();
+    super.dispose();
+  }
+
+  Future<void> _toggleMusic() async {
+    if (_isPlaying) {
+      await _player.pause();
+    } else {
+      await _player.play(UrlSource('audio/bgm.mp3'));
+    }
+    setState(() => _isPlaying = !_isPlaying);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final currentIndex = AppRoutes.pageIndexOf(location);
+    final currentIndex = AppRoutes.pageIndexOf(widget.location);
 
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 255, 254, 254),
@@ -90,7 +121,7 @@ class MainShell extends StatelessWidget {
           Column(
             children: [
               const SizedBox(height: 80),
-              Expanded(child: child),
+              Expanded(child: widget.child),
               const SumeruFooter(),
             ],
           ),
@@ -99,6 +130,37 @@ class MainShell extends StatelessWidget {
             left: 16,
             right: 16,
             child: SumeruAppBar(currentIndex: currentIndex),
+          ),
+          // ── 背景音樂控制按鈕 ───────────────────────────────────
+          Positioned(
+            bottom: 24,
+            right: 20,
+            child: Tooltip(
+              message: _isPlaying ? '暫停音樂' : '播放音樂',
+              child: GestureDetector(
+                onTap: _toggleMusic,
+                child: Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF5C518),
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2),
+                        blurRadius: 6,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Icon(
+                    _isPlaying ? Icons.music_note : Icons.music_off,
+                    color: Colors.white,
+                    size: 22,
+                  ),
+                ),
+              ),
+            ),
           ),
         ],
       ),

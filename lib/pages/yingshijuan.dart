@@ -252,7 +252,7 @@ class _YingShiJuanPageState extends State<YingShiJuanPage> {
           ]),
         ),
       ),
-      drawer: _IndexDrawer(cards: filtered, onSelect: (c) => _jumpToCard(c, filtered)),
+      drawer: _IndexDrawer(cards: filtered, lang: _lang, onSelect: (c) => _jumpToCard(c, filtered)),
       body: filtered.isEmpty
           ? Center(child: Text('找不到符合「$_query」的卡片', style: const TextStyle(fontSize: 14, color: _kGoldBorder)))
           : LayoutBuilder(
@@ -336,10 +336,61 @@ class _LangSwitcher extends StatelessWidget {
 }
 
 // ── 目錄側欄 ────────────────────────────────────────────────────
-class _IndexDrawer extends StatelessWidget {
-  const _IndexDrawer({required this.cards, required this.onSelect});
+class _IndexDrawer extends StatefulWidget {
+  const _IndexDrawer({required this.cards, required this.lang, required this.onSelect});
   final List<_Card> cards;
+  final AppLang lang;
   final ValueChanged<_Card> onSelect;
+
+  @override
+  State<_IndexDrawer> createState() => _IndexDrawerState();
+}
+
+class _IndexDrawerState extends State<_IndexDrawer> {
+  // key = original title, value = translated title
+  final Map<String, String> _titleCache = {};
+  final Map<String, String> _dateCache = {};
+  bool _loading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadTitles();
+  }
+
+  @override
+  void didUpdateWidget(_IndexDrawer old) {
+    super.didUpdateWidget(old);
+    if (old.lang != widget.lang || old.cards != widget.cards) {
+      _loadTitles();
+    }
+  }
+
+  Future<void> _loadTitles() async {
+    if (widget.lang == AppLang.zhCN) {
+      setState(() { _titleCache.clear(); _dateCache.clear(); _loading = false; });
+      return;
+    }
+    setState(() => _loading = true);
+    for (final c in widget.cards) {
+      if (!mounted) return;
+      _titleCache[c.title] = await TranslationService.translate(c.title, widget.lang);
+      if (c.date != null) {
+        _dateCache[c.date!] = await TranslationService.translate(c.date!, widget.lang);
+      }
+    }
+    if (!mounted) return;
+    setState(() => _loading = false);
+  }
+
+  String _t(String original) =>
+      widget.lang == AppLang.zhCN ? original : (_titleCache[original] ?? original);
+
+  String? _d(String? original) {
+    if (original == null) return null;
+    if (widget.lang == AppLang.zhCN) return original;
+    return _dateCache[original] ?? original;
+  }
 
   @override
   Widget build(BuildContext context) => Drawer(
@@ -351,21 +402,28 @@ class _IndexDrawer extends StatelessWidget {
           child: Row(children: [
             const Icon(Icons.menu_book_rounded, size: 18, color: _kGold),
             const SizedBox(width: 8),
-            Text('目錄（${cards.length}）', style: const TextStyle(fontSize: 14, color: _kGold)),
+            Text('目錄（${widget.cards.length}）', style: const TextStyle(fontSize: 14, color: _kGold)),
+            if (_loading) ...[
+              const SizedBox(width: 8),
+              const SizedBox(width: 12, height: 12, child: CircularProgressIndicator(strokeWidth: 2, color: _kGold)),
+            ],
           ]),
         ),
         _kDivider,
         Expanded(
-          child: cards.isEmpty
+          child: widget.cards.isEmpty
               ? const Center(child: Text('無符合項目', style: TextStyle(fontSize: 13, color: _kGoldBorder)))
               : ListView.builder(
-                  itemCount: cards.length,
-                  itemBuilder: (ctx, i) => ListTile(
-                    dense: true,
-                    title: Text(cards[i].title, style: const TextStyle(fontSize: 14, color: _kGold), maxLines: 1, overflow: TextOverflow.ellipsis),
-                    subtitle: cards[i].date != null ? Text(cards[i].date!, style: _kDateStyle) : null,
-                    onTap: () => onSelect(cards[i]),
-                  ),
+                  itemCount: widget.cards.length,
+                  itemBuilder: (ctx, i) {
+                    final c = widget.cards[i];
+                    return ListTile(
+                      dense: true,
+                      title: Text(_t(c.title), style: const TextStyle(fontSize: 14, color: _kGold), maxLines: 1, overflow: TextOverflow.ellipsis),
+                      subtitle: _d(c.date) != null ? Text(_d(c.date!)!, style: _kDateStyle) : null,
+                      onTap: () => widget.onSelect(c),
+                    );
+                  },
                 ),
         ),
       ]),

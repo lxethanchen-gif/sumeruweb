@@ -22,29 +22,23 @@ class SumeruFooter extends StatelessWidget {
   /// mobile  < 600  → 16px（與外層頁面 padding 相同，內容不壓縮）
   /// tablet  < 1024 → 32px
   /// desktop ≥ 1024 → 最多讓內容區留到 960px，多餘空間自動置中
-  EdgeInsets _hPad(BuildContext ctx) {
-    if (_isMobile(ctx)) return const EdgeInsets.symmetric(horizontal: 16);
-    if (_isTablet(ctx)) return const EdgeInsets.symmetric(horizontal: 32);
-    // desktop：用 LayoutBuilder / FractionallySizedBox 讓內容置中
-    final w = MediaQuery.sizeOf(ctx).width;
-    final side = ((w - 960) / 2).clamp(48.0, double.infinity);
-    return EdgeInsets.symmetric(horizontal: side);
-  }
+  EdgeInsets _hPad(BuildContext ctx) =>
+      const EdgeInsets.symmetric(horizontal: 16);
 
   @override
   Widget build(BuildContext context) {
     final mobile = _isMobile(context);
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16),   // 與畫面底部的距離
-      child: Material(
-        elevation: 6,
-        shadowColor: _kBlack38,
+      padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+      child: Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
         color: kPrimaryGold,
         borderRadius: BorderRadius.circular(16),
-        child: Padding(
-          padding: _hPad(context).copyWith(top: 18, bottom: 14),
-          child: Column(
+      ),
+      child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               // ── 頂部分隔線 ────────────────────────────────────────
@@ -101,8 +95,7 @@ class SumeruFooter extends StatelessWidget {
                 ],
               ),
             ],
-          ),
-        ),
+      ),
       ),
     );
   }
@@ -130,7 +123,7 @@ class _CreditTag extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
             decoration: BoxDecoration(
-              color: _kWhite,
+              color: kPrimaryGold,
               borderRadius: BorderRadius.circular(10),
             ),
             child: Text(
@@ -138,7 +131,7 @@ class _CreditTag extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 10,
                 fontWeight: FontWeight.w700,
-                color: kPrimaryGold,
+                color: Colors.white,
                 letterSpacing: 0.5,
               ),
             ),

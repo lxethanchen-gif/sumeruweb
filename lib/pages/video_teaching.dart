@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 const _gold = Color.fromARGB(255, 255, 209, 2);
 const _goldLight = Color(0xFFFFFBE6);
@@ -16,6 +18,106 @@ const _navDeco = BoxDecoration(color: Colors.white, borderRadius: BorderRadius.a
 const _navDecoDisabled = BoxDecoration(color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(8)), boxShadow: [_navShadow], border: Border.fromBorderSide(BorderSide(color: Color(0x33FFD102), width: 1)));
 const _searchDeco = BoxDecoration(color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(12)), boxShadow: [_navShadow]);
 const _titleStyle = TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFF1A1A1A));
+
+// ── 支援語言 ────────────────────────────────────────────────────
+enum AppLang {
+  zhTW, zhCN, en, ja, es, fr, de, ar, hi, ko, th, pt, vi, it, la, id, bo,
+}
+
+extension AppLangX on AppLang {
+  String get label => switch (this) {
+    AppLang.zhTW => '繁中',
+    AppLang.zhCN => '简中',
+    AppLang.en   => 'EN',
+    AppLang.ja   => 'JP',
+    AppLang.es   => 'ES',
+    AppLang.fr   => 'FR',
+    AppLang.de   => 'DE',
+    AppLang.ar   => 'AR',
+    AppLang.hi   => 'HI',
+    AppLang.ko   => 'KO',
+    AppLang.th   => 'TH',
+    AppLang.pt   => 'PT',
+    AppLang.vi   => 'VI',
+    AppLang.it   => 'IT',
+    AppLang.la   => 'LA',
+    AppLang.id   => 'ID',
+    AppLang.bo   => 'BO',
+  };
+  String get fullName => switch (this) {
+    AppLang.zhTW => '繁體中文',
+    AppLang.zhCN => '简体中文',
+    AppLang.en   => 'English',
+    AppLang.ja   => '日本語',
+    AppLang.es   => 'Español',
+    AppLang.fr   => 'Français',
+    AppLang.de   => 'Deutsch',
+    AppLang.ar   => 'العربية',
+    AppLang.hi   => 'हिन्दी',
+    AppLang.ko   => '한국어',
+    AppLang.th   => 'ภาษาไทย',
+    AppLang.pt   => 'Português',
+    AppLang.vi   => 'Tiếng Việt',
+    AppLang.it   => 'Italiano',
+    AppLang.la   => 'Latina',
+    AppLang.id   => 'Bahasa Indonesia',
+    AppLang.bo   => 'བོད་ཡིག',
+  };
+  // Google Translate target code; zhTW is original so pass-through
+  String get targetCode => switch (this) {
+    AppLang.zhTW => 'zh-TW',
+    AppLang.zhCN => 'zh-CN',
+    AppLang.en   => 'en',
+    AppLang.ja   => 'ja',
+    AppLang.es   => 'es',
+    AppLang.fr   => 'fr',
+    AppLang.de   => 'de',
+    AppLang.ar   => 'ar',
+    AppLang.hi   => 'hi',
+    AppLang.ko   => 'ko',
+    AppLang.th   => 'th',
+    AppLang.pt   => 'pt',
+    AppLang.vi   => 'vi',
+    AppLang.it   => 'it',
+    AppLang.la   => 'la',
+    AppLang.id   => 'id',
+    AppLang.bo   => 'bo',
+  };
+}
+
+// ── 翻譯快取 ──────────────────────────────────────────────────
+class _TranslationCache {
+  static final _cache = <String, String>{};
+  static String _key(String text, AppLang lang) => '${lang.name}::$text';
+  static String? get(String text, AppLang lang) =>
+      lang == AppLang.zhTW ? text : _cache[_key(text, lang)];
+  static void set(String text, AppLang lang, String translated) =>
+      _cache[_key(text, lang)] = translated;
+}
+
+// ── 翻譯服務 ──────────────────────────────────────────────────
+abstract class TranslationService {
+  static Future<String> translate(String text, AppLang target) async {
+    if (target == AppLang.zhTW || text.trim().isEmpty) return text;
+    final cached = _TranslationCache.get(text, target);
+    if (cached != null) return cached;
+    try {
+      final uri = Uri.parse(
+        'https://translate.googleapis.com/translate_a/single'
+        '?client=gtx&sl=zh-TW&tl=${target.targetCode}&dt=t&q=${Uri.encodeComponent(text)}',
+      );
+      final res = await http.get(uri);
+      if (res.statusCode != 200) return text;
+      final data = jsonDecode(utf8.decode(res.bodyBytes)) as List;
+      final segments = data[0] as List;
+      final translated = segments.map((s) => s[0] as String).join();
+      _TranslationCache.set(text, target, translated);
+      return translated;
+    } catch (_) {
+      return text;
+    }
+  }
+}
 
 class VideoData {
   final String id, title, url;
@@ -84,6 +186,7 @@ class _VideoTeachingsPageState extends State<VideoTeachingsPage> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   int _page = 0;
   String _query = '';
+  AppLang _lang = AppLang.zhTW;
 
   static int _cols(double w) =>
       w >= 1700 ? 6 : w >= 1280 ? 5 : w >= 1000 ? 4 : w >= 720 ? 3 : w >= 480 ? 2 : 1;
@@ -109,6 +212,8 @@ class _VideoTeachingsPageState extends State<VideoTeachingsPage> {
     _scaffoldKey.currentState?.closeDrawer();
   }
 
+  void _onLangChanged(AppLang lang) => setState(() => _lang = lang);
+
   @override
   Widget build(BuildContext context) {
     final filtered = _filtered;
@@ -127,30 +232,36 @@ class _VideoTeachingsPageState extends State<VideoTeachingsPage> {
         titleSpacing: 0,
         title: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Container(
-            height: 40,
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            decoration: _searchDeco,
-            child: Row(children: [
-              const Icon(Icons.search, size: 18, color: _gold),
-              const SizedBox(width: 8),
-              Expanded(
-                child: TextField(
-                  onChanged: _onSearchChanged,
-                  style: const TextStyle(fontSize: 14, color: _gold),
-                  decoration: const InputDecoration(
-                    isDense: true,
-                    border: InputBorder.none,
-                    hintText: '搜尋影片標題…',
-                    hintStyle: TextStyle(fontSize: 13, color: _goldBorder),
+          child: Row(children: [
+            Expanded(
+              child: Container(
+                height: 40,
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                decoration: _searchDeco,
+                child: Row(children: [
+                  const Icon(Icons.search, size: 18, color: _gold),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: TextField(
+                      onChanged: _onSearchChanged,
+                      style: const TextStyle(fontSize: 14, color: _gold),
+                      decoration: const InputDecoration(
+                        isDense: true,
+                        border: InputBorder.none,
+                        hintText: '搜尋影片標題…',
+                        hintStyle: TextStyle(fontSize: 13, color: _goldBorder),
+                      ),
+                    ),
                   ),
-                ),
+                ]),
               ),
-            ]),
-          ),
+            ),
+            const SizedBox(width: 10),
+            _LangSwitcher(current: _lang, onChanged: _onLangChanged),
+          ]),
         ),
       ),
-      drawer: _IndexDrawer(videos: filtered, onSelect: (v) => _jumpTo(v, filtered)),
+      drawer: _IndexDrawer(videos: filtered, lang: _lang, onSelect: (v) => _jumpTo(v, filtered)),
       body: filtered.isEmpty
           ? Center(child: Text('找不到符合「$_query」的影片', style: const TextStyle(fontSize: 14, color: _goldBorder)))
           : CustomScrollView(
@@ -162,7 +273,11 @@ class _VideoTeachingsPageState extends State<VideoTeachingsPage> {
                     final cols = _cols(c.crossAxisExtent).clamp(1, 6);
                     return SliverGrid(
                       delegate: SliverChildBuilderDelegate(
-                        (ctx, i) => _VideoCard(video: list[i]),
+                        (ctx, i) => _VideoCard(
+                          key: ValueKey('${list[i].id}_${_lang.name}'),
+                          video: list[i],
+                          lang: _lang,
+                        ),
                         childCount: list.length,
                         addAutomaticKeepAlives: false,
                         addRepaintBoundaries: true,
@@ -186,10 +301,108 @@ class _VideoTeachingsPageState extends State<VideoTeachingsPage> {
   }
 }
 
-class _IndexDrawer extends StatelessWidget {
+// ── 語言切換器 ─────────────────────────────────────────────────
+class _LangSwitcher extends StatelessWidget {
+  const _LangSwitcher({required this.current, required this.onChanged});
+  final AppLang current;
+  final ValueChanged<AppLang> onChanged;
+
+  @override
+  Widget build(BuildContext context) => Container(
+    height: 40,
+    padding: const EdgeInsets.symmetric(horizontal: 4),
+    decoration: _searchDeco,
+    child: PopupMenuButton<AppLang>(
+      tooltip: '切換語言',
+      offset: const Offset(0, 44),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      color: Colors.white,
+      initialValue: current,
+      onSelected: onChanged,
+      constraints: const BoxConstraints(maxHeight: 400),
+      itemBuilder: (ctx) => AppLang.values.map((l) => PopupMenuItem(
+        value: l,
+        child: Row(children: [
+          if (l == current)
+            const Padding(padding: EdgeInsets.only(right: 8), child: Icon(Icons.check, size: 16, color: _gold))
+          else
+            const SizedBox(width: 24),
+          Text(
+            l.fullName,
+            style: TextStyle(
+              fontSize: 13,
+              color: l == current ? _gold : const Color(0xFF555555),
+              fontWeight: l == current ? FontWeight.bold : FontWeight.normal,
+            ),
+          ),
+        ]),
+      )).toList(),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        child: Row(mainAxisSize: MainAxisSize.min, children: [
+          const Icon(Icons.translate_rounded, size: 16, color: _gold),
+          const SizedBox(width: 4),
+          Text(current.label, style: const TextStyle(fontSize: 13, color: _gold, fontWeight: FontWeight.w600)),
+          const Icon(Icons.arrow_drop_down, size: 16, color: _gold),
+        ]),
+      ),
+    ),
+  );
+}
+
+// ── 目錄側欄（支援翻譯） ────────────────────────────────────────
+class _IndexDrawer extends StatefulWidget {
   final List<VideoData> videos;
+  final AppLang lang;
   final ValueChanged<VideoData> onSelect;
-  const _IndexDrawer({required this.videos, required this.onSelect});
+  const _IndexDrawer({required this.videos, required this.lang, required this.onSelect});
+
+  @override
+  State<_IndexDrawer> createState() => _IndexDrawerState();
+}
+
+class _IndexDrawerState extends State<_IndexDrawer> {
+  // cache: videoId -> translated title
+  final Map<String, String> _titles = {};
+  bool _loading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadTitles();
+  }
+
+  @override
+  void didUpdateWidget(_IndexDrawer old) {
+    super.didUpdateWidget(old);
+    if (old.lang != widget.lang || old.videos != widget.videos) {
+      _loadTitles();
+    }
+  }
+
+  Future<void> _loadTitles() async {
+    if (widget.lang == AppLang.zhTW) {
+      setState(() {
+        _titles.clear();
+        _loading = false;
+      });
+      return;
+    }
+    setState(() => _loading = true);
+    final results = <String, String>{};
+    for (final v in widget.videos) {
+      if (!mounted) return;
+      results[v.id] = await TranslationService.translate(v.title, widget.lang);
+    }
+    if (!mounted) return;
+    setState(() {
+      _titles.addAll(results);
+      _loading = false;
+    });
+  }
+
+  String _titleFor(VideoData v) =>
+      widget.lang == AppLang.zhTW ? v.title : (_titles[v.id] ?? v.title);
 
   @override
   Widget build(BuildContext context) => Drawer(
@@ -201,20 +414,32 @@ class _IndexDrawer extends StatelessWidget {
           child: Row(children: [
             const Icon(Icons.menu_book_rounded, size: 18, color: _gold),
             const SizedBox(width: 8),
-            Text('目錄（${videos.length}）', style: const TextStyle(fontSize: 14, color: _gold)),
+            Text('目錄（${widget.videos.length}）', style: const TextStyle(fontSize: 14, color: _gold)),
+            if (_loading) ...[
+              const SizedBox(width: 8),
+              const SizedBox(width: 12, height: 12, child: CircularProgressIndicator(strokeWidth: 2, color: _gold)),
+            ],
           ]),
         ),
-        const SizedBox(height: 1, child: ColoredBox(color: _goldBorder)),
+        const Divider(color: _goldBorder, height: 1, thickness: 1),
         Expanded(
-          child: videos.isEmpty
+          child: widget.videos.isEmpty
               ? const Center(child: Text('無符合項目', style: TextStyle(fontSize: 13, color: _goldBorder)))
               : ListView.builder(
-                  itemCount: videos.length,
-                  itemBuilder: (ctx, i) => ListTile(
-                    dense: true,
-                    title: Text(videos[i].title, style: const TextStyle(fontSize: 14, color: _gold)),
-                    onTap: () => onSelect(videos[i]),
-                  ),
+                  itemCount: widget.videos.length,
+                  itemBuilder: (ctx, i) {
+                    final v = widget.videos[i];
+                    return ListTile(
+                      dense: true,
+                      title: Text(
+                        _titleFor(v),
+                        style: const TextStyle(fontSize: 14, color: _gold),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      onTap: () => widget.onSelect(v),
+                    );
+                  },
                 ),
         ),
       ]),
@@ -222,6 +447,7 @@ class _IndexDrawer extends StatelessWidget {
   );
 }
 
+// ── 分頁導覽列 ────────────────────────────────────────────────────
 class _PaginationBar extends StatelessWidget {
   final int page, total;
   final ValueChanged<int> onTap;
@@ -271,33 +497,89 @@ class _NavButton extends StatelessWidget {
   );
 }
 
-class _VideoCard extends StatelessWidget {
+// ── 影片卡片（支援翻譯） ──────────────────────────────────────────
+class _VideoCard extends StatefulWidget {
   final VideoData video;
-  const _VideoCard({required this.video});
+  final AppLang lang;
+  const _VideoCard({super.key, required this.video, required this.lang});
 
   @override
-  Widget build(BuildContext context) => GestureDetector(
-    onTap: () async {
-      final uri = Uri.parse(video.url);
-      if (await canLaunchUrl(uri)) await launchUrl(uri, mode: LaunchMode.externalApplication);
-    },
-    child: Container(
-      decoration: _cardDeco,
-      clipBehavior: Clip.antiAlias,
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        AspectRatio(
-          aspectRatio: 16 / 9,
-          child: Image.network(
-            'https://img.youtube.com/vi/${video.id}/hqdefault.jpg',
-            fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) => Container(color: const Color(0xFFF0F0F0), child: const Icon(Icons.broken_image, size: 40, color: Colors.grey)),
+  State<_VideoCard> createState() => _VideoCardState();
+}
+
+class _VideoCardState extends State<_VideoCard> {
+  String? _displayTitle;
+  bool _loadingTranslation = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _displayTitle = widget.video.title;
+    _loadTranslation();
+  }
+
+  @override
+  void didUpdateWidget(_VideoCard old) {
+    super.didUpdateWidget(old);
+    if (old.lang != widget.lang || old.video != widget.video) {
+      _loadTranslation();
+    }
+  }
+
+  Future<void> _loadTranslation() async {
+    if (widget.lang == AppLang.zhTW) {
+      setState(() {
+        _displayTitle = widget.video.title;
+        _loadingTranslation = false;
+      });
+      return;
+    }
+    setState(() => _loadingTranslation = true);
+    final title = await TranslationService.translate(widget.video.title, widget.lang);
+    if (!mounted) return;
+    setState(() {
+      _displayTitle = title;
+      _loadingTranslation = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final title = _displayTitle ?? widget.video.title;
+
+    return GestureDetector(
+      onTap: () async {
+        final uri = Uri.parse(widget.video.url);
+        if (await canLaunchUrl(uri)) await launchUrl(uri, mode: LaunchMode.externalApplication);
+      },
+      child: Container(
+        decoration: _cardDeco,
+        clipBehavior: Clip.antiAlias,
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          AspectRatio(
+            aspectRatio: 16 / 9,
+            child: Image.network(
+              'https://img.youtube.com/vi/${widget.video.id}/hqdefault.jpg',
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => Container(
+                color: const Color(0xFFF0F0F0),
+                child: const Icon(Icons.broken_image, size: 40, color: Colors.grey),
+              ),
+            ),
           ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-          child: Text(video.title, style: _titleStyle, maxLines: 2, overflow: TextOverflow.ellipsis),
-        ),
-      ]),
-    ),
-  );
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            child: _loadingTranslation
+                ? const SizedBox(
+                    height: 20,
+                    child: Center(
+                      child: SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2, color: _gold)),
+                    ),
+                  )
+                : Text(title, style: _titleStyle, maxLines: 2, overflow: TextOverflow.ellipsis),
+          ),
+        ]),
+      ),
+    );
+  }
 }
