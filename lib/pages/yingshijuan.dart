@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'yingshijuan_data.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'footer.dart';
 
 // ── 常數 ────────────────────────────────────────────────────────
 const _kGold    = Color(0xFFF5C518);
@@ -288,6 +289,7 @@ class _YingShiJuanPageState extends State<YingShiJuanPage> {
                       child: _PageNav(page: _page, pageCount: pageCount, onChanged: (p) => _goToPage(p, pageCount)),
                     ),
                   ),
+                  const SliverToBoxAdapter(child: SumeruFooter()),
                 ],
               ),
             ),

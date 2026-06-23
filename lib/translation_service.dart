@@ -92,19 +92,73 @@ class AppStrings {
 // ── Google 翻譯核心服務（用於整頁任意文字動態翻譯） ───────────────────
 class GoogleTranslateService {
   // ⚠️ 請在編譯時帶入 key，或直接在此貼上你的 Google Cloud Translation API Key
-  static const String _apiKey = String.fromEnvironment('GOOGLE_TRANSLATE_API_KEY', defaultValue: 'YOUR_API_KEY_HERE');
+  static const String _apiKey = String.fromEnvironment(
+    'GOOGLE_TRANSLATE_API_KEY',
+    defaultValue: 'YOUR_API_KEY_HERE',
+  );
 
-  // 二級快取結構：{ 'en': { '原文': '密文' } }，避免重複翻譯相同內文
+  // Google Cloud Translation API 單次 q 欄位安全上限（官方 5000，留餘量）
+  static const int _chunkSize = 4000;
+
+  // 二級快取結構：{ 'en': { '原文': '譯文' } }，避免重複翻譯相同內文
   static final Map<String, Map<String, String>> _dynamicCache = {};
 
+  // ── 對外公開介面（不變） ──────────────────────────────────────────
   static Future<String> translateText(String text, String targetLang) async {
     if (targetLang == 'zh-TW' || text.trim().isEmpty) return text;
 
-    // 將 Flutter 常用的 zh-TW / zh-CN 轉換為 Google API 標準代碼
-    String apiLang = targetLang;
-    if (targetLang == 'zh-CN') apiLang = 'zh-CN';
+    // 快取命中直接回傳
+    final cached = _dynamicCache[targetLang]?[text];
+    if (cached != null) return cached;
 
-    final url = Uri.parse('https://translation.googleapis.com/language/translate/v2?key=$_apiKey');
+    final result = text.length > _chunkSize
+        ? await _translateInChunks(text, targetLang)
+        : await _translateOnce(text, targetLang);
+
+    // 寫入快取（以整段原文為 key，保證下次同段文字直接命中）
+    _dynamicCache[targetLang] ??= {};
+    _dynamicCache[targetLang]![text] = result;
+    return result;
+  }
+
+  // ── 分段翻譯：依 \n 行切割，累積不超過 _chunkSize 再送出 ─────────────
+  static Future<String> _translateInChunks(
+    String text,
+    String targetLang,
+  ) async {
+    final lines = text.split('\n');
+    final chunks = <String>[];
+    final buf = StringBuffer();
+
+    for (final line in lines) {
+      // +1 計入即將補回的 '\n'
+      if (buf.length + line.length + 1 > _chunkSize && buf.isNotEmpty) {
+        chunks.add(buf.toString());
+        buf.clear();
+      }
+      if (buf.isNotEmpty) buf.write('\n');
+      buf.write(line);
+    }
+    if (buf.isNotEmpty) chunks.add(buf.toString());
+
+    // 依序翻譯，避免並發觸發 rate-limit
+    final results = <String>[];
+    for (final chunk in chunks) {
+      results.add(await _translateOnce(chunk, targetLang));
+    }
+    return results.join('\n');
+  }
+
+  // ── 單次 API 請求 ─────────────────────────────────────────────────
+  static Future<String> _translateOnce(
+    String text,
+    String targetLang,
+  ) async {
+    if (text.trim().isEmpty) return text;
+
+    final url = Uri.parse(
+      'https://translation.googleapis.com/language/translate/v2?key=$_apiKey',
+    );
 
     try {
       final response = await http.post(
@@ -112,20 +166,14 @@ class GoogleTranslateService {
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'q': text,
-          'target': apiLang,
-          'format': 'text', // 使用 text 格式，避免內文中的標點符號被 HTML 轉義（如 ' 變成 &#39;）
+          'target': targetLang,
+          'format': 'text', // 避免標點符號被 HTML 轉義（如 ' → &#39;）
         }),
       );
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        final translatedText = data['data']['translations'][0]['translatedText'] as String;
-
-        // 寫入快取
-        _dynamicCache[targetLang] ??= {};
-        _dynamicCache[targetLang]![text] = translatedText;
-
-        return translatedText;
+        return data['data']['translations'][0]['translatedText'] as String;
       } else {
         debugPrint('Google API 錯誤: ${response.body}');
         return text;

@@ -56,7 +56,7 @@ class ResourceLinksPage extends StatelessWidget {
     {'title': '波斯文', 'url': 'https://drive.google.com/file/d/16Y_rMOKiMCI_v6iUm-Wy6RYyVoxFGWqy/view?usp=drive_link'},
   ];
 
-  // 異步高效下載邏輯：外開系統瀏覽器下載，0 佔用 Flutter 渲染資源
+  // 異步高效下載邏輯
   Future<void> _downloadFile(BuildContext context, String url) async {
     if (await canLaunchUrlString(url)) {
       await launchUrlString(url, mode: LaunchMode.externalApplication);
@@ -70,6 +70,7 @@ class ResourceLinksPage extends StatelessWidget {
   // 共用的 Wrap 卡片區塊
   Widget _buildResourceWrap(BuildContext context, double cardSize, List<Map<String, String>> resources) {
     return Wrap(
+      alignment: WrapAlignment.center, // 修正：讓 Wrap 內部的子元件水平置中
       spacing: 8,
       runSpacing: 8,
       children: resources.map((item) => InkWell(
@@ -120,49 +121,66 @@ class ResourceLinksPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 32),
-          child: Column(
-            children: [
+        child: Center( // 修正：確保內容寬度不足時也能在畫面上水平置中
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 32),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center, // 修正：垂直方向置中（若內容沒超出螢幕）
+              crossAxisAlignment: CrossAxisAlignment.center, // 修正：水平方向置中
+              children: [
 
-              // ── APK 下載按鈕 ──
-              const Text(
-                '須彌山佛國學習APP APK Links:',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color.fromARGB(221, 255, 179, 2)),
-              ),
-              const SizedBox(height: 12),
-              ElevatedButton.icon(
-                onPressed: () => _downloadFile(context, _apkUrl),
-                icon: const Icon(Icons.android, color: Colors.white, size: 18),
-                label: const Text('點擊下載 APK', style: TextStyle(fontSize: 14, color: Colors.white)),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF4CAF50),
-                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                // ── APK 下載按鈕 ──
+                const Text(
+                  '須彌山佛國學習 APP APK Links(還未更新):',
+                  textAlign: TextAlign.center, // 修正：文字本身置中
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color.fromARGB(221, 255, 179, 2)),
                 ),
-              ),
+                const SizedBox(height: 12),
+                ElevatedButton.icon(
+                  onPressed: () => _downloadFile(context, _apkUrl),
+                  icon: const Icon(Icons.android, color: Colors.white, size: 18),
+                  label: const Text('點擊下載 APK', style: TextStyle(fontSize: 14, color: Colors.white)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF4CAF50),
+                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  ),
+                ),
 
-              const SizedBox(height: 40),
+                const SizedBox(height: 40),
 
-              // ── 第一區塊 ──
-              const Text('須彌山佛國 戒律 3國語言翻譯', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color.fromARGB(221, 255, 179, 2))),
-              const SizedBox(height: 20),
-              _buildResourceWrap(context, cardSize, _resources1),
+                // ── 第一區塊 ──
+                const Text(
+                  '須彌山佛國 戒律 3國語言翻譯', 
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color.fromARGB(221, 255, 179, 2))
+                ),
+                const SizedBox(height: 20),
+                _buildResourceWrap(context, cardSize, _resources1),
 
-              const SizedBox(height: 40),
+                const SizedBox(height: 40),
 
-              // ── 第二區塊 ──
-              const Text('了解佛法 14國語言翻譯', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color.fromARGB(221, 255, 179, 2))),
-              const SizedBox(height: 20),
-              _buildResourceWrap(context, cardSize, _resources2),
+                // ── 第二區塊 ──
+                const Text(
+                  '了解佛法 14國語言翻譯', 
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color.fromARGB(221, 255, 179, 2))
+                ),
+                const SizedBox(height: 20),
+                _buildResourceWrap(context, cardSize, _resources2),
 
-              const SizedBox(height: 40),
+                const SizedBox(height: 40),
 
-              // ── 第三區塊 ──
-              const Text('文字開示 19國語言翻譯', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color.fromARGB(221, 255, 179, 2))),
-              const SizedBox(height: 20),
-              _buildResourceWrap(context, cardSize, _resources3),
-            ],
+                // ── 第三區塊 ──
+                const Text(
+                  '文字開示 19國語言翻譯', 
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color.fromARGB(221, 255, 179, 2))
+                ),
+                const SizedBox(height: 20),
+                _buildResourceWrap(context, cardSize, _resources3),
+              ],
+            ),
           ),
         ),
       ),

@@ -39,7 +39,7 @@ class SumeruFooter extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
-            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               // ── 頂部分隔線 ────────────────────────────────────────
               const SizedBox(height: 1, child: ColoredBox(color: _kWhite20)),
@@ -47,9 +47,9 @@ class SumeruFooter extends StatelessWidget {
 
               // ── 主要內容（社群按鈕 + 微信群組）──────────────────────
               mobile
-                  // 手機：垂直排列，居中
+                  // 手機：垂直排列，居中，不限制自身高度
                   ? const Column(
-                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         _SocialRow(),
                         SizedBox(height: 16),

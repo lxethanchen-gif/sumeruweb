@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'footer.dart';
 
 const _gold = Color.fromARGB(255, 255, 209, 2);
 const _goldLight = Color(0xFFFFFBE6);
@@ -295,6 +296,7 @@ class _VideoTeachingsPageState extends State<VideoTeachingsPage> {
                       child: _PaginationBar(page: _page, total: total, onTap: (p) => _goTo(p, total)),
                     ),
                   ),
+                const SliverToBoxAdapter(child: SumeruFooter()),
               ],
             ),
     );

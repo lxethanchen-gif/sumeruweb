@@ -14,14 +14,14 @@ import 'pages/shizhai.dart';
 import 'pages/video_teaching.dart';
 import 'pages/resource_links.dart';
 import 'pages/buddha_intro.dart';
-import 'translation_service.dart';
+import 'translation_service.dart' hide TranslationService;
 import 'firebase_options.dart';
 import 'pages/live_stream.dart';
 import 'pages/footer.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  usePathUrlStrategy(); // 移除 URL 中的 #
+  usePathUrlStrategy();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const SumeruApp());
 }
@@ -92,7 +92,7 @@ class _MainShellState extends State<MainShell> {
   void initState() {
     super.initState();
     _player = AudioPlayer();
-    _player.setReleaseMode(ReleaseMode.loop); // 循環播放
+    _player.setReleaseMode(ReleaseMode.loop);
   }
 
   @override
@@ -118,20 +118,37 @@ class _MainShellState extends State<MainShell> {
       backgroundColor: const Color.fromARGB(255, 255, 254, 254),
       body: Stack(
         children: [
-          Column(
-            children: [
-              const SizedBox(height: 80),
-              Expanded(child: widget.child),
-              const SumeruFooter(),
+
+          // ── 頁面主體 + Footer：用 CustomScrollView 確保 Footer 完整顯示 ──
+          CustomScrollView(
+            slivers: [
+              // AppBar 佔位
+              const SliverToBoxAdapter(
+                child: SizedBox(height: 80),
+              ),
+              // 頁面內容：撐滿剩餘空間
+              SliverFillRemaining(
+                hasScrollBody: false,
+                child: Column(
+                  children: [
+                    Expanded(child: widget.child),
+                    // Footer 在這裡，高度完全由自身內容決定，不受任何外層限制
+                    const SumeruFooter(),
+                  ],
+                ),
+              ),
             ],
           ),
+
+          // ── 浮動 AppBar（最上層）──────────────────────────────────
           Positioned(
             top: 12,
             left: 16,
             right: 16,
             child: SumeruAppBar(currentIndex: currentIndex),
           ),
-          // ── 背景音樂控制按鈕 ───────────────────────────────────
+
+          // ── 背景音樂控制按鈕 ──────────────────────────────────────
           Positioned(
             bottom: 24,
             right: 20,

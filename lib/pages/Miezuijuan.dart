@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'footer.dart';
 
 // ── 風格常數 ────────────────────────────────────────────────────
 const _kGold          = Color(0xFFF5C518);
@@ -238,14 +239,21 @@ class _MieZuiJuanPageState extends State<MieZuiJuanPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _buildHeader(context),
-            _buildBody(context),
-          ],
+      body: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _buildHeader(context),
+              _buildBody(context),
+            ],
+          ),
         ),
+          ),
+          const SumeruFooter(),
+        ],
       ),
     );
   }

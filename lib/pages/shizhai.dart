@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'poems_data.dart';
+import 'footer.dart';
 
 const _gold = Color.fromARGB(255, 255, 209, 2);
 const _goldLight = Color(0xFFFFFBE6);
@@ -167,6 +168,7 @@ class _ShiZhaiPageState extends State<ShiZhaiPage> {
                       child: _PaginationBar(page: _page, total: _totalPages, onTap: _goTo),
                     ),
                   ),
+                const SliverToBoxAdapter(child: SumeruFooter()),
               ],
             ),
     );
