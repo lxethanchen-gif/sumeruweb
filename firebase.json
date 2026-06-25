@@ -23,8 +23,7 @@
     }
   },
   "hosting": {
-    "site": "sumeruweb",
-    "public": "build/web",
+    "public": "public",
     "ignore": [
       "firebase.json",
       "**/.*",
