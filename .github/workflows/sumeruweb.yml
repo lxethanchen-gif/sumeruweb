@@ -3,40 +3,50 @@ name: Deploy Flutter Web to GitHub Pages
 on:
   push:
     branches:
-      - main  # 推送到 main 分支時自動觸發
+      - main
 
 permissions:
-  contents: write  # 允許寫入 gh-pages 分支
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
-      # 1. 取得原始碼
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      # 2. 安裝 Flutter
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.44.3'  # ⚠️ 請改成你本地的 Flutter 版本
+          flutter-version: '3.44.3'   # ← 換成你專案的版本
           channel: 'stable'
           cache: true
 
-      # 3. 安裝套件
       - name: Install dependencies
         run: flutter pub get
 
-      # 4. Build Flutter Web（設定正確的 base-href）
-      - name: Build Flutter Web
+      - name: Build web
         run: flutter build web --release --base-href /sumeruweb/
+        #                                               ↑ 換成你的 repo 名稱
 
-      # 5. 部署到 GitHub Pages（gh-pages 分支）
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./build/web
-          publish_branch: gh-pages
+          path: build/web
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
