@@ -7,8 +7,8 @@ import 'package:http/http.dart' as http;
 // ── 風格常數（與 yingshijuan.dart 一致）────────────────────────
 const _kGold = Color(0xFFF5C518);
 const _kGoldDim = Color(0xFFB8960E);
-const _kGoldBorder = Color(0x59F5C518); // gold @ 35%
-const _kGoldBorderDim = Color(0x26F5C518); // gold @ 15%
+const _kGoldBorder = Color(0x59F5C518);
+const _kGoldBorderDim = Color(0x26F5C518);
 const _kCopyIconColor = Color(0x99B8960E);
 const _kNavShadow = BoxShadow(
   color: Color(0x0D000000),
@@ -59,7 +59,7 @@ const _kCopyIcon = Icon(
   color: _kCopyIconColor,
 );
 
-// ── 支援語言（與 yingshijuan.dart 一致）────────────────────────
+// ── 支援語言 ────────────────────────────────────────────────────
 enum AppLang {
   zhCN,
   zhTW,
@@ -360,10 +360,7 @@ class _JiYuanDaoZhiPageState extends State<JiYuanDaoZhiPage> {
       ),
       body: ScrollConfiguration(
         behavior: NoScrollbarBehavior(),
-        child: Column(
-          children: [
-            Expanded(
-              child: LayoutBuilder(
+        child: LayoutBuilder(
           builder: (context, constraints) {
             final w = constraints.maxWidth;
             final cols = w > 1000 ? 3 : (w > 600 ? 2 : 1);
@@ -396,10 +393,6 @@ class _JiYuanDaoZhiPageState extends State<JiYuanDaoZhiPage> {
               ),
             );
           },
-        ),
-            ),
-            const SumeruFooter(),
-          ],
         ),
       ),
     );
@@ -573,7 +566,6 @@ class _CardWidgetState extends State<_CardWidget> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ── 標題列＋右上角複製鍵 ──
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
