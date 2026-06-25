@@ -1,82 +1,82 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
-  <!-- 首頁 / Home -->
+  <!-- 首頁 -->
   <url>
     <loc>https://sumeruweb.vercel.app/</loc>
-    <lastmod>2026-06-14</lastmod>
+    <lastmod>2026-06-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
 
-  <!-- 法義體悟 / Dharma Realization -->
+  <!-- 法義體悟 -->
   <url>
-    <loc>https://sumeruweb.vercel.app/#dharma-realize</loc>
-    <lastmod>2026-06-14</lastmod>
+    <loc>https://sumeruweb.vercel.app/dharma-realize</loc>
+    <lastmod>2026-06-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
 
-  <!-- 應世卷 / Ying Shi Juan -->
+  <!-- 應世卷 -->
   <url>
-    <loc>https://sumeruweb.vercel.app/#ying-shi-juan</loc>
-    <lastmod>2026-06-14</lastmod>
+    <loc>https://sumeruweb.vercel.app/ying-shi-juan</loc>
+    <lastmod>2026-06-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
-  <!-- 滅罪卷 / Mie Zui Juan -->
+  <!-- 滅罪卷 -->
   <url>
-    <loc>https://sumeruweb.vercel.app/#mie-zui-juan</loc>
-    <lastmod>2026-06-14</lastmod>
+    <loc>https://sumeruweb.vercel.app/mie-zui-juan</loc>
+    <lastmod>2026-06-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
-  <!-- 機緣道指 / Ji Yuan Dao Zhi -->
+  <!-- 機緣道指 -->
   <url>
-    <loc>https://sumeruweb.vercel.app/#ji-yuan-dao-zhi</loc>
-    <lastmod>2026-06-14</lastmod>
+    <loc>https://sumeruweb.vercel.app/ji-yuan-dao-zhi</loc>
+    <lastmod>2026-06-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
-  <!-- 施齋 / Shi Zhai -->
+  <!-- 施齋 -->
   <url>
-    <loc>https://sumeruweb.vercel.app/#shi-zhai</loc>
-    <lastmod>2026-06-14</lastmod>
+    <loc>https://sumeruweb.vercel.app/shi-zhai</loc>
+    <lastmod>2026-06-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
-  <!-- 影音開示 / Video Teachings -->
+  <!-- 影音開示 -->
   <url>
-    <loc>https://sumeruweb.vercel.app/#video-teachings</loc>
-    <lastmod>2026-06-14</lastmod>
+    <loc>https://sumeruweb.vercel.app/video-teachings</loc>
+    <lastmod>2026-06-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
-  <!-- 資源連結 / Resource Links -->
+  <!-- 資源連結 -->
   <url>
-    <loc>https://sumeruweb.vercel.app/#resource-links</loc>
-    <lastmod>2026-06-14</lastmod>
+    <loc>https://sumeruweb.vercel.app/resource-links</loc>
+    <lastmod>2026-06-25</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
 
-  <!-- 佛陀介紹 / Buddha Introduction -->
+  <!-- 佛陀介紹 -->
   <url>
-    <loc>https://sumeruweb.vercel.app/#buddha-intro</loc>
-    <lastmod>2026-06-14</lastmod>
+    <loc>https://sumeruweb.vercel.app/buddha-intro</loc>
+    <lastmod>2026-06-25</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
-  <!-- 直播 / Live Stream -->
+  <!-- 直播 -->
   <url>
-    <loc>https://sumeruweb.vercel.app/#live-stream</loc>
-    <lastmod>2026-06-14</lastmod>
+    <loc>https://sumeruweb.vercel.app/live-stream</loc>
+    <lastmod>2026-06-25</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
