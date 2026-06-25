@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <base href="/sumeruweb/" />
+
+    <meta charset="UTF-8" />
+    <meta content="IE=Edge" http-equiv="X-UA-Compatible" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- ══ 基本 SEO ══════════════════════════════════════════════ -->
+    <title>須彌山佛國網</title>
+    <meta name="description" content="須彌山佛國網，收錄諦深大師法義開示、應世卷、滅罪卷、機緣道旨妙法入門卷、詩摘、影音開示及多國語言佛法資源。" />
+    <meta name="keywords" content="須彌山佛國網, 諦深大師, 佛法開示, 應世卷, 滅罪卷, 影音開示, 佛教, 淨土, 禪宗" />
+    <meta name="author" content="須彌山佛國網" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://sumeruweb.web.app/" />
+
+    <!-- ══ Google Search Console 驗證 ══════════════════════════ -->
+    <meta name="google-site-verification" content="4ydd4nUzgGWcU-eEczGhxSOKsmShwQtWPTnzicBziaw" />
+
+    <!-- ══ Open Graph（社群分享）══════════════════════════════════ -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="須彌山佛國網" />
+    <meta property="og:title" content="須彌山佛國網" />
+    <meta property="og:description" content="收錄諦深大師法義開示、應世卷、滅罪卷、機緣道旨妙法入門卷、詩摘、影音開示及多國語言佛法資源。" />
+    <meta property="og:url" content="https://sumeruweb.web.app/" />
+    <meta property="og:image" content="https://sumeruweb.web.app/icons/logo_with_border.png" />
+    <meta property="og:locale" content="zh_TW" />
+
+    <!-- ══ Twitter Card ══════════════════════════════════════════ -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="須彌山佛國網" />
+    <meta name="twitter:description" content="收錄諦深大師法義開示、應世卷、滅罪卷、機緣道旨妙法入門卷、詩摘、影音開示及多國語言佛法資源。" />
+    <meta name="twitter:image" content="https://sumeruweb.web.app/icons/logo_with_border.png" />
+
+    <!-- ══ iOS / PWA ══════════════════════════════════════════════ -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="apple-mobile-web-app-title" content="須彌山佛國網" />
+    <link rel="apple-touch-icon" href="icons/logo_with_border.png" />
+
+    <!-- ══ Favicon & Manifest ═════════════════════════════════════ -->
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link rel="manifest" href="manifest.json" />
+
+    <!-- ══ 結構化資料 JSON-LD（幫助 Google 理解網站內容）══════════ -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "須彌山佛國網",
+      "alternateName": "Sumeru Mount Buddha Nation",
+      "url": "https://sumeruweb.web.app/",
+      "description": "收錄諦深大師法義開示、應世卷、滅罪卷、機緣道旨妙法入門卷、詩摘、影音開示及多國語言佛法資源。",
+      "inLanguage": ["zh-TW", "zh-CN", "en", "ja"],
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://sumeruweb.web.app/",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "諦深大師",
+      "alternateName": "釋迦妙生",
+      "description": "淨土獲證、禪宗傳承，法號諦深，佛光普照神僧呼喚所得。",
+      "url": "https://sumeruweb.web.app/buddha_intro"
+    }
+    </script>
+
+    <!-- ══ YouTube IFrame API ══════════════════════════════════════ -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+  </head>
+  <body>
+    <script src="flutter_bootstrap.js" async></script>
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
+      import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-analytics.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyA_G4R_Ah0XuNFK0W3wt_HJIGaaVHr4Zls",
+        authDomain: "sumeruweb.firebaseapp.com",
+        projectId: "sumeruweb",
+        storageBucket: "sumeruweb.firebasestorage.app",
+        messagingSenderId: "443158351698",
+        appId: "1:443158351698:web:275cff043feb171958b48b",
+        measurementId: "G-ZG8D9KEEPZ",
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const analytics = getAnalytics(app);
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore-compat.js"></script>
+  </body>
+</html>
