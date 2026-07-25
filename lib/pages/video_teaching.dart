@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 import 'footer.dart';
 
 const _gold = Color.fromARGB(255, 255, 209, 2);
-const _goldLight = Color(0xFFFFFBE6);
+const _goldLight = Color.fromARGB(255, 255, 255, 255);
 const _goldBorder = Color(0x8CFFD102);
 const _navShadow = BoxShadow(color: Color(0x0D000000), blurRadius: 6, offset: Offset(0, 2));
 const _cardShadows = [
@@ -18,7 +18,7 @@ const _border = Border.fromBorderSide(BorderSide(color: _goldBorder, width: 1));
 const _navDeco = BoxDecoration(color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(8)), boxShadow: [_navShadow], border: _border);
 const _navDecoDisabled = BoxDecoration(color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(8)), boxShadow: [_navShadow], border: Border.fromBorderSide(BorderSide(color: Color(0x33FFD102), width: 1)));
 const _searchDeco = BoxDecoration(color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(12)), boxShadow: [_navShadow]);
-const _titleStyle = TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Color.fromARGB(255, 246, 209, 4));
+const _titleStyle = TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Color.fromARGB(255, 246, 209, 4));
 
 // ── 支援語言 ────────────────────────────────────────────────────
 enum AppLang {
