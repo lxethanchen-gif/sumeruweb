@@ -121,25 +121,24 @@ class _MainShellState extends State<MainShell> {
 
           // ── 頁面主體 + Footer：用 CustomScrollView 確保 Footer 完整顯示 ──
           CustomScrollView(
-            // slivers: [
-            //   // AppBar 佔位
-            //   const SliverToBoxAdapter(
-            //     child: SizedBox(height: 80),
-            //   ),
-            //   // 頁面內容：撐滿剩餘空間
-            //   SliverFillRemaining(
-            //     hasScrollBody: false,
-            //     child: Column(
-            //       children: [
-            //         Expanded(child: widget.child),
-            //         // Footer 在這裡，高度完全由自身內容決定，不受任何外層限制
-            //         const SumeruFooter(),
-            //       ],
-            //     ),
-            //   ),
-            // ],
+            slivers: [
+              // AppBar 佔位
+              const SliverToBoxAdapter(
+                child: SizedBox(height: 80),
+              ),
+              // 頁面內容：撐滿剩餘空間
+              SliverFillRemaining(
+                hasScrollBody: false,
+                child: Column(
+                  children: [
+                    Expanded(child: widget.child),
+                    // Footer 在這裡，高度完全由自身內容決定，不受任何外層限制
+                    // const SumeruFooter(),
+                  ],
+                ),
+              ),
+            ],
           ),
-
           // ── 浮動 AppBar（最上層）──────────────────────────────────
           Positioned(
             top: 12,
