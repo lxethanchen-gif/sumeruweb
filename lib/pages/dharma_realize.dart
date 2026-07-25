@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'footer.dart';
 
 // ── 風格常數（與 jiyuandaozhi.dart 一致）────────────────────────
 const _kGold = Color(0xFFF5C518);
@@ -321,44 +322,52 @@ class _ContentBody extends StatelessWidget {
     return ScrollConfiguration(
       behavior: NoScrollbarBehavior(),
       child: SingleChildScrollView(
-        padding: EdgeInsets.fromLTRB(hPad, 28, hPad, 40),
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 860),
-            child: Container(
-              padding: const EdgeInsets.all(24),
-              decoration: _kCardDecoration,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // 章節標題
-                  Text(
-                    title,
-                    style: _kTitleStyle.copyWith(
-                      fontSize: 20,
-                      letterSpacing: 1.2,
-                    ),
+        padding: EdgeInsets.fromLTRB(0, 28, 0, 0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 860),
+                child: Container(
+                  margin: EdgeInsets.symmetric(horizontal: hPad),
+                  padding: const EdgeInsets.all(24),
+                  decoration: _kCardDecoration,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // 章節標題
+                      Text(
+                        title,
+                        style: _kTitleStyle.copyWith(
+                          fontSize: 20,
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      // 底部強調線
+                      Container(
+                        height: 2,
+                        width: 48,
+                        decoration: BoxDecoration(
+                          color: _kGold,
+                          borderRadius: BorderRadius.circular(1),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      // 正文
+                      Text(
+                        content,
+                        style: _kBodyStyle.copyWith(fontSize: 15, height: 2.0),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 10),
-                  // 底部強調線
-                  Container(
-                    height: 2,
-                    width: 48,
-                    decoration: BoxDecoration(
-                      color: _kGold,
-                      borderRadius: BorderRadius.circular(1),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  // 正文
-                  Text(
-                    content,
-                    style: _kBodyStyle.copyWith(fontSize: 15, height: 2.0),
-                  ),
-                ],
+                ),
               ),
             ),
-          ),
+            const SizedBox(height: 32),
+            const SumeruFooter(),
+          ],
         ),
       ),
     );

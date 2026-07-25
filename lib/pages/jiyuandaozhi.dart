@@ -365,31 +365,35 @@ class _JiYuanDaoZhiPageState extends State<JiYuanDaoZhiPage> {
             final w = constraints.maxWidth;
             final cols = w > 1000 ? 3 : (w > 600 ? 2 : 1);
             return SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
-              child: Center(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const SizedBox(height: 8),
-                    Wrap(
-                      spacing: 16,
-                      runSpacing: 16,
-                      alignment: WrapAlignment.center,
-                      children: _kCards
-                          .map(
-                            (c) => _CardWidget(
-                              key: ValueKey('${c.title}_${_lang.name}'),
-                              data: c,
-                              screenWidth: w,
-                              cols: cols,
-                              lang: _lang,
-                            ),
-                          )
-                          .toList(),
+              padding: const EdgeInsets.only(top: 24, bottom: 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const SizedBox(height: 8),
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Wrap(
+                        spacing: 16,
+                        runSpacing: 16,
+                        alignment: WrapAlignment.center,
+                        children: _kCards
+                            .map(
+                              (c) => _CardWidget(
+                                key: ValueKey('${c.title}_${_lang.name}'),
+                                data: c,
+                                screenWidth: w,
+                                cols: cols,
+                                lang: _lang,
+                              ),
+                            )
+                            .toList(),
+                      ),
                     ),
-                    const SizedBox(height: 48),
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: 32),
+                  const SumeruFooter(),
+                ],
               ),
             );
           },

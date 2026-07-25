@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher_string.dart'; // 引入高效連結啟動器
+import 'footer.dart';
 
 class ResourceLinksPage extends StatelessWidget {
   const ResourceLinksPage({super.key});
@@ -121,66 +122,74 @@ class ResourceLinksPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
       body: SafeArea(
-        child: Center( // 修正：確保內容寬度不足時也能在畫面上水平置中
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 32),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center, // 修正：垂直方向置中（若內容沒超出螢幕）
-              crossAxisAlignment: CrossAxisAlignment.center, // 修正：水平方向置中
-              children: [
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.only(top: 32, bottom: 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center, // 修正：垂直方向置中（若內容沒超出螢幕）
+                  crossAxisAlignment: CrossAxisAlignment.center, // 修正：水平方向置中
+                  children: [
 
-                // ── APK 下載按鈕 ──
-                const Text(
-                  '須彌山佛國學習 APP APK Links(還未更新):',
-                  textAlign: TextAlign.center, // 修正：文字本身置中
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color.fromARGB(221, 255, 179, 2)),
+                    // ── APK 下載按鈕 ──
+                    const Text(
+                      '須彌山佛國學習 APP APK Links(還未更新):',
+                      textAlign: TextAlign.center, // 修正：文字本身置中
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color.fromARGB(221, 255, 179, 2)),
+                    ),
+                    const SizedBox(height: 12),
+                    ElevatedButton.icon(
+                      onPressed: () => _downloadFile(context, _apkUrl),
+                      icon: const Icon(Icons.android, color: Colors.white, size: 18),
+                      label: const Text('點擊下載 APK', style: TextStyle(fontSize: 14, color: Colors.white)),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF4CAF50),
+                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      ),
+                    ),
+
+                    const SizedBox(height: 40),
+
+                    // ── 第一區塊 ──
+                    const Text(
+                      '須彌山佛國 戒律 3國語言翻譯', 
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color.fromARGB(221, 255, 179, 2))
+                    ),
+                    const SizedBox(height: 20),
+                    _buildResourceWrap(context, cardSize, _resources1),
+
+                    const SizedBox(height: 40),
+
+                    // ── 第二區塊 ──
+                    const Text(
+                      '了解佛法 14國語言翻譯', 
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color.fromARGB(221, 255, 179, 2))
+                    ),
+                    const SizedBox(height: 20),
+                    _buildResourceWrap(context, cardSize, _resources2),
+
+                    const SizedBox(height: 40),
+
+                    // ── 第三區塊 ──
+                    const Text(
+                      '文字開示 19國語言翻譯', 
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color.fromARGB(221, 255, 179, 2))
+                    ),
+                    const SizedBox(height: 20),
+                    _buildResourceWrap(context, cardSize, _resources3),
+                  ],
                 ),
-                const SizedBox(height: 12),
-                ElevatedButton.icon(
-                  onPressed: () => _downloadFile(context, _apkUrl),
-                  icon: const Icon(Icons.android, color: Colors.white, size: 18),
-                  label: const Text('點擊下載 APK', style: TextStyle(fontSize: 14, color: Colors.white)),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF4CAF50),
-                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                  ),
-                ),
-
-                const SizedBox(height: 40),
-
-                // ── 第一區塊 ──
-                const Text(
-                  '須彌山佛國 戒律 3國語言翻譯', 
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color.fromARGB(221, 255, 179, 2))
-                ),
-                const SizedBox(height: 20),
-                _buildResourceWrap(context, cardSize, _resources1),
-
-                const SizedBox(height: 40),
-
-                // ── 第二區塊 ──
-                const Text(
-                  '了解佛法 14國語言翻譯', 
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color.fromARGB(221, 255, 179, 2))
-                ),
-                const SizedBox(height: 20),
-                _buildResourceWrap(context, cardSize, _resources2),
-
-                const SizedBox(height: 40),
-
-                // ── 第三區塊 ──
-                const Text(
-                  '文字開示 19國語言翻譯', 
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color.fromARGB(221, 255, 179, 2))
-                ),
-                const SizedBox(height: 20),
-                _buildResourceWrap(context, cardSize, _resources3),
-              ],
-            ),
+              ),
+              const SizedBox(height: 24),
+              const SumeruFooter(),
+            ],
           ),
         ),
       ),

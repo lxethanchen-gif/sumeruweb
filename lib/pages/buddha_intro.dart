@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'footer.dart';
 
 // ── 風格常數（與 yingshijuan.dart 一致）────────────────────────
 const _kGold    = Color(0xFFF5C518);
@@ -181,22 +182,32 @@ class _DesktopLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(64, 40, 64, 48),
+        padding: const EdgeInsets.only(top: 40, bottom: 24),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _PhotoGrid(
-              images: images,
-              crossCount: 4,
-              spacing: 16,
-              aspectRatio: 0.82,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 64),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _PhotoGrid(
+                    images: images,
+                    crossCount: 4,
+                    spacing: 16,
+                    aspectRatio: 0.82,
+                  ),
+                  const SizedBox(height: 36),
+                  const _TitleBlock(titleSize: 28, subtitleSize: 14),
+                  const SizedBox(height: 20),
+                  const _GoldDivider(),
+                  const SizedBox(height: 24),
+                  _IntroText(intro: intro, fontSize: 15),
+                ],
+              ),
             ),
-            const SizedBox(height: 36),
-            const _TitleBlock(titleSize: 28, subtitleSize: 14),
-            const SizedBox(height: 20),
-            const _GoldDivider(),
             const SizedBox(height: 24),
-            _IntroText(intro: intro, fontSize: 15),
+            const SumeruFooter(),
           ],
         ),
       );
@@ -212,22 +223,32 @@ class _TabletLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(32, 36, 32, 48),
+        padding: const EdgeInsets.only(top: 36, bottom: 24),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _PhotoGrid(
-              images: images,
-              crossCount: 2,
-              spacing: 12,
-              aspectRatio: 1.1,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _PhotoGrid(
+                    images: images,
+                    crossCount: 2,
+                    spacing: 12,
+                    aspectRatio: 1.1,
+                  ),
+                  const SizedBox(height: 32),
+                  const _TitleBlock(titleSize: 24, subtitleSize: 13),
+                  const SizedBox(height: 16),
+                  const _GoldDivider(),
+                  const SizedBox(height: 20),
+                  _IntroText(intro: intro, fontSize: 15),
+                ],
+              ),
             ),
-            const SizedBox(height: 32),
-            const _TitleBlock(titleSize: 24, subtitleSize: 13),
-            const SizedBox(height: 16),
-            const _GoldDivider(),
-            const SizedBox(height: 20),
-            _IntroText(intro: intro, fontSize: 15),
+            const SizedBox(height: 24),
+            const SumeruFooter(),
           ],
         ),
       );
@@ -243,22 +264,32 @@ class _MobileLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(16, 24, 16, 40),
+        padding: const EdgeInsets.only(top: 24, bottom: 24),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _PhotoGrid(
-              images: images,
-              crossCount: 2,
-              spacing: 8,
-              aspectRatio: 0.9,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _PhotoGrid(
+                    images: images,
+                    crossCount: 2,
+                    spacing: 8,
+                    aspectRatio: 0.9,
+                  ),
+                  const SizedBox(height: 24),
+                  const _TitleBlock(titleSize: 22, subtitleSize: 13),
+                  const SizedBox(height: 14),
+                  const _GoldDivider(),
+                  const SizedBox(height: 16),
+                  _IntroText(intro: intro, fontSize: 14),
+                ],
+              ),
             ),
-            const SizedBox(height: 24),
-            const _TitleBlock(titleSize: 22, subtitleSize: 13),
-            const SizedBox(height: 14),
-            const _GoldDivider(),
             const SizedBox(height: 16),
-            _IntroText(intro: intro, fontSize: 14),
+            const SumeruFooter(),
           ],
         ),
       );

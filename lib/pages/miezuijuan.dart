@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'footer.dart';
 
 // ── 風格常數 ────────────────────────────────────────────────────
 const _kGold          = Color(0xFFF5C518);
@@ -244,6 +245,7 @@ class _MieZuiJuanPageState extends State<MieZuiJuanPage> {
           children: [
             _buildHeader(context),
             _buildBody(context),
+            const SumeruFooter(),
           ],
         ),
       ),

@@ -2,6 +2,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'footer.dart';
 
 // ─── 道場布置圖片 ─────────────────────────────────────────────
 
@@ -278,99 +279,107 @@ class _LiveStreamPageState extends State<LiveStreamPage> {
               : 12.0;
 
           return ListView(
-            padding: EdgeInsets.symmetric(horizontal: hPadding, vertical: 12),
+            padding: const EdgeInsets.symmetric(vertical: 12),
             children: [
-              // ── 頂部提示列
-              const SizedBox(height: 10),
-
-              // ── 早晚課持續時間影片
-              _OuterCard(
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: hPadding),
                 child: Column(
                   children: [
-                    _SectionHeader(
-                      time: '參考影片',
-                      title: '早晚課持續時間',
-                      icon: Icons.play_circle_outline,
-                      isFirst: true,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: _ThumbnailPlayer(videoId: kTopVideoId),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 10),
+                    // ── 頂部提示列
+                    const SizedBox(height: 10),
 
-              // ── 道場布置卡
-              const _ShrineCard(),
-              const SizedBox(height: 10),
-
-              // ── 共修時程大卡
-              _OuterCard(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: kSchedule.asMap().entries.map((entry) {
-                    return _ScheduleSectionBlock(
-                      section: entry.value,
-                      activeVideoId: _activeVideoId,
-                      activeController: _activeController,
-                      onPlay: _playVideo,
-                      isFirst: entry.key == 0,
-                      isLast: entry.key == kSchedule.length - 1,
-                    );
-                  }).toList(),
-                ),
-              ),
-              const SizedBox(height: 10),
-
-              // ── 其他資源卡
-              _OuterCard(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _SectionHeader(
-                      time: '其他資源',
-                      title: '寶鼎讚・叩鐘偈',
-                      icon: Icons.music_note_outlined,
-                      isFirst: true,
+                    // ── 早晚課持續時間影片
+                    _OuterCard(
+                      child: Column(
+                        children: [
+                          _SectionHeader(
+                            time: '參考影片',
+                            title: '早晚課持續時間',
+                            icon: Icons.play_circle_outline,
+                            isFirst: true,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: _ThumbnailPlayer(videoId: kTopVideoId),
+                          ),
+                        ],
+                      ),
                     ),
-                    ...kOtherVideos.map((v) {
-                      final isActive = _activeVideoId == v.videoId;
-                      return _ScheduleItemRow(
-                        name: v.label,
-                        links: [v],
-                        activeVideoId: _activeVideoId,
-                        activeController: _activeController,
-                        onPlay: _playVideo,
-                        show22Precepts: false,
-                        showDivider: true,
-                      );
-                    }),
-                    const SizedBox(height: 4),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 10),
+                    const SizedBox(height: 10),
 
-              // ── 法會影片
-              _OuterCard(
-                child: Column(
-                  children: [
-                    _SectionHeader(
-                      time: '法會影片',
-                      title: '地藏菩薩本願經',
-                      icon: Icons.import_contacts_outlined,
-                      isFirst: true,
+                    // ── 道場布置卡
+                    const _ShrineCard(),
+                    const SizedBox(height: 10),
+
+                    // ── 共修時程大卡
+                    _OuterCard(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: kSchedule.asMap().entries.map((entry) {
+                          return _ScheduleSectionBlock(
+                            section: entry.value,
+                            activeVideoId: _activeVideoId,
+                            activeController: _activeController,
+                            onPlay: _playVideo,
+                            isFirst: entry.key == 0,
+                            isLast: entry.key == kSchedule.length - 1,
+                          );
+                        }).toList(),
+                      ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: _ThumbnailPlayer(videoId: kBottomVideoId),
+                    const SizedBox(height: 10),
+
+                    // ── 其他資源卡
+                    _OuterCard(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _SectionHeader(
+                            time: '其他資源',
+                            title: '寶鼎讚・叩鐘偈',
+                            icon: Icons.music_note_outlined,
+                            isFirst: true,
+                          ),
+                          ...kOtherVideos.map((v) {
+                            final isActive = _activeVideoId == v.videoId;
+                            return _ScheduleItemRow(
+                              name: v.label,
+                              links: [v],
+                              activeVideoId: _activeVideoId,
+                              activeController: _activeController,
+                              onPlay: _playVideo,
+                              show22Precepts: false,
+                              showDivider: true,
+                            );
+                          }),
+                          const SizedBox(height: 4),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+
+                    // ── 法會影片
+                    _OuterCard(
+                      child: Column(
+                        children: [
+                          _SectionHeader(
+                            time: '法會影片',
+                            title: '地藏菩薩本願經',
+                            icon: Icons.import_contacts_outlined,
+                            isFirst: true,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: _ThumbnailPlayer(videoId: kBottomVideoId),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
               ),
               const SizedBox(height: 24),
+              const SumeruFooter(),
             ],
           );
         },

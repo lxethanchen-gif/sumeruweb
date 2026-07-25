@@ -3,6 +3,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'dart:ui_web' as ui;
 import 'dart:html' as html;
 import 'dart:async';
+import 'footer.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -439,85 +440,94 @@ class _HomePageState extends State<HomePage> {
     final bool isWide = w > 720;
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
-      child: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // ── 標題 ────────────────────────────────────────
-            Text(
-              '諦深佛陀 2026年5月29日 現場直播開示',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: w > 600 ? 30 : 22,
-                fontWeight: FontWeight.bold,
-                color: _gold,
-                letterSpacing: 1.2,
-                height: 1.4,
-              ),
-            ),
-            const SizedBox(height: 24),
-
-            // ── YouTube 影片 ─────────────────────────────────
-            ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: SizedBox(
-                width: contentWidth,
-                height: contentWidth * 9 / 16,
-                child: const HtmlElementView(viewType: 'youtube-player'),
-              ),
-            ),
-            const SizedBox(height: 32),
-
-            // ── 輪播圖（RWD）────────────────────────────────
-            SizedBox(width: contentWidth, child: _buildCarousel(contentWidth)),
-            const SizedBox(height: 36),
-
-            // ── 最新消息 & 影音開示 ──────────────────────────
-            SizedBox(
-              width: contentWidth,
-              child: isWide
-                  ? IntrinsicHeight(
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Expanded(
-                            child: _buildSection(
-                              title: '最新消息',
-                              items: _news,
-                              icon: Icons.campaign_outlined,
-                            ),
-                          ),
-                          const SizedBox(width: 20),
-                          Expanded(
-                            child: _buildSection(
-                              title: '影音開示',
-                              items: _videos,
-                              icon: Icons.play_circle_outline,
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-                  : Column(
-                      children: [
-                        _buildSection(
-                          title: '最新消息',
-                          items: _news,
-                          icon: Icons.campaign_outlined,
-                        ),
-                        const SizedBox(height: 24),
-                        _buildSection(
-                          title: '影音開示',
-                          items: _videos,
-                          icon: Icons.play_circle_outline,
-                        ),
-                      ],
+      padding: const EdgeInsets.symmetric(vertical: 28),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // ── 標題 ────────────────────────────────────────
+                  Text(
+                    '諦深佛陀 2026年5月29日 現場直播開示',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: w > 600 ? 30 : 22,
+                      fontWeight: FontWeight.bold,
+                      color: _gold,
+                      letterSpacing: 1.2,
+                      height: 1.4,
                     ),
+                  ),
+                  const SizedBox(height: 24),
+
+                  // ── YouTube 影片 ─────────────────────────────────
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: SizedBox(
+                      width: contentWidth,
+                      height: contentWidth * 9 / 16,
+                      child: const HtmlElementView(viewType: 'youtube-player'),
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+
+                  // ── 輪播圖（RWD）────────────────────────────────
+                  SizedBox(width: contentWidth, child: _buildCarousel(contentWidth)),
+                  const SizedBox(height: 36),
+
+                  // ── 最新消息 & 影音開示 ──────────────────────────
+                  SizedBox(
+                    width: contentWidth,
+                    child: isWide
+                        ? IntrinsicHeight(
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Expanded(
+                                  child: _buildSection(
+                                    title: '最新消息',
+                                    items: _news,
+                                    icon: Icons.campaign_outlined,
+                                  ),
+                                ),
+                                const SizedBox(width: 20),
+                                Expanded(
+                                  child: _buildSection(
+                                    title: '影音開示',
+                                    items: _videos,
+                                    icon: Icons.play_circle_outline,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        : Column(
+                            children: [
+                              _buildSection(
+                                title: '最新消息',
+                                items: _news,
+                                icon: Icons.campaign_outlined,
+                              ),
+                              const SizedBox(height: 24),
+                              _buildSection(
+                                title: '影音開示',
+                                items: _videos,
+                                icon: Icons.play_circle_outline,
+                              ),
+                            ],
+                          ),
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 24),
-          ],
-        ),
+          ),
+          const SizedBox(height: 36),
+          const SumeruFooter(),
+        ],
       ),
     );
   }
