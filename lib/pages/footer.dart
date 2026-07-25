@@ -168,7 +168,7 @@ class _SocialRow extends StatelessWidget {
     (icon: _SIcon.facebook, label: 'Facebook',
       url: 'https://www.facebook.com/share/g/1DYkv4t3Bt/'),
     (icon: _SIcon.line,     label: 'Line',
-      url: 'https://line.me/R/ti/g/rSS6ZaP3_x'),
+      url: 'https://line.me/ti/g2/_F-C9oJmub6DPVx_KnLp8A-eWogzziD8AyDWLQ?utm_source=invitation&utm_medium=link_copy&utm_campaign=default'),
     (icon: _SIcon.youtube,  label: 'YouTube',
       url: 'https://www.youtube.com/@Dishenbuddha'),
     (icon: _SIcon.excel,    label: '皈依表',

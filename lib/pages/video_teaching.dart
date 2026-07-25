@@ -459,6 +459,16 @@ const _videos = <VideoData>[
     '諦深佛陀開示 如何發心出家',
     'https://youtu.be/x_7-wZRu1gg',
   ),
+  VideoData(
+    'iT_ZDekFnMo',
+    '諦深佛陀開示 2021年10月24日',
+    'https://youtu.be/iT_ZDekFnMo',
+  ),
+  VideoData(
+    'Vdt19z6GMvU',
+    '諦深佛陀開示 2021年12月20日',
+    'https://youtu.be/Vdt19z6GMvU',
+  ),
 ];
 
 class VideoTeachingsPage extends StatefulWidget {
