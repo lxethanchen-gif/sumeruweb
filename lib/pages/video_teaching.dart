@@ -4,85 +4,128 @@ import 'package:url_launcher/url_launcher.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'footer.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 const _gold = Color.fromARGB(255, 255, 209, 2);
 const _goldLight = Color.fromARGB(255, 255, 255, 255);
 const _goldBorder = Color(0x8CFFD102);
-const _navShadow = BoxShadow(color: Color(0x0D000000), blurRadius: 6, offset: Offset(0, 2));
+const _navShadow = BoxShadow(
+  color: Color(0x0D000000),
+  blurRadius: 6,
+  offset: Offset(0, 2),
+);
 const _cardShadows = [
   BoxShadow(color: Color(0x12000000), blurRadius: 20, offset: Offset(0, 4)),
   BoxShadow(color: Color(0x0A000000), blurRadius: 6, offset: Offset(0, 1)),
 ];
-const _cardDeco = BoxDecoration(color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(12)), boxShadow: _cardShadows);
+const _cardDeco = BoxDecoration(
+  color: Colors.white,
+  borderRadius: BorderRadius.all(Radius.circular(12)),
+  boxShadow: _cardShadows,
+);
 const _border = Border.fromBorderSide(BorderSide(color: _goldBorder, width: 1));
-const _navDeco = BoxDecoration(color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(8)), boxShadow: [_navShadow], border: _border);
-const _navDecoDisabled = BoxDecoration(color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(8)), boxShadow: [_navShadow], border: Border.fromBorderSide(BorderSide(color: Color(0x33FFD102), width: 1)));
-const _searchDeco = BoxDecoration(color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(12)), boxShadow: [_navShadow]);
-const _titleStyle = TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Color.fromARGB(255, 246, 209, 4));
+const _navDeco = BoxDecoration(
+  color: Colors.white,
+  borderRadius: BorderRadius.all(Radius.circular(8)),
+  boxShadow: [_navShadow],
+  border: _border,
+);
+const _navDecoDisabled = BoxDecoration(
+  color: Colors.white,
+  borderRadius: BorderRadius.all(Radius.circular(8)),
+  boxShadow: [_navShadow],
+  border: Border.fromBorderSide(BorderSide(color: Color(0x33FFD102), width: 1)),
+);
+const _searchDeco = BoxDecoration(
+  color: Colors.white,
+  borderRadius: BorderRadius.all(Radius.circular(12)),
+  boxShadow: [_navShadow],
+);
+const _titleStyle = TextStyle(
+  fontSize: 16,
+  fontWeight: FontWeight.w600,
+  color: Color.fromARGB(255, 246, 209, 4),
+);
 
 // ── 支援語言 ────────────────────────────────────────────────────
 enum AppLang {
-  zhTW, zhCN, en, ja, es, fr, de, ar, hi, ko, th, pt, vi, it, la, id, bo,
+  zhTW,
+  zhCN,
+  en,
+  ja,
+  es,
+  fr,
+  de,
+  ar,
+  hi,
+  ko,
+  th,
+  pt,
+  vi,
+  it,
+  la,
+  id,
+  bo,
 }
 
 extension AppLangX on AppLang {
   String get label => switch (this) {
     AppLang.zhTW => '繁中',
     AppLang.zhCN => '简中',
-    AppLang.en   => 'EN',
-    AppLang.ja   => 'JP',
-    AppLang.es   => 'ES',
-    AppLang.fr   => 'FR',
-    AppLang.de   => 'DE',
-    AppLang.ar   => 'AR',
-    AppLang.hi   => 'HI',
-    AppLang.ko   => 'KO',
-    AppLang.th   => 'TH',
-    AppLang.pt   => 'PT',
-    AppLang.vi   => 'VI',
-    AppLang.it   => 'IT',
-    AppLang.la   => 'LA',
-    AppLang.id   => 'ID',
-    AppLang.bo   => 'BO',
+    AppLang.en => 'EN',
+    AppLang.ja => 'JP',
+    AppLang.es => 'ES',
+    AppLang.fr => 'FR',
+    AppLang.de => 'DE',
+    AppLang.ar => 'AR',
+    AppLang.hi => 'HI',
+    AppLang.ko => 'KO',
+    AppLang.th => 'TH',
+    AppLang.pt => 'PT',
+    AppLang.vi => 'VI',
+    AppLang.it => 'IT',
+    AppLang.la => 'LA',
+    AppLang.id => 'ID',
+    AppLang.bo => 'BO',
   };
   String get fullName => switch (this) {
     AppLang.zhTW => '繁體中文',
     AppLang.zhCN => '简体中文',
-    AppLang.en   => 'English',
-    AppLang.ja   => '日本語',
-    AppLang.es   => 'Español',
-    AppLang.fr   => 'Français',
-    AppLang.de   => 'Deutsch',
-    AppLang.ar   => 'العربية',
-    AppLang.hi   => 'हिन्दी',
-    AppLang.ko   => '한국어',
-    AppLang.th   => 'ภาษาไทย',
-    AppLang.pt   => 'Português',
-    AppLang.vi   => 'Tiếng Việt',
-    AppLang.it   => 'Italiano',
-    AppLang.la   => 'Latina',
-    AppLang.id   => 'Bahasa Indonesia',
-    AppLang.bo   => 'བོད་ཡིག',
+    AppLang.en => 'English',
+    AppLang.ja => '日本語',
+    AppLang.es => 'Español',
+    AppLang.fr => 'Français',
+    AppLang.de => 'Deutsch',
+    AppLang.ar => 'العربية',
+    AppLang.hi => 'हिन्दी',
+    AppLang.ko => '한국어',
+    AppLang.th => 'ภาษาไทย',
+    AppLang.pt => 'Português',
+    AppLang.vi => 'Tiếng Việt',
+    AppLang.it => 'Italiano',
+    AppLang.la => 'Latina',
+    AppLang.id => 'Bahasa Indonesia',
+    AppLang.bo => 'བོད་ཡིག',
   };
   // Google Translate target code; zhTW is original so pass-through
   String get targetCode => switch (this) {
     AppLang.zhTW => 'zh-TW',
     AppLang.zhCN => 'zh-CN',
-    AppLang.en   => 'en',
-    AppLang.ja   => 'ja',
-    AppLang.es   => 'es',
-    AppLang.fr   => 'fr',
-    AppLang.de   => 'de',
-    AppLang.ar   => 'ar',
-    AppLang.hi   => 'hi',
-    AppLang.ko   => 'ko',
-    AppLang.th   => 'th',
-    AppLang.pt   => 'pt',
-    AppLang.vi   => 'vi',
-    AppLang.it   => 'it',
-    AppLang.la   => 'la',
-    AppLang.id   => 'id',
-    AppLang.bo   => 'bo',
+    AppLang.en => 'en',
+    AppLang.ja => 'ja',
+    AppLang.es => 'es',
+    AppLang.fr => 'fr',
+    AppLang.de => 'de',
+    AppLang.ar => 'ar',
+    AppLang.hi => 'hi',
+    AppLang.ko => 'ko',
+    AppLang.th => 'th',
+    AppLang.pt => 'pt',
+    AppLang.vi => 'vi',
+    AppLang.it => 'it',
+    AppLang.la => 'la',
+    AppLang.id => 'id',
+    AppLang.bo => 'bo',
   };
 }
 
@@ -126,55 +169,296 @@ class VideoData {
 }
 
 const _videos = <VideoData>[
-  VideoData('2z26miBEBkA', '諦深佛陀開示 2020年3月7日 49期(第1期)', 'https://youtu.be/2z26miBEBkA'),
-  VideoData('aYdmafP7HMY', '諦深佛陀開示 2020年3月14日 49期(第2期)', 'https://youtu.be/aYdmafP7HMY'),
-  VideoData('3uGgjYDmhUA', '諦深佛陀開示 2020年3月21日 49期(第3期)', 'https://youtu.be/3uGgjYDmhUA'),
-  VideoData('stTdG5iHhjE', '諦深佛陀開示 2020年3月28日 49期(第4期)', 'https://youtu.be/stTdG5iHhjE'),
-  VideoData('5C4nQcL9LQQ', '諦深佛陀開示 2020年4月4日 49期(第5期)', 'https://youtu.be/5C4nQcL9LQQ'),
-  VideoData('H1lleUTetsQ', '諦深佛陀開示 2020年4月11日 49期(第6期)', 'https://youtu.be/H1lleUTetsQ'),
-  VideoData('aBnWRe6MuMo', '諦深佛陀開示 2020年4月18日 49期(第7期)', 'https://youtu.be/aBnWRe6MuMo'),
-  VideoData('LJyHPuiF8UQ', '諦深佛陀開示 2020年4月25日 49期(第8期)', 'https://youtu.be/LJyHPuiF8UQ'),
-  VideoData('yPiOy9NjS_c', '諦深佛陀開示 2020年4月26日 49期(第9期)', 'https://youtu.be/yPiOy9NjS_c'),
-  VideoData('2BwBSduL4-U', '諦深佛陀開示 2020年4月30日 49期(第10期)', 'https://youtu.be/2BwBSduL4-U'),
-  VideoData('eqKls8wUiPY', '諦深佛陀開示 2020年5月2日 49期(第11期)', 'https://youtu.be/eqKls8wUiPY'),
-  VideoData('XBeCi0JORV0', '諦深佛陀開示 2020年5月9日 49期(第12期)', 'https://youtu.be/XBeCi0JORV0'),
-  VideoData('nj711RpHviw', '諦深佛陀開示 2020年5月16日 49期(第13期)', 'https://youtu.be/nj711RpHviw'),
-  VideoData('QuQSeUm7N9M', '諦深佛陀開示 2020年5月23日 49期(第14期)', 'https://youtu.be/QuQSeUm7N9M'),
-  VideoData('rfsX-E7Il5w', '諦深佛陀開示 2020年5月30日 49期(第15期)', 'https://youtu.be/rfsX-E7Il5w'),
-  VideoData('dJhRgdfS6iU', '諦深佛陀開示 2020年6月6日 49期(第16期)', 'https://youtu.be/dJhRgdfS6iU'),
-  VideoData('262NEBlWEqg', '諦深佛陀開示 2020年6月13日 49期(第17期)', 'https://youtu.be/262NEBlWEqg'),
-  VideoData('j6mM4OQ9MCk', '諦深佛陀開示 2020年6月20日 49期(第18期)', 'https://youtu.be/j6mM4OQ9MCk'),
-  VideoData('H3VNj1IN6cQ', '諦深佛陀開示 2020年6月27日 49期(第19期)', 'https://youtu.be/H3VNj1IN6cQ'),
-  VideoData('rX3999zfw00', '諦深佛陀開示 2020年7月4日 49期(第20期)', 'https://youtu.be/rX3999zfw00'),
-  VideoData('DnQG3YtISs8', '諦深佛陀開示 2020年7月11日 49期(第21期)', 'https://youtu.be/DnQG3YtISs8'),
-  VideoData('g28d1S926Rc', '諦深佛陀開示 2020年7月18日 49期(第22期)', 'https://youtu.be/g28d1S926Rc'),
-  VideoData('txzLgfTEPXk', '諦深佛陀開示 2020年7月25日 49期(第23期)', 'https://youtu.be/txzLgfTEPXk'),
-  VideoData('Xa8oQYBxK9Q', '諦深佛陀開示 2020年8月1日 49期(第24期)', 'https://youtu.be/Xa8oQYBxK9Q'),
-  VideoData('AOAS242oUlE', '諦深佛陀開示 2020年8月8日 49期(第25期)', 'https://youtu.be/AOAS242oUlE'),
-  VideoData('oDjIuDkA9tg', '諦深佛陀開示 2020年8月15日 49期(第26期)', 'https://youtu.be/oDjIuDkA9tg'),
-  VideoData('pIRPa9gNFqA', '諦深佛陀開示 2020年8月22日 49期(第27期)', 'https://youtu.be/pIRPa9gNFqA'),
-  VideoData('jIv-IhC-RHM', '諦深佛陀開示 2020年8月29日 49期(第28期)', 'https://youtu.be/jIv-IhC-RHM'),
-  VideoData('gIpKP3KP48c', '諦深佛陀開示 2020年9月5日 49期(第29期)', 'https://youtu.be/gIpKP3KP48c'),
-  VideoData('G3Ncx7iwImU', '諦深佛陀開示 2020年9月12日 49期(第30期)', 'https://youtu.be/G3Ncx7iwImU'),
-  VideoData('vnzcDNC4XFg', '諦深佛陀開示 2020年9月19日 49期(第31期)', 'https://youtu.be/vnzcDNC4XFg'),
-  VideoData('NugoxAuPvzA', '諦深佛陀開示 2020年9月26日 49期(第32期)', 'https://youtu.be/NugoxAuPvzA'),
-  VideoData('RRopQZdX45k', '諦深佛陀開示 2020年10月3日 49期(第33期)', 'https://youtu.be/RRopQZdX45k'),
-  VideoData('Kk_GO7LC8q0', '諦深佛陀開示 2020年10月10日 49期(第34期)', 'https://youtu.be/Kk_GO7LC8q0'),
-  VideoData('M5wu_DWiPS8', '諦深佛陀開示 2020年10月17日 49期(第35期)', 'https://youtu.be/M5wu_DWiPS8'),
-  VideoData('IqhBwhYHC_k', '諦深佛陀開示 2020年10月24日 49期(第36期)', 'https://youtu.be/IqhBwhYHC_k'),
-  VideoData('Vhm19TQjp68', '諦深佛陀開示 2020年10月31日 49期(第37期)', 'https://youtu.be/Vhm19TQjp68'),
-  VideoData('Y_dzD41G7ow', '諦深佛陀開示 2020年11月7日 49期(第38期)', 'https://youtu.be/Y_dzD41G7ow'),
-  VideoData('7Vd8-bBqEoM', '諦深佛陀開示 2020年11月14日 49期(第39期)', 'https://youtu.be/7Vd8-bBqEoM'),
-  VideoData('3PKymWBy4xg', '諦深佛陀開示 2020年11月21日 49期(第40期)', 'https://youtu.be/3PKymWBy4xg'),
-  VideoData('nday-JJ-Cww', '諦深佛陀開示 2020年11月28日 49期(第41期)', 'https://youtu.be/nday-JJ-Cww'),
-  VideoData('w3_FQTXuqFg', '諦深佛陀開示 2020年12月5日 49期(第42期)', 'https://youtu.be/w3_FQTXuqFg'),
-  VideoData('eWIi69l28dE', '諦深佛陀開示 2020年12月12日 49期(第43期)', 'https://youtu.be/eWIi69l28dE'),
-  VideoData('W684lpOKESQ', '諦深佛陀開示 2020年12月19日 49期(第44期)', 'https://youtu.be/W684lpOKESQ'),
-  VideoData('XQVCQvpi3RM', '諦深佛陀開示 2020年12月26日 49期(第45期)', 'https://youtu.be/XQVCQvpi3RM'),
-  VideoData('AwoN9zqdpHE', '諦深佛陀開示 2020年12月31日 49期(第46期)', 'https://youtu.be/AwoN9zqdpHE'),
-  VideoData('ffC1-37WU5U', '諦深佛陀開示 2021年1月2日 49期(第47期)', 'https://youtu.be/ffC1-37WU5U'),
-  VideoData('e-T5aXiY4Fc', '諦深佛陀開示 2021年1月9日 49期(第48期)', 'https://youtu.be/e-T5aXiY4Fc'),
-  VideoData('MzoUsZvr4Us', '諦深佛陀開示 2021年1月16日 49期(第49期)', 'https://youtu.be/MzoUsZvr4Us'),
+  VideoData(
+    '2z26miBEBkA',
+    '諦深佛陀開示 2020年3月7日 49期(第1期)',
+    'https://youtu.be/2z26miBEBkA',
+  ),
+  VideoData(
+    'aYdmafP7HMY',
+    '諦深佛陀開示 2020年3月14日 49期(第2期)',
+    'https://youtu.be/aYdmafP7HMY',
+  ),
+  VideoData(
+    '3uGgjYDmhUA',
+    '諦深佛陀開示 2020年3月21日 49期(第3期)',
+    'https://youtu.be/3uGgjYDmhUA',
+  ),
+  VideoData(
+    'stTdG5iHhjE',
+    '諦深佛陀開示 2020年3月28日 49期(第4期)',
+    'https://youtu.be/stTdG5iHhjE',
+  ),
+  VideoData(
+    '5C4nQcL9LQQ',
+    '諦深佛陀開示 2020年4月4日 49期(第5期)',
+    'https://youtu.be/5C4nQcL9LQQ',
+  ),
+  VideoData(
+    'H1lleUTetsQ',
+    '諦深佛陀開示 2020年4月11日 49期(第6期)',
+    'https://youtu.be/H1lleUTetsQ',
+  ),
+  VideoData(
+    'aBnWRe6MuMo',
+    '諦深佛陀開示 2020年4月18日 49期(第7期)',
+    'https://youtu.be/aBnWRe6MuMo',
+  ),
+  VideoData(
+    'LJyHPuiF8UQ',
+    '諦深佛陀開示 2020年4月25日 49期(第8期)',
+    'https://youtu.be/LJyHPuiF8UQ',
+  ),
+  VideoData(
+    'yPiOy9NjS_c',
+    '諦深佛陀開示 2020年4月26日 49期(第9期)',
+    'https://youtu.be/yPiOy9NjS_c',
+  ),
+  VideoData(
+    '2BwBSduL4-U',
+    '諦深佛陀開示 2020年4月30日 49期(第10期)',
+    'https://youtu.be/2BwBSduL4-U',
+  ),
+  VideoData(
+    'eqKls8wUiPY',
+    '諦深佛陀開示 2020年5月2日 49期(第11期)',
+    'https://youtu.be/eqKls8wUiPY',
+  ),
+  VideoData(
+    'XBeCi0JORV0',
+    '諦深佛陀開示 2020年5月9日 49期(第12期)',
+    'https://youtu.be/XBeCi0JORV0',
+  ),
+  VideoData(
+    'nj711RpHviw',
+    '諦深佛陀開示 2020年5月16日 49期(第13期)',
+    'https://youtu.be/nj711RpHviw',
+  ),
+  VideoData(
+    'QuQSeUm7N9M',
+    '諦深佛陀開示 2020年5月23日 49期(第14期)',
+    'https://youtu.be/QuQSeUm7N9M',
+  ),
+  VideoData(
+    'rfsX-E7Il5w',
+    '諦深佛陀開示 2020年5月30日 49期(第15期)',
+    'https://youtu.be/rfsX-E7Il5w',
+  ),
+  VideoData(
+    'dJhRgdfS6iU',
+    '諦深佛陀開示 2020年6月6日 49期(第16期)',
+    'https://youtu.be/dJhRgdfS6iU',
+  ),
+  VideoData(
+    '262NEBlWEqg',
+    '諦深佛陀開示 2020年6月13日 49期(第17期)',
+    'https://youtu.be/262NEBlWEqg',
+  ),
+  VideoData(
+    'j6mM4OQ9MCk',
+    '諦深佛陀開示 2020年6月20日 49期(第18期)',
+    'https://youtu.be/j6mM4OQ9MCk',
+  ),
+  VideoData(
+    'H3VNj1IN6cQ',
+    '諦深佛陀開示 2020年6月27日 49期(第19期)',
+    'https://youtu.be/H3VNj1IN6cQ',
+  ),
+  VideoData(
+    'rX3999zfw00',
+    '諦深佛陀開示 2020年7月4日 49期(第20期)',
+    'https://youtu.be/rX3999zfw00',
+  ),
+  VideoData(
+    'DnQG3YtISs8',
+    '諦深佛陀開示 2020年7月11日 49期(第21期)',
+    'https://youtu.be/DnQG3YtISs8',
+  ),
+  VideoData(
+    'g28d1S926Rc',
+    '諦深佛陀開示 2020年7月18日 49期(第22期)',
+    'https://youtu.be/g28d1S926Rc',
+  ),
+  VideoData(
+    'txzLgfTEPXk',
+    '諦深佛陀開示 2020年7月25日 49期(第23期)',
+    'https://youtu.be/txzLgfTEPXk',
+  ),
+  VideoData(
+    'Xa8oQYBxK9Q',
+    '諦深佛陀開示 2020年8月1日 49期(第24期)',
+    'https://youtu.be/Xa8oQYBxK9Q',
+  ),
+  VideoData(
+    'AOAS242oUlE',
+    '諦深佛陀開示 2020年8月8日 49期(第25期)',
+    'https://youtu.be/AOAS242oUlE',
+  ),
+  VideoData(
+    'oDjIuDkA9tg',
+    '諦深佛陀開示 2020年8月15日 49期(第26期)',
+    'https://youtu.be/oDjIuDkA9tg',
+  ),
+  VideoData(
+    'pIRPa9gNFqA',
+    '諦深佛陀開示 2020年8月22日 49期(第27期)',
+    'https://youtu.be/pIRPa9gNFqA',
+  ),
+  VideoData(
+    'jIv-IhC-RHM',
+    '諦深佛陀開示 2020年8月29日 49期(第28期)',
+    'https://youtu.be/jIv-IhC-RHM',
+  ),
+  VideoData(
+    'gIpKP3KP48c',
+    '諦深佛陀開示 2020年9月5日 49期(第29期)',
+    'https://youtu.be/gIpKP3KP48c',
+  ),
+  VideoData(
+    'G3Ncx7iwImU',
+    '諦深佛陀開示 2020年9月12日 49期(第30期)',
+    'https://youtu.be/G3Ncx7iwImU',
+  ),
+  VideoData(
+    'vnzcDNC4XFg',
+    '諦深佛陀開示 2020年9月19日 49期(第31期)',
+    'https://youtu.be/vnzcDNC4XFg',
+  ),
+  VideoData(
+    'NugoxAuPvzA',
+    '諦深佛陀開示 2020年9月26日 49期(第32期)',
+    'https://youtu.be/NugoxAuPvzA',
+  ),
+  VideoData(
+    'RRopQZdX45k',
+    '諦深佛陀開示 2020年10月3日 49期(第33期)',
+    'https://youtu.be/RRopQZdX45k',
+  ),
+  VideoData(
+    'Kk_GO7LC8q0',
+    '諦深佛陀開示 2020年10月10日 49期(第34期)',
+    'https://youtu.be/Kk_GO7LC8q0',
+  ),
+  VideoData(
+    'M5wu_DWiPS8',
+    '諦深佛陀開示 2020年10月17日 49期(第35期)',
+    'https://youtu.be/M5wu_DWiPS8',
+  ),
+  VideoData(
+    'IqhBwhYHC_k',
+    '諦深佛陀開示 2020年10月24日 49期(第36期)',
+    'https://youtu.be/IqhBwhYHC_k',
+  ),
+  VideoData(
+    'Vhm19TQjp68',
+    '諦深佛陀開示 2020年10月31日 49期(第37期)',
+    'https://youtu.be/Vhm19TQjp68',
+  ),
+  VideoData(
+    'Y_dzD41G7ow',
+    '諦深佛陀開示 2020年11月7日 49期(第38期)',
+    'https://youtu.be/Y_dzD41G7ow',
+  ),
+  VideoData(
+    '7Vd8-bBqEoM',
+    '諦深佛陀開示 2020年11月14日 49期(第39期)',
+    'https://youtu.be/7Vd8-bBqEoM',
+  ),
+  VideoData(
+    '3PKymWBy4xg',
+    '諦深佛陀開示 2020年11月21日 49期(第40期)',
+    'https://youtu.be/3PKymWBy4xg',
+  ),
+  VideoData(
+    'nday-JJ-Cww',
+    '諦深佛陀開示 2020年11月28日 49期(第41期)',
+    'https://youtu.be/nday-JJ-Cww',
+  ),
+  VideoData(
+    'w3_FQTXuqFg',
+    '諦深佛陀開示 2020年12月5日 49期(第42期)',
+    'https://youtu.be/w3_FQTXuqFg',
+  ),
+  VideoData(
+    'eWIi69l28dE',
+    '諦深佛陀開示 2020年12月12日 49期(第43期)',
+    'https://youtu.be/eWIi69l28dE',
+  ),
+  VideoData(
+    'W684lpOKESQ',
+    '諦深佛陀開示 2020年12月19日 49期(第44期)',
+    'https://youtu.be/W684lpOKESQ',
+  ),
+  VideoData(
+    'XQVCQvpi3RM',
+    '諦深佛陀開示 2020年12月26日 49期(第45期)',
+    'https://youtu.be/XQVCQvpi3RM',
+  ),
+  VideoData(
+    'AwoN9zqdpHE',
+    '諦深佛陀開示 2020年12月31日 49期(第46期)',
+    'https://youtu.be/AwoN9zqdpHE',
+  ),
+  VideoData(
+    'ffC1-37WU5U',
+    '諦深佛陀開示 2021年1月2日 49期(第47期)',
+    'https://youtu.be/ffC1-37WU5U',
+  ),
+  VideoData(
+    'e-T5aXiY4Fc',
+    '諦深佛陀開示 2021年1月9日 49期(第48期)',
+    'https://youtu.be/e-T5aXiY4Fc',
+  ),
+  VideoData(
+    'MzoUsZvr4Us',
+    '諦深佛陀開示 2021年1月16日 49期(第49期)',
+    'https://youtu.be/MzoUsZvr4Us',
+  ),
+  VideoData(
+    'fxG517U2nuE',
+    '諦深佛陀開示 2021年2月11日',
+    'https://youtu.be/fxG517U2nuE',
+  ),
+  VideoData(
+    'fxG517U2nuE',
+    '諦深佛陀開示 2021年2月11日',
+    'https://youtu.be/fxG517U2nuE',
+  ),
+  VideoData(
+    'sXfvyqw62bA',
+    '諦深佛陀開示 2021年3月31日',
+    'https://www.youtube.com/live/sXfvyqw62bA',
+  ),
+  VideoData(
+    'wDYOKDgn-Uc',
+    '諦深佛陀開示 2021年5月19日',
+    'https://youtu.be/wDYOKDgn-Uc',
+  ),
+  VideoData(
+    'Vjajl5I010M',
+    '諦深佛陀開示 2021年7月28日',
+    'https://youtu.be/Vjajl5I010M',
+  ),
+  VideoData(
+    'Vjajl5I010M',
+    '諦深佛陀開示 2021年7月28日',
+    'https://youtu.be/Vjajl5I010M',
+  ),
+  VideoData(
+    '0B2V8lvOPKQ',
+    '諦深佛陀開示 如何修止觀',
+    'https://youtu.be/0B2V8lvOPKQ',
+  ),
+  VideoData(
+    '1pirAsAHCsM',
+    '諦深佛陀開示 示現49期',
+    'https://youtu.be/1pirAsAHCsM',
+  ),
+  VideoData(
+    'x_7-wZRu1gg',
+    '諦深佛陀開示 如何發心出家',
+    'https://youtu.be/x_7-wZRu1gg',
+  ),
 ];
 
 class VideoTeachingsPage extends StatefulWidget {
@@ -190,22 +474,37 @@ class _VideoTeachingsPageState extends State<VideoTeachingsPage> {
   String _query = '';
   AppLang _lang = AppLang.zhTW;
 
-  static int _cols(double w) =>
-      w >= 1700 ? 6 : w >= 1280 ? 5 : w >= 1000 ? 4 : w >= 720 ? 3 : w >= 480 ? 2 : 1;
+  static int _cols(double w) => w >= 1700
+      ? 6
+      : w >= 1280
+      ? 5
+      : w >= 1000
+      ? 4
+      : w >= 720
+      ? 3
+      : w >= 480
+      ? 2
+      : 1;
 
   List<VideoData> get _filtered {
     if (_query.isEmpty) return _videos;
     final q = _query.toLowerCase();
-    return _videos.where((v) => v.title.toLowerCase().contains(q)).toList(growable: false);
+    return _videos
+        .where((v) => v.title.toLowerCase().contains(q))
+        .toList(growable: false);
   }
 
-  int _totalPages(int len) => (len / _perPage).ceil().clamp(1, double.infinity).toInt();
+  int _totalPages(int len) =>
+      (len / _perPage).ceil().clamp(1, double.infinity).toInt();
 
   void _goTo(int p, int total) {
     if (p != _page && p >= 0 && p < total) setState(() => _page = p);
   }
 
-  void _onSearchChanged(String v) => setState(() { _query = v; _page = 0; });
+  void _onSearchChanged(String v) => setState(() {
+    _query = v;
+    _page = 0;
+  });
 
   void _jumpTo(VideoData v, List<VideoData> f) {
     final idx = f.indexOf(v);
@@ -221,7 +520,10 @@ class _VideoTeachingsPageState extends State<VideoTeachingsPage> {
     final filtered = _filtered;
     final total = _totalPages(filtered.length);
     final start = (_page * _perPage).clamp(0, filtered.length);
-    final list = filtered.sublist(start, (start + _perPage).clamp(0, filtered.length));
+    final list = filtered.sublist(
+      start,
+      (start + _perPage).clamp(0, filtered.length),
+    );
 
     return Scaffold(
       key: _scaffoldKey,
@@ -234,67 +536,85 @@ class _VideoTeachingsPageState extends State<VideoTeachingsPage> {
         titleSpacing: 0,
         title: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Row(children: [
-            Expanded(
-              child: Container(
-                height: 40,
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                decoration: _searchDeco,
-                child: Row(children: [
-                  const Icon(Icons.search, size: 18, color: _gold),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: TextField(
-                      onChanged: _onSearchChanged,
-                      style: const TextStyle(fontSize: 14, color: _gold),
-                      decoration: const InputDecoration(
-                        isDense: true,
-                        border: InputBorder.none,
-                        hintText: '搜尋影片標題…',
-                        hintStyle: TextStyle(fontSize: 13, color: _goldBorder),
+          child: Row(
+            children: [
+              Expanded(
+                child: Container(
+                  height: 40,
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  decoration: _searchDeco,
+                  child: Row(
+                    children: [
+                      const Icon(Icons.search, size: 18, color: _gold),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: TextField(
+                          onChanged: _onSearchChanged,
+                          style: const TextStyle(fontSize: 14, color: _gold),
+                          decoration: const InputDecoration(
+                            isDense: true,
+                            border: InputBorder.none,
+                            hintText: '搜尋影片標題…',
+                            hintStyle: TextStyle(
+                              fontSize: 13,
+                              color: _goldBorder,
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
+                    ],
                   ),
-                ]),
+                ),
               ),
-            ),
-            const SizedBox(width: 10),
-            _LangSwitcher(current: _lang, onChanged: _onLangChanged),
-          ]),
+              const SizedBox(width: 10),
+              _LangSwitcher(current: _lang, onChanged: _onLangChanged),
+            ],
+          ),
         ),
       ),
-      drawer: _IndexDrawer(videos: filtered, lang: _lang, onSelect: (v) => _jumpTo(v, filtered)),
+      drawer: _IndexDrawer(
+        videos: filtered,
+        lang: _lang,
+        onSelect: (v) => _jumpTo(v, filtered),
+      ),
       body: filtered.isEmpty
-          ? Center(child: Text('找不到符合「$_query」的影片', style: const TextStyle(fontSize: 14, color: _goldBorder)))
+          ? Center(
+              child: Text(
+                '找不到符合「$_query」的影片',
+                style: const TextStyle(fontSize: 14, color: _goldBorder),
+              ),
+            )
           : CustomScrollView(
               cacheExtent: 1200,
               slivers: [
                 SliverPadding(
                   padding: const EdgeInsets.all(20),
-                  sliver: SliverLayoutBuilder(builder: (ctx, c) {
-                    final cols = _cols(c.crossAxisExtent).clamp(1, 6);
-                    return SliverGrid(
-                      delegate: SliverChildBuilderDelegate(
-                        (ctx, i) => _VideoCard(
+                  sliver: SliverLayoutBuilder(
+                    builder: (ctx, c) {
+                      final cols = _cols(c.crossAxisExtent).clamp(1, 6);
+                      return SliverMasonryGrid.count(
+                        crossAxisCount: cols,
+                        mainAxisSpacing: 16,
+                        crossAxisSpacing: 16,
+                        childCount: list.length,
+                        itemBuilder: (ctx, i) => _VideoCard(
                           key: ValueKey('${list[i].id}_${_lang.name}'),
                           video: list[i],
                           lang: _lang,
                         ),
-                        childCount: list.length,
-                        addAutomaticKeepAlives: false,
-                        addRepaintBoundaries: true,
-                      ),
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: cols, crossAxisSpacing: 16, mainAxisSpacing: 16, childAspectRatio: 16 / 13,
-                      ),
-                    );
-                  }),
+                      );
+                    },
+                  ),
                 ),
                 if (total > 1)
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.only(bottom: 24),
-                      child: _PaginationBar(page: _page, total: total, onTap: (p) => _goTo(p, total)),
+                      child: _PaginationBar(
+                        page: _page,
+                        total: total,
+                        onTap: (p) => _goTo(p, total),
+                      ),
                     ),
                   ),
                 const SliverToBoxAdapter(child: SumeruFooter()),
@@ -323,31 +643,52 @@ class _LangSwitcher extends StatelessWidget {
       initialValue: current,
       onSelected: onChanged,
       constraints: const BoxConstraints(maxHeight: 400),
-      itemBuilder: (ctx) => AppLang.values.map((l) => PopupMenuItem(
-        value: l,
-        child: Row(children: [
-          if (l == current)
-            const Padding(padding: EdgeInsets.only(right: 8), child: Icon(Icons.check, size: 16, color: _gold))
-          else
-            const SizedBox(width: 24),
-          Text(
-            l.fullName,
-            style: TextStyle(
-              fontSize: 13,
-              color: l == current ? _gold : const Color(0xFF555555),
-              fontWeight: l == current ? FontWeight.bold : FontWeight.normal,
+      itemBuilder: (ctx) => AppLang.values
+          .map(
+            (l) => PopupMenuItem(
+              value: l,
+              child: Row(
+                children: [
+                  if (l == current)
+                    const Padding(
+                      padding: EdgeInsets.only(right: 8),
+                      child: Icon(Icons.check, size: 16, color: _gold),
+                    )
+                  else
+                    const SizedBox(width: 24),
+                  Text(
+                    l.fullName,
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: l == current ? _gold : const Color(0xFF555555),
+                      fontWeight: l == current
+                          ? FontWeight.bold
+                          : FontWeight.normal,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ]),
-      )).toList(),
+          )
+          .toList(),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: Row(mainAxisSize: MainAxisSize.min, children: [
-          const Icon(Icons.translate_rounded, size: 16, color: _gold),
-          const SizedBox(width: 4),
-          Text(current.label, style: const TextStyle(fontSize: 13, color: _gold, fontWeight: FontWeight.w600)),
-          const Icon(Icons.arrow_drop_down, size: 16, color: _gold),
-        ]),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.translate_rounded, size: 16, color: _gold),
+            const SizedBox(width: 4),
+            Text(
+              current.label,
+              style: const TextStyle(
+                fontSize: 13,
+                color: _gold,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const Icon(Icons.arrow_drop_down, size: 16, color: _gold),
+          ],
+        ),
       ),
     ),
   );
@@ -358,7 +699,11 @@ class _IndexDrawer extends StatefulWidget {
   final List<VideoData> videos;
   final AppLang lang;
   final ValueChanged<VideoData> onSelect;
-  const _IndexDrawer({required this.videos, required this.lang, required this.onSelect});
+  const _IndexDrawer({
+    required this.videos,
+    required this.lang,
+    required this.onSelect,
+  });
 
   @override
   State<_IndexDrawer> createState() => _IndexDrawerState();
@@ -411,41 +756,61 @@ class _IndexDrawerState extends State<_IndexDrawer> {
   Widget build(BuildContext context) => Drawer(
     backgroundColor: Colors.white,
     child: SafeArea(
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-          child: Row(children: [
-            const Icon(Icons.menu_book_rounded, size: 18, color: _gold),
-            const SizedBox(width: 8),
-            Text('目錄（${widget.videos.length}）', style: const TextStyle(fontSize: 14, color: _gold)),
-            if (_loading) ...[
-              const SizedBox(width: 8),
-              const SizedBox(width: 12, height: 12, child: CircularProgressIndicator(strokeWidth: 2, color: _gold)),
-            ],
-          ]),
-        ),
-        const Divider(color: _goldBorder, height: 1, thickness: 1),
-        Expanded(
-          child: widget.videos.isEmpty
-              ? const Center(child: Text('無符合項目', style: TextStyle(fontSize: 13, color: _goldBorder)))
-              : ListView.builder(
-                  itemCount: widget.videos.length,
-                  itemBuilder: (ctx, i) {
-                    final v = widget.videos[i];
-                    return ListTile(
-                      dense: true,
-                      title: Text(
-                        _titleFor(v),
-                        style: const TextStyle(fontSize: 14, color: _gold),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      onTap: () => widget.onSelect(v),
-                    );
-                  },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+            child: Row(
+              children: [
+                const Icon(Icons.menu_book_rounded, size: 18, color: _gold),
+                const SizedBox(width: 8),
+                Text(
+                  '目錄（${widget.videos.length}）',
+                  style: const TextStyle(fontSize: 14, color: _gold),
                 ),
-        ),
-      ]),
+                if (_loading) ...[
+                  const SizedBox(width: 8),
+                  const SizedBox(
+                    width: 12,
+                    height: 12,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: _gold,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          const Divider(color: _goldBorder, height: 1, thickness: 1),
+          Expanded(
+            child: widget.videos.isEmpty
+                ? const Center(
+                    child: Text(
+                      '無符合項目',
+                      style: TextStyle(fontSize: 13, color: _goldBorder),
+                    ),
+                  )
+                : ListView.builder(
+                    itemCount: widget.videos.length,
+                    itemBuilder: (ctx, i) {
+                      final v = widget.videos[i];
+                      return ListTile(
+                        dense: true,
+                        title: Text(
+                          _titleFor(v),
+                          style: const TextStyle(fontSize: 14, color: _gold),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        onTap: () => widget.onSelect(v),
+                      );
+                    },
+                  ),
+          ),
+        ],
+      ),
     ),
   );
 }
@@ -454,15 +819,33 @@ class _IndexDrawerState extends State<_IndexDrawer> {
 class _PaginationBar extends StatelessWidget {
   final int page, total;
   final ValueChanged<int> onTap;
-  const _PaginationBar({required this.page, required this.total, required this.onTap});
+  const _PaginationBar({
+    required this.page,
+    required this.total,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) => Center(
-    child: Wrap(alignment: WrapAlignment.center, spacing: 8, runSpacing: 8, children: [
-      _NavButton(icon: Icons.chevron_left, enabled: page > 0, onTap: () => onTap(page - 1)),
-      for (int i = 0; i < total; i++) _PageBtn(i: i, selected: i == page, onTap: () => onTap(i)),
-      _NavButton(icon: Icons.chevron_right, enabled: page < total - 1, onTap: () => onTap(page + 1)),
-    ]),
+    child: Wrap(
+      alignment: WrapAlignment.center,
+      spacing: 8,
+      runSpacing: 8,
+      children: [
+        _NavButton(
+          icon: Icons.chevron_left,
+          enabled: page > 0,
+          onTap: () => onTap(page - 1),
+        ),
+        for (int i = 0; i < total; i++)
+          _PageBtn(i: i, selected: i == page, onTap: () => onTap(i)),
+        _NavButton(
+          icon: Icons.chevron_right,
+          enabled: page < total - 1,
+          onTap: () => onTap(page + 1),
+        ),
+      ],
+    ),
   );
 }
 
@@ -470,15 +853,33 @@ class _PageBtn extends StatelessWidget {
   final int i;
   final bool selected;
   final VoidCallback onTap;
-  const _PageBtn({required this.i, required this.selected, required this.onTap});
+  const _PageBtn({
+    required this.i,
+    required this.selected,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) => GestureDetector(
     onTap: onTap,
     child: Container(
-      width: 36, height: 36, alignment: Alignment.center,
-      decoration: BoxDecoration(color: selected ? _gold : Colors.white, borderRadius: const BorderRadius.all(Radius.circular(8)), border: _border, boxShadow: const [_navShadow]),
-      child: Text('${i + 1}', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: selected ? Colors.white : _gold)),
+      width: 36,
+      height: 36,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: selected ? _gold : Colors.white,
+        borderRadius: const BorderRadius.all(Radius.circular(8)),
+        border: _border,
+        boxShadow: const [_navShadow],
+      ),
+      child: Text(
+        '${i + 1}',
+        style: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+          color: selected ? Colors.white : _gold,
+        ),
+      ),
     ),
   );
 }
@@ -487,15 +888,25 @@ class _NavButton extends StatelessWidget {
   final IconData icon;
   final bool enabled;
   final VoidCallback onTap;
-  const _NavButton({required this.icon, required this.enabled, required this.onTap});
+  const _NavButton({
+    required this.icon,
+    required this.enabled,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) => GestureDetector(
     onTap: enabled ? onTap : null,
     child: Container(
-      width: 36, height: 36, alignment: Alignment.center,
+      width: 36,
+      height: 36,
+      alignment: Alignment.center,
       decoration: enabled ? _navDeco : _navDecoDisabled,
-      child: Icon(icon, size: 18, color: enabled ? _gold : const Color(0x33FFD102)),
+      child: Icon(
+        icon,
+        size: 18,
+        color: enabled ? _gold : const Color(0x33FFD102),
+      ),
     ),
   );
 }
@@ -538,7 +949,10 @@ class _VideoCardState extends State<_VideoCard> {
       return;
     }
     setState(() => _loadingTranslation = true);
-    final title = await TranslationService.translate(widget.video.title, widget.lang);
+    final title = await TranslationService.translate(
+      widget.video.title,
+      widget.lang,
+    );
     if (!mounted) return;
     setState(() {
       _displayTitle = title;
@@ -553,35 +967,55 @@ class _VideoCardState extends State<_VideoCard> {
     return GestureDetector(
       onTap: () async {
         final uri = Uri.parse(widget.video.url);
-        if (await canLaunchUrl(uri)) await launchUrl(uri, mode: LaunchMode.externalApplication);
+        if (await canLaunchUrl(uri))
+          await launchUrl(uri, mode: LaunchMode.externalApplication);
       },
       child: Container(
         decoration: _cardDeco,
         clipBehavior: Clip.antiAlias,
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          AspectRatio(
-            aspectRatio: 16 / 9,
-            child: Image.network(
-              'https://img.youtube.com/vi/${widget.video.id}/hqdefault.jpg',
-              fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => Container(
-                color: const Color(0xFFF0F0F0),
-                child: const Icon(Icons.broken_image, size: 40, color: Colors.grey),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            AspectRatio(
+              aspectRatio: 16 / 9,
+              child: Image.network(
+                'https://img.youtube.com/vi/${widget.video.id}/hqdefault.jpg',
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => Container(
+                  color: const Color(0xFFF0F0F0),
+                  child: const Icon(
+                    Icons.broken_image,
+                    size: 40,
+                    color: Colors.grey,
+                  ),
+                ),
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-            child: _loadingTranslation
-                ? const SizedBox(
-                    height: 20,
-                    child: Center(
-                      child: SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2, color: _gold)),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              child: _loadingTranslation
+                  ? const SizedBox(
+                      height: 20,
+                      child: Center(
+                        child: SizedBox(
+                          width: 14,
+                          height: 14,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: _gold,
+                          ),
+                        ),
+                      ),
+                    )
+                  : Text(
+                      title,
+                      style: _titleStyle,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  )
-                : Text(title, style: _titleStyle, maxLines: 2, overflow: TextOverflow.ellipsis),
-          ),
-        ]),
+            ),
+          ],
+        ),
       ),
     );
   }
