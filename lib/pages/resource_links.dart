@@ -6,7 +6,7 @@ class ResourceLinksPage extends StatelessWidget {
   const ResourceLinksPage({super.key});
 
   // ── APK 下載連結 ──
-  static const String _apkUrl = 'https://drive.google.com/file/d/1-CIfgUfsr2xkft1LRjbDQt1sXlY9REiZ/view?usp=sharing';
+  // static const String _apkUrl = 'https://drive.google.com/file/d/1-CIfgUfsr2xkft1LRjbDQt1sXlY9REiZ/view?usp=sharing';
 
   // 靜態資料常數化（整合 9 種語言版本與對應的下載連結）── 第一區塊
   static const List<Map<String, String>> _resources1 = [
@@ -45,7 +45,7 @@ class ResourceLinksPage extends StatelessWidget {
     {'title': '德文', 'url': 'https://drive.google.com/file/d/1a5jgBvko_kp5AXb20WGJihe3OCz5HAEj/view?usp=drive_link'},
     {'title': '西班牙文', 'url': 'https://drive.google.com/file/d/1hwZuIuxI4I7d4ueZvvsjtxhx_eduItyv/view?usp=drive_link'},
     {'title': '葡萄牙文', 'url': 'https://drive.google.com/file/d/1ScoXlhu3O_Ij7B3ZqEzsS_jhUyxEtKAi/view?usp=drive_link'},
-    {'title': '義大利文', 'url': 'https://drive.google.com/file/d/1P0QJ9739snEhOGjy922nydcbYrqOF_yC/view?usp=drive_link'},
+    {'title': '義大利文', 'url': 'https://drive.google.com/file/d/1M-p923XPDTI58GTphqLaOT1GaYhv5eZq/view?usp=drive_link'},
     {'title': '拉丁文', 'url': 'https://drive.google.com/file/d/1yTVtPyHRUugpDTu-OFnMeI_w_SRj6Y-0/view?usp=drive_link'},
     {'title': '泰文', 'url': 'https://drive.google.com/file/d/1FwSKYN98G7Wc9nIN7OAYjtJ4msW-Rf53/view?usp=drive_link'},
     {'title': '尼泊爾文', 'url': 'https://drive.google.com/file/d/15vXT64HdYDKFp8QQYJSCCvLvfJ8mdZkk/view?usp=drive_link'},
@@ -135,28 +135,28 @@ class ResourceLinksPage extends StatelessWidget {
                   children: [
 
                     // ── APK 下載按鈕 ──
-                    const Text(
-                      '須彌山佛國學習 APP APK Links(還未更新):',
-                      textAlign: TextAlign.center, // 修正：文字本身置中
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color.fromARGB(221, 255, 179, 2)),
-                    ),
-                    const SizedBox(height: 12),
-                    ElevatedButton.icon(
-                      onPressed: () => _downloadFile(context, _apkUrl),
-                      icon: const Icon(Icons.android, color: Colors.white, size: 18),
-                      label: const Text('點擊下載 APK', style: TextStyle(fontSize: 14, color: Colors.white)),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF4CAF50),
-                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                      ),
-                    ),
+                    // const Text(
+                      // '須彌山佛國學習 APP APK Links(還未更新):',
+                      // textAlign: TextAlign.center, // 修正：文字本身置中
+                      // style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color.fromARGB(221, 255, 179, 2)),
+                    // ),
+                    // const SizedBox(height: 12),
+                    // ElevatedButton.icon(
+                      // onPressed: () => _downloadFile(context, _apkUrl),
+                      // icon: const Icon(Icons.android, color: Colors.white, size: 18),
+                      // label: const Text('點擊下載 APK', style: TextStyle(fontSize: 14, color: Colors.white)),
+                      // style: ElevatedButton.styleFrom(
+                        // backgroundColor: const Color(0xFF4CAF50),
+                        // padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                        // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      // ),
+                    // ),
 
-                    const SizedBox(height: 40),
+                    // const SizedBox(height: 40),
 
                     // ── 第一區塊 ──
                     const Text(
-                      '須彌山佛國 戒律 3國語言翻譯', 
+                      '須彌山佛國 戒律 4國語言翻譯', 
                       textAlign: TextAlign.center,
                       style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color.fromARGB(221, 255, 179, 2))
                     ),
