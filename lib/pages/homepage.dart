@@ -143,7 +143,7 @@ class _HomePageState extends State<HomePage> {
     ui.platformViewRegistry.registerViewFactory(
       'youtube-player',
       (int viewId) => html.IFrameElement()
-        ..src = 'https://www.youtube.com/live/ew0PgNXOrQk?si=rO5CQ7seHdUIMbp9'
+        ..src = 'https://www.youtube.com/embed/ew0PgNXOrQk?autoplay=0'
         ..style.border = 'none'
         ..style.width = '100%'
         ..style.height = '100%'
