@@ -143,7 +143,7 @@ class _HomePageState extends State<HomePage> {
     ui.platformViewRegistry.registerViewFactory(
       'youtube-player',
       (int viewId) => html.IFrameElement()
-        ..src = 'https://www.youtube.com/embed/gj4mSg0ElRA?autoplay=0'
+        ..src = 'https://www.youtube.com/live/ew0PgNXOrQk?si=rO5CQ7seHdUIMbp9'
         ..style.border = 'none'
         ..style.width = '100%'
         ..style.height = '100%'
@@ -452,7 +452,7 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   // ── 標題 ────────────────────────────────────────
                   Text(
-                    '諦深佛陀 2026年5月29日 現場直播開示',
+                    '諦深佛陀 2026年8月1日 現場直播開示',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: w > 600 ? 30 : 22,
