@@ -109,7 +109,7 @@ class SumeruLogo extends StatelessWidget {
               ),
             ),
             if (!compact)
-              const Text('Sumeru Mount Buddha Nation', style: _kSubStyle),
+              const Text('', style: _kSubStyle),
           ],
         ),
       ],
