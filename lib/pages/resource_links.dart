@@ -20,7 +20,7 @@ class ResourceLinksPage extends StatelessWidget {
   static const List<Map<String, String>> _resources2 = [
     {'title': '繁體中文', 'url': 'https://drive.google.com/file/d/1pElReRzRx8ZVoe_IMATcGl6M3zfwqXxt/view?usp=drive_link'},
     {'title': '簡體中文', 'url': 'https://drive.google.com/file/d/18W2HS-zj6nswu1Oo14PAZoMELo31Ll-M/view?usp=drive_link'},
-    {'title': '英文', 'url': 'https://drive.google.com/file/d/1Tlmv2ivfAJkxUzr-MJLMNAlVzTUnuZNZ/view?usp=drive_link'},
+    // {'title': '英文', 'url': 'https://drive.google.com/file/d/1Tlmv2ivfAJkxUzr-MJLMNAlVzTUnuZNZ/view?usp=drive_link'},
     {'title': '日文', 'url': 'https://drive.google.com/file/d/1Ne3y4s2KSt0GPdvSwnkSRY2-BoYjRhPU/view?usp=drive_link'},
     {'title': '法文', 'url': 'https://drive.google.com/file/d/1QrXGKVekq8TK543V0aqM5GGbPf-4Fz87/view?usp=drive_link'},
     {'title': '德文', 'url': 'https://drive.google.com/file/d/1BPH2glM2HH-ILSKONklLZwPYEYRanQx_/view?usp=drive_link'},
@@ -38,7 +38,7 @@ class ResourceLinksPage extends StatelessWidget {
   static const List<Map<String, String>> _resources3 = [
     {'title': '繁體中文', 'url': 'https://drive.google.com/file/d/1RXWiutokfDbqkJ0fCfyvI_uAeq_EflvB/view?usp=drive_link'},
     {'title': '簡體中文', 'url': 'https://drive.google.com/file/d/1ltLkkWkUDqf11IMrpVOsKWAkMG6pZBV1/view?usp=drive_link'},
-    {'title': '英文', 'url': 'https://drive.google.com/file/d/1GHJ35sGZaH-2okrSMPhkxLz1JQUqdtF_/view?usp=drive_link'},
+    // {'title': '英文', 'url': 'https://drive.google.com/file/d/1GHJ35sGZaH-2okrSMPhkxLz1JQUqdtF_/view?usp=drive_link'},
     {'title': '日文', 'url': 'https://drive.google.com/file/d/1TrH9kn3BhNINiyNPx5nB_Yn35KxlI39Y/view?usp=drive_link'},
     {'title': '韓文', 'url': 'https://drive.google.com/file/d/164JW7YuZjWXjQkKiaF93gejYTwNi9pf5/view?usp=drive_link'},
     {'title': '法文', 'url': 'https://drive.google.com/file/d/1vNGTnWaJg8YutKif6uBBfU5B8wAjNB3-/view?usp=drive_link'},
