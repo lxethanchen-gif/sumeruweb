@@ -53,7 +53,7 @@ class SumeruFooter extends StatelessWidget {
                       children: [
                         _SocialRow(),
                         SizedBox(height: 16),
-                        _WechatGroup(),
+                        
                       ],
                     )
                   // 平板 / 桌機：橫向 Wrap
@@ -62,7 +62,7 @@ class SumeruFooter extends StatelessWidget {
                       crossAxisAlignment: WrapCrossAlignment.center,
                       spacing: 32,
                       runSpacing: 16,
-                      children: [_SocialRow(), _WechatGroup()],
+                      children: [_SocialRow(),],
                     ),
 
               const SizedBox(height: 18),
@@ -71,7 +71,7 @@ class SumeruFooter extends StatelessWidget {
 
               // ── 底部說明文字 ──────────────────────────────────────
               Text(
-                '求皈依者 須持佛陀二十二戒 · 下載皈依表 · 加入如少水魚微信 · 遞交皈依表',
+                '求皈依者 須持佛陀二十二戒 · 下載皈依表 · 遞交皈依表',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: mobile ? 11 : 12,
@@ -85,15 +85,15 @@ class SumeruFooter extends StatelessWidget {
               const SizedBox(height: 12),
 
               // ── 發心貢獻者標籤（最底部）──────────────────────────────
-              Wrap(
-                alignment: WrapAlignment.center,
-                spacing: 8,
-                runSpacing: 6,
-                children: const [
-                  _CreditTag(region: '台灣', name: '智定成', role: 'Web & App dev'),
-                  _CreditTag(region: '香港', name: '智道心', role: 'Data Collection'),
-                ],
-              ),
+              // Wrap(
+              //   alignment: WrapAlignment.center,
+              //   spacing: 8,
+              //   runSpacing: 6,
+              //   children: const [
+              //     _CreditTag(region: '台灣', name: '智定成', role: 'Web & App dev'),
+              //     _CreditTag(region: '香港', name: '智道心', role: 'Data Collection'),
+              //   ],
+              // ),
             ],
       ),
       ),
@@ -268,105 +268,35 @@ class _WechatGroup extends StatelessWidget {
         color: _kWhite20,
         borderRadius: BorderRadius.circular(14),
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 34,
-            height: 34,
-            decoration: BoxDecoration(
-              color: const Color(0xFF07C160),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: const Icon(Icons.chat_bubble_rounded, color: _kWhite, size: 18),
-          ),
-          const SizedBox(width: 10),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: const [
-              _WechatId(name: '如少水魚', id: '13589807963'),
-              SizedBox(height: 4),
-              _WechatId(name: '如救頭燃', id: '15966583597'),
-            ],
-          ),
-        ],
-      ),
+      // child: Row(
+      //   mainAxisSize: MainAxisSize.min,
+      //   children: [
+      //     Container(
+      //       width: 34,
+      //       height: 34,
+      //       decoration: BoxDecoration(
+      //         color: const Color(0xFF07C160),
+      //         borderRadius: BorderRadius.circular(8),
+      //       ),
+      //       child: const Icon(Icons.chat_bubble_rounded, color: _kWhite, size: 18),
+      //     ),
+      //     const SizedBox(width: 10),
+      //     Column(
+      //       crossAxisAlignment: CrossAxisAlignment.start,
+      //       mainAxisSize: MainAxisSize.min,
+      //       children: const [
+      //         _WechatId(name: '如少水魚', id: '13589807963'),
+      //         SizedBox(height: 4),
+      //         _WechatId(name: '如救頭燃', id: '15966583597'),
+      //       ],
+      //     ),
+      //   ],
+      // ),
     );
   }
 }
 
 // ── _WechatId ─────────────────────────────────────────────────────
-class _WechatId extends StatefulWidget {
-  final String name;
-  final String id;
-  const _WechatId({required this.name, required this.id});
-
-  @override
-  State<_WechatId> createState() => _WechatIdState();
-}
-
-class _WechatIdState extends State<_WechatId> {
-  bool _hov    = false;
-  bool _copied = false;
-
-  Future<void> _copy() async {
-    await Clipboard.setData(ClipboardData(text: widget.id));
-    setState(() => _copied = true);
-    await Future.delayed(const Duration(seconds: 2));
-    if (mounted) setState(() => _copied = false);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      onEnter: (_) => setState(() => _hov = true),
-      onExit:  (_) => setState(() => _hov = false),
-      child: GestureDetector(
-        onTap: _copy,
-        child: AnimatedContainer(
-          duration: _dur130,
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          decoration: BoxDecoration(
-            color: _hov ? _kWhite : Colors.transparent,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                '${widget.name}：',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: _hov ? kPrimaryGold : _kWhite,
-                ),
-              ),
-              Text(
-                _copied ? '已複製！' : widget.id,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: _copied
-                      ? const Color(0xFF2ECC40)
-                      : (_hov ? kPrimaryGold : _kWhite70),
-                ),
-              ),
-              const SizedBox(width: 4),
-              Icon(
-                _copied ? Icons.check_rounded : Icons.copy_rounded,
-                size: 12,
-                color: _copied
-                    ? const Color(0xFF2ECC40)
-                    : (_hov ? kPrimaryGold : _kWhite70),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
 
 // ── _SIcon enum & widget ──────────────────────────────────────────
 enum _SIcon { facebook, line, youtube, excel }
