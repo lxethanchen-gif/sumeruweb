@@ -219,6 +219,38 @@ const List<VideoLink> kOtherVideos = [
   VideoLink(label: '叩鐘偈', videoId: 'cxOc-Lsr35o'),
 ];
 
+// ─── 經書連結 ────────────────────────────────────────────────
+
+class SutraLink {
+  final String label;
+  final String url;
+  final String thumbnailUrl;
+
+  const SutraLink({
+    required this.label,
+    required this.url,
+    required this.thumbnailUrl,
+  });
+}
+
+// 圖示直接取自 Google Drive 檔案的縮圖（依 file id 產生）
+const List<SutraLink> kSutraLinks = [
+  SutraLink(
+    label: '早晚課 課誦本',
+    url:
+        'https://drive.google.com/file/d/1imuOwJApX2BaZlz3Y9z8ivV5aeVhyihX/view?usp=sharing',
+    thumbnailUrl:
+        'https://drive.google.com/thumbnail?id=1imuOwJApX2BaZlz3Y9z8ivV5aeVhyihX&sz=w400',
+  ),
+  SutraLink(
+    label: '地藏菩薩本願經',
+    url:
+        'https://drive.google.com/file/d/1BPq5MsFlpIfHb3xYYykcITt7t8awJwyZ/view?usp=sharing',
+    thumbnailUrl:
+        'https://drive.google.com/thumbnail?id=1BPq5MsFlpIfHb3xYYykcITt7t8awJwyZ&sz=w400',
+  ),
+];
+
 const String kTopVideoId = 'xjdmGS6S7fs';
 const String kBottomVideoId = 'GibAHSiCJPI';
 const String kDownloadUrl =
@@ -295,7 +327,7 @@ class _LiveStreamPageState extends State<LiveStreamPage> {
                           _SectionHeader(
                             time: '參考影片',
                             title: '早晚課持續時間',
-                            icon: Icons.play_circle_outline,
+                            // icon: Icons.play_circle_outline,
                             isFirst: true,
                           ),
                           Padding(
@@ -337,7 +369,7 @@ class _LiveStreamPageState extends State<LiveStreamPage> {
                           _SectionHeader(
                             time: '其他資源',
                             title: '寶鼎讚・叩鐘偈',
-                            icon: Icons.music_note_outlined,
+                            // icon: Icons.music_note_outlined,
                             isFirst: true,
                           ),
                           ...kOtherVideos.map((v) {
@@ -365,7 +397,7 @@ class _LiveStreamPageState extends State<LiveStreamPage> {
                           _SectionHeader(
                             time: '法會影片',
                             title: '地藏菩薩本願經',
-                            icon: Icons.import_contacts_outlined,
+                            // icon: Icons.import_contacts_outlined,
                             isFirst: true,
                           ),
                           Padding(
@@ -374,6 +406,22 @@ class _LiveStreamPageState extends State<LiveStreamPage> {
                           ),
                         ],
                       ),
+                    ),
+                    const SizedBox(height: 20),
+
+                    // ── 經書下載小圖示
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: kSutraLinks
+                          .map(
+                            (s) => Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 14,
+                              ),
+                              child: _SutraDownloadIcon(sutra: s),
+                            ),
+                          )
+                          .toList(),
                     ),
                   ],
                 ),
@@ -407,8 +455,8 @@ class _ShrineCard extends StatelessWidget {
         children: [
           _SectionHeader(
             time: '道場布置',
-            title: '',
-            icon: Icons.home_outlined,
+            title: '道場布置器具',
+            // icon: Icons.home_outlined,
             isFirst: true,
           ),
 
@@ -525,6 +573,96 @@ class _ShrineImageTile extends StatelessWidget {
   }
 }
 
+// ─── 經書下載小圖示（圖示取自 Google Drive 縮圖） ───────────────
+
+class _SutraDownloadIcon extends StatelessWidget {
+  final SutraLink sutra;
+  const _SutraDownloadIcon({required this.sutra});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => launchUrl(
+        Uri.parse(sutra.url),
+        mode: LaunchMode.externalApplication,
+      ),
+      child: Column(
+        children: [
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Container(
+                  width: 64,
+                  height: 64,
+                  color: kGoldLight,
+                  child: Image.network(
+                    sutra.thumbnailUrl,
+                    fit: BoxFit.cover,
+                    loadingBuilder: (context, child, progress) {
+                      if (progress == null) return child;
+                      return const Center(
+                        child: SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: kGoldMid,
+                          ),
+                        ),
+                      );
+                    },
+                    errorBuilder: (_, __, ___) => const Center(
+                      child: Icon(
+                        Icons.menu_book_outlined,
+                        size: 26,
+                        color: kGoldMid,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                right: -4,
+                bottom: -4,
+                child: Container(
+                  width: 22,
+                  height: 22,
+                  decoration: BoxDecoration(
+                    color: kGoldMid,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white, width: 1.5),
+                  ),
+                  child: const Icon(
+                    Icons.download_outlined,
+                    size: 13,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          SizedBox(
+            width: 76,
+            child: Text(
+              sutra.label,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
+                color: kGold,
+                height: 1.3,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 // ─── 外層白卡 ─────────────────────────────────────────────────
 
 class _OuterCard extends StatelessWidget {
@@ -556,13 +694,13 @@ class _OuterCard extends StatelessWidget {
 class _SectionHeader extends StatelessWidget {
   final String time;
   final String title;
-  final IconData icon;
+  // final IconData icon;
   final bool isFirst;
 
   const _SectionHeader({
     required this.time,
     required this.title,
-    required this.icon,
+    // required this.icon,
     this.isFirst = false,
   });
 
@@ -590,7 +728,7 @@ class _SectionHeader extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 10),
-          Icon(icon, size: 16, color: kHeaderText.withOpacity(0.7)),
+          // Icon(icon, size: 16, color: kHeaderText.withOpacity(0.7)),
           const SizedBox(width: 5),
           Expanded(
             child: Text(
@@ -636,7 +774,7 @@ class _ScheduleSectionBlock extends StatelessWidget {
         _SectionHeader(
           time: section.time,
           title: section.title,
-          icon: section.icon,
+          // icon: section.icon,
           isFirst: isFirst,
         ),
 
