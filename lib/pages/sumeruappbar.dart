@@ -19,7 +19,7 @@ const _barDeco = BoxDecoration(
   borderRadius: BorderRadius.all(Radius.circular(16)),
   boxShadow: [_barShadow],
 );
-const _itemLabelStyle = TextStyle(fontSize: 18, fontWeight: FontWeight.w600);
+const _itemLabelStyle = TextStyle(fontSize: 16, fontWeight: FontWeight.w600);
 
 // ── 導覽項目資料模型 ──────────────────────────────────────────────
 class _NavItem {
@@ -121,7 +121,7 @@ class _Logo extends StatelessWidget {
           Text(
             '須彌山佛國網',
             style: TextStyle(
-              fontSize: 18,
+              fontSize: 16,
               fontWeight: FontWeight.w700,
               color: _white,
             ),
@@ -247,7 +247,7 @@ class _DropdownNavGroupState extends State<_DropdownNavGroup> {
     final overlay = Overlay.of(context);
     _entry = OverlayEntry(
       builder: (ctx) => Positioned(
-        width: 240,
+        width: 220,
         child: CompositedTransformFollower(
           link: _link,
           showWhenUnlinked: false,
