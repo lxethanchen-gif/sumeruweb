@@ -499,6 +499,81 @@ const _videos = <VideoData>[
     '2022年12月10日',
     'https://youtu.be/V0a0hbtI49Y',
   ),
+  VideoData(
+    'FnxWxHmFr4k',
+    '2023年1月21日',
+    'https://youtu.be/FnxWxHmFr4k',
+  ),
+  VideoData(
+    'FnxWxHmFr4k',
+    '2023年1月21日',
+    'https://youtu.be/FnxWxHmFr4k',
+  ),
+  VideoData(
+    'FnxWxHmFr4k',
+    '2023年1月21日',
+    'https://youtu.be/FnxWxHmFr4k',
+  ),
+  VideoData(
+    'eGO6FHpQdk8',
+    '2023年3月10日',
+    'https://youtu.be/eGO6FHpQdk8',
+  ),
+  VideoData(
+    'B-SzXaYtWkE',
+    '2023年5月22日',
+    'https://youtu.be/B-SzXaYtWkE',
+  ),
+  VideoData(
+    'CYOLEGe8QhQ',
+    '2023年11月2日',
+    'https://youtu.be/CYOLEGe8QhQ',
+  ),
+  VideoData(
+    'CYOLEGe8QhQ',
+    '2023年12月29日',
+    'https://youtu.be/LjPaoOWzJdY',
+  ),
+  VideoData(
+    'UcRqfGqZvs8',
+    '2024年2月9日',
+    'https://youtu.be/UcRqfGqZvs8',
+  ),
+  VideoData(
+    'vIMF1DzitZI',
+    '2024年2月14日 香港地藏法會',
+    'https://youtu.be/vIMF1DzitZI',
+  ),
+  VideoData(
+    '8VkgSo62_5E',
+    '2024年2月15日 香港地藏法會',
+    'https://youtu.be/8VkgSo62_5E',
+  ),
+  VideoData(
+    '-guDN5c1hH8',
+    '2024年2月16日 香港地藏法會',
+    'https://youtu.be/-guDN5c1hH8',
+  ),
+  VideoData(
+    'KZaGqeR3V1Q',
+    '2024年2月17日 香港地藏法會',
+    'https://youtu.be/KZaGqeR3V1Q',
+  ),
+  VideoData(
+    'J7-4KHXLVbE',
+    '2024年2月18日 香港地藏法會',
+    'https://youtu.be/J7-4KHXLVbE',
+  ),
+  VideoData(
+    'zsNMWflqiX0',
+    '2024年5月11日',
+    'https://youtu.be/zsNMWflqiX0',
+  ),
+  VideoData(
+    'nTYNq1dBtnc',
+    '2024年5月15日',
+    'https://youtu.be/nTYNq1dBtnc',
+  ),
 ];
 
 class VideoTeachingsPage extends StatefulWidget {
