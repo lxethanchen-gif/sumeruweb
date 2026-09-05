@@ -4,7 +4,6 @@ import 'package:url_launcher/url_launcher.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'footer.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 const _gold = Color.fromARGB(255, 255, 209, 2);
 const _goldLight = Color.fromARGB(255, 255, 255, 255);
@@ -45,7 +44,11 @@ const _titleStyle = TextStyle(
   fontSize: 16,
   fontWeight: FontWeight.w600,
   color: Color.fromARGB(255, 246, 209, 4),
+  height: 1.2,
 );
+// 影片卡「標題區」固定高度（以兩行標題為基準），
+// 讓所有卡片不論標題長短都統一大小。
+const double _titleAreaHeight = 60;
 
 // ── 支援語言 ────────────────────────────────────────────────────
 enum AppLang {
@@ -414,191 +417,47 @@ const _videos = <VideoData>[
     '2021年1月16日 49期(第49期)',
     'https://youtu.be/MzoUsZvr4Us',
   ),
-  VideoData(
-    'fxG517U2nuE',
-    '2021年2月11日',
-    'https://youtu.be/fxG517U2nuE',
-  ),
+  VideoData('fxG517U2nuE', '2021年2月11日', 'https://youtu.be/fxG517U2nuE'),
   VideoData(
     'sXfvyqw62bA',
     '2021年3月31日',
     'https://www.youtube.com/live/sXfvyqw62bA',
   ),
-  VideoData(
-    'wDYOKDgn-Uc',
-    '2021年5月19日',
-    'https://youtu.be/wDYOKDgn-Uc',
-  ),
-  VideoData(
-    'Vjajl5I010M',
-    '2021年7月28日',
-    'https://youtu.be/Vjajl5I010M',
-  ),
-  VideoData(
-    '0B2V8lvOPKQ',
-    '諦深佛陀開示 如何修止觀',
-    'https://youtu.be/0B2V8lvOPKQ',
-  ),
-  VideoData(
-    '1pirAsAHCsM',
-    '諦深佛陀開示 示現49期',
-    'https://youtu.be/1pirAsAHCsM',
-  ),
-  VideoData(
-    'x_7-wZRu1gg',
-    '諦深佛陀開示 如何發心出家',
-    'https://youtu.be/x_7-wZRu1gg',
-  ),
-  VideoData(
-    'iT_ZDekFnMo',
-    '2021年10月24日',
-    'https://youtu.be/iT_ZDekFnMo',
-  ),
-  VideoData(
-    'Vdt19z6GMvU',
-    '2021年12月20日',
-    'https://youtu.be/Vdt19z6GMvU',
-  ),
-  VideoData(
-    'OhKDjnkM48s',
-    '2022年1月31日',
-    'https://youtu.be/OhKDjnkM48s',
-  ),
-  VideoData(
-    'axJiTER9eSo',
-    '2022年2月5日',
-    'https://youtu.be/axJiTER9eSo',
-  ),
-  VideoData(
-    'fZGLvwD38wc',
-    '2022年3月20日',
-    'https://youtu.be/fZGLvwD38wc',
-  ),
-  VideoData(
-    'LyrR4lCv6WI',
-    '2022年5月4日',
-    'https://youtu.be/LyrR4lCv6WI',
-  ),
-  VideoData(
-    'zwQMbuQPv7Y',
-    '2022年7月17日',
-    'https://youtu.be/zwQMbuQPv7Y',
-  ),
-  VideoData(
-    'W4Z4vm3zQlQ',
-    '2022年10月14日',
-    'https://youtu.be/W4Z4vm3zQlQ',
-  ),
-  VideoData(
-    'V0a0hbtI49Y',
-    '2022年12月10日',
-    'https://youtu.be/V0a0hbtI49Y',
-  ),
-  VideoData(
-    'FnxWxHmFr4k',
-    '2023年1月21日',
-    'https://youtu.be/FnxWxHmFr4k',
-  ),
-  VideoData(
-    'eGO6FHpQdk8',
-    '2023年3月10日',
-    'https://youtu.be/eGO6FHpQdk8',
-  ),
-  VideoData(
-    'B-SzXaYtWkE',
-    '2023年5月22日',
-    'https://youtu.be/B-SzXaYtWkE',
-  ),
-  VideoData(
-    'CYOLEGe8QhQ',
-    '2023年11月2日',
-    'https://youtu.be/CYOLEGe8QhQ',
-  ),
-  VideoData(
-    'CYOLEGe8QhQ',
-    '2023年12月29日',
-    'https://youtu.be/LjPaoOWzJdY',
-  ),
-  VideoData(
-    'UcRqfGqZvs8',
-    '2024年2月9日',
-    'https://youtu.be/UcRqfGqZvs8',
-  ),
-  VideoData(
-    'vIMF1DzitZI',
-    '2024年2月14日 香港地藏法會',
-    'https://youtu.be/vIMF1DzitZI',
-  ),
-  VideoData(
-    '8VkgSo62_5E',
-    '2024年2月15日 香港地藏法會',
-    'https://youtu.be/8VkgSo62_5E',
-  ),
-  VideoData(
-    '-guDN5c1hH8',
-    '2024年2月16日 香港地藏法會',
-    'https://youtu.be/-guDN5c1hH8',
-  ),
-  VideoData(
-    'KZaGqeR3V1Q',
-    '2024年2月17日 香港地藏法會',
-    'https://youtu.be/KZaGqeR3V1Q',
-  ),
-  VideoData(
-    'J7-4KHXLVbE',
-    '2024年2月18日 香港地藏法會',
-    'https://youtu.be/J7-4KHXLVbE',
-  ),
-  VideoData(
-    'zsNMWflqiX0',
-    '2024年5月11日',
-    'https://youtu.be/zsNMWflqiX0',
-  ),
-  VideoData(
-    'nTYNq1dBtnc',
-    '2024年5月15日',
-    'https://youtu.be/nTYNq1dBtnc',
-  ),
-  VideoData(
-    'eO3shpiiFBM',
-    '2024年7月24日',
-    'https://youtu.be/eO3shpiiFBM',
-  ),
-  VideoData(
-    '3vLj1EJtmbU',
-    '2024年10月22日',
-    'https://youtu.be/3vLj1EJtmbU',
-  ),
-  VideoData(
-    '8L0y7F3mvBM',
-    '2024年12月17日',
-    'https://youtu.be/8L0y7F3mvBM',
-  ),
-  VideoData(
-    '8L0y7F3mvBM',
-    '2025年1月28日',
-    'https://youtu.be/23UtXP92emw',
-  ),
-  VideoData(
-    'd_O06DVDWYs',
-    '2025年3月18日',
-    'https://youtu.be/d_O06DVDWYs',
-  ),
-  VideoData(
-    'ZSbmJ9u4ZeM',
-    '2025年5月1日',
-    'https://youtu.be/ZSbmJ9u4ZeM',
-  ),
-  VideoData(
-    'XSoXF4ha3a8',
-    '2025年5月5日',
-    'https://youtu.be/XSoXF4ha3a8',
-  ),
-  VideoData(
-    'xSKLKrcRZXk',
-    '2025年7月13日',
-    'https://youtu.be/xSKLKrcRZXk',
-  ),
+  VideoData('wDYOKDgn-Uc', '2021年5月19日', 'https://youtu.be/wDYOKDgn-Uc'),
+  VideoData('Vjajl5I010M', '2021年7月28日', 'https://youtu.be/Vjajl5I010M'),
+  VideoData('0B2V8lvOPKQ', '諦深佛陀開示 如何修止觀', 'https://youtu.be/0B2V8lvOPKQ'),
+  VideoData('1pirAsAHCsM', '諦深佛陀開示 示現49期', 'https://youtu.be/1pirAsAHCsM'),
+  VideoData('x_7-wZRu1gg', '諦深佛陀開示 如何發心出家', 'https://youtu.be/x_7-wZRu1gg'),
+  VideoData('iT_ZDekFnMo', '2021年10月24日', 'https://youtu.be/iT_ZDekFnMo'),
+  VideoData('Vdt19z6GMvU', '2021年12月20日', 'https://youtu.be/Vdt19z6GMvU'),
+  VideoData('OhKDjnkM48s', '2022年1月31日', 'https://youtu.be/OhKDjnkM48s'),
+  VideoData('axJiTER9eSo', '2022年2月5日', 'https://youtu.be/axJiTER9eSo'),
+  VideoData('fZGLvwD38wc', '2022年3月20日', 'https://youtu.be/fZGLvwD38wc'),
+  VideoData('LyrR4lCv6WI', '2022年5月4日', 'https://youtu.be/LyrR4lCv6WI'),
+  VideoData('zwQMbuQPv7Y', '2022年7月17日', 'https://youtu.be/zwQMbuQPv7Y'),
+  VideoData('W4Z4vm3zQlQ', '2022年10月14日', 'https://youtu.be/W4Z4vm3zQlQ'),
+  VideoData('V0a0hbtI49Y', '2022年12月10日', 'https://youtu.be/V0a0hbtI49Y'),
+  VideoData('FnxWxHmFr4k', '2023年1月21日', 'https://youtu.be/FnxWxHmFr4k'),
+  VideoData('eGO6FHpQdk8', '2023年3月10日', 'https://youtu.be/eGO6FHpQdk8'),
+  VideoData('B-SzXaYtWkE', '2023年5月22日', 'https://youtu.be/B-SzXaYtWkE'),
+  VideoData('CYOLEGe8QhQ', '2023年11月2日', 'https://youtu.be/CYOLEGe8QhQ'),
+  VideoData('CYOLEGe8QhQ', '2023年12月29日', 'https://youtu.be/LjPaoOWzJdY'),
+  VideoData('UcRqfGqZvs8', '2024年2月9日', 'https://youtu.be/UcRqfGqZvs8'),
+  VideoData('vIMF1DzitZI', '2024年2月14日 香港地藏法會', 'https://youtu.be/vIMF1DzitZI'),
+  VideoData('8VkgSo62_5E', '2024年2月15日 香港地藏法會', 'https://youtu.be/8VkgSo62_5E'),
+  VideoData('-guDN5c1hH8', '2024年2月16日 香港地藏法會', 'https://youtu.be/-guDN5c1hH8'),
+  VideoData('KZaGqeR3V1Q', '2024年2月17日 香港地藏法會', 'https://youtu.be/KZaGqeR3V1Q'),
+  VideoData('J7-4KHXLVbE', '2024年2月18日 香港地藏法會', 'https://youtu.be/J7-4KHXLVbE'),
+  VideoData('zsNMWflqiX0', '2024年5月11日', 'https://youtu.be/zsNMWflqiX0'),
+  VideoData('nTYNq1dBtnc', '2024年5月15日', 'https://youtu.be/nTYNq1dBtnc'),
+  VideoData('eO3shpiiFBM', '2024年7月24日', 'https://youtu.be/eO3shpiiFBM'),
+  VideoData('3vLj1EJtmbU', '2024年10月22日', 'https://youtu.be/3vLj1EJtmbU'),
+  VideoData('8L0y7F3mvBM', '2024年12月17日', 'https://youtu.be/8L0y7F3mvBM'),
+  VideoData('8L0y7F3mvBM', '2025年1月28日', 'https://youtu.be/23UtXP92emw'),
+  VideoData('d_O06DVDWYs', '2025年3月18日', 'https://youtu.be/d_O06DVDWYs'),
+  VideoData('ZSbmJ9u4ZeM', '2025年5月1日', 'https://youtu.be/ZSbmJ9u4ZeM'),
+  VideoData('XSoXF4ha3a8', '2025年5月5日', 'https://youtu.be/XSoXF4ha3a8'),
+  VideoData('xSKLKrcRZXk', '2025年7月13日', 'https://youtu.be/xSKLKrcRZXk'),
   VideoData(
     'fSBgyQo9ihg',
     '2025年11月8日',
@@ -648,7 +507,7 @@ class VideoTeachingsPage extends StatefulWidget {
 }
 
 class _VideoTeachingsPageState extends State<VideoTeachingsPage> {
-  static const _perPage = 24;
+  static const _perPage = 25;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   int _page = 0;
   String _query = '';
@@ -771,16 +630,28 @@ class _VideoTeachingsPageState extends State<VideoTeachingsPage> {
                   padding: const EdgeInsets.all(20),
                   sliver: SliverLayoutBuilder(
                     builder: (ctx, c) {
+                      const spacing = 16.0;
                       final cols = _cols(c.crossAxisExtent).clamp(1, 6);
-                      return SliverMasonryGrid.count(
-                        crossAxisCount: cols,
-                        mainAxisSpacing: 16,
-                        crossAxisSpacing: 16,
-                        childCount: list.length,
-                        itemBuilder: (ctx, i) => _VideoCard(
-                          key: ValueKey('${list[i].id}_${_lang.name}'),
-                          video: list[i],
-                          lang: _lang,
+                      // 每張卡片寬度：以可用寬度平分（含欄間距）
+                      final itemWidth =
+                          (c.crossAxisExtent - spacing * (cols - 1)) / cols;
+                      // 卡片高度 = 16:9 縮圖高度 + 固定標題區高度
+                      // 讓每張卡片長寬完全一致（以最大的卡片為基準）
+                      final itemHeight = itemWidth * 9 / 16 + _titleAreaHeight;
+                      return SliverGrid(
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: cols,
+                          mainAxisSpacing: spacing,
+                          crossAxisSpacing: spacing,
+                          mainAxisExtent: itemHeight,
+                        ),
+                        delegate: SliverChildBuilderDelegate(
+                          (ctx, i) => _VideoCard(
+                            key: ValueKey('${list[i].id}_${_lang.name}'),
+                            video: list[i],
+                            lang: _lang,
+                          ),
+                          childCount: list.length,
                         ),
                       );
                     },
@@ -1171,12 +1042,15 @@ class _VideoCardState extends State<_VideoCard> {
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-              child: _loadingTranslation
-                  ? const SizedBox(
-                      height: 20,
-                      child: Center(
+            SizedBox(
+              height: _titleAreaHeight,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 10,
+                ),
+                child: _loadingTranslation
+                    ? const Center(
                         child: SizedBox(
                           width: 14,
                           height: 14,
@@ -1185,14 +1059,17 @@ class _VideoCardState extends State<_VideoCard> {
                             color: _gold,
                           ),
                         ),
+                      )
+                    : Align(
+                        alignment: Alignment.topLeft,
+                        child: Text(
+                          title,
+                          style: _titleStyle,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
-                    )
-                  : Text(
-                      title,
-                      style: _titleStyle,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
+              ),
             ),
           ],
         ),
