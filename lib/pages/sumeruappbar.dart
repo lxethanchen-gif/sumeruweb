@@ -1,896 +1,446 @@
-import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:pointer_interceptor/pointer_interceptor.dart';
-import '../routes.dart';
 import 'dart:async';
 
-// ── 常數 ──────────────────────────────────────────────────────────
-const Color kPrimaryGold = Color(0xFFF5C518);
-const Color kNavTextOnGold = Colors.white;
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import '../routes.dart';
 
-const _dur130 = Duration(milliseconds: 130);
-const _dur150 = Duration(milliseconds: 150);
-
-const _kWhite20 = Color(0x33FFFFFF);
-const _kBlack26 = Color(0x42000000);
-const _kBlack38 = Color(0x61000000);
-
-const _kNavItems = [
-  (label: '了解佛法',           path: AppRoutes.dharmaRealize),
-  (label: '應世卷',             path: AppRoutes.yingShiJuan),
-  (label: '滅罪卷',             path: AppRoutes.mieZuiJuan),
-  (label: '機緣道旨妙法入門卷', path: AppRoutes.jiYuanDaoZhi),
-  (label: '詩摘',               path: AppRoutes.shiZhai),
-];
-
-// ── 工具 ──────────────────────────────────────────────────────────
-bool _isMobile(BuildContext ctx) => MediaQuery.sizeOf(ctx).width < 600;
-bool _isTablet(BuildContext ctx) => MediaQuery.sizeOf(ctx).width < 1024;
-
-Color _hlColor(bool hl) => hl ? kPrimaryGold : kNavTextOnGold;
-
-BoxDecoration _pillDeco(bool hl, {double r = 20}) => hl
-    ? BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(r))
-    : BoxDecoration(color: Colors.transparent, borderRadius: BorderRadius.circular(r));
-
-const _kBarDivider = SizedBox(
-  width: 1,
-  child: ColoredBox(color: Color(0x33FFFFFF)),
+// ── 視覺樣式常數 ──────────────────────────────────────────────────
+// Header 底色為金黃色，文字/圖示一律使用白色以確保對比。
+const _gold = Color.fromARGB(255, 255, 209, 2);
+const _white = Colors.white;
+const _selectedBg = Colors.white;
+const _barShadow = BoxShadow(
+  color: Color(0x33000000),
+  blurRadius: 16,
+  offset: Offset(0, 4),
 );
+const _barDeco = BoxDecoration(
+  color: _gold,
+  borderRadius: BorderRadius.all(Radius.circular(16)),
+  boxShadow: [_barShadow],
+);
+const _itemLabelStyle = TextStyle(fontSize: 14, fontWeight: FontWeight.w600);
 
-// ── _HoverContainer ────────────────────────────────────────────────
-class _HoverContainer extends StatefulWidget {
-  final Widget Function(bool hl) builder;
-  final VoidCallback onTap;
-  final bool forceHighlight;
-  const _HoverContainer({
-    required this.builder,
-    required this.onTap,
-    this.forceHighlight = false,
-  });
-  @override
-  State<_HoverContainer> createState() => _HoverContainerState();
+// ── 導覽項目資料模型 ──────────────────────────────────────────────
+class _NavItem {
+  final String label;
+  final String path;
+  const _NavItem(this.label, this.path);
 }
 
-class _HoverContainerState extends State<_HoverContainer> {
-  bool _hov = false;
+// 下拉選單群組：了解佛法 / 應世卷 / 滅罪卷 / 機緣道旨 / 詩摘
+// 對應 main.dart GoRouter 宣告順序中的 index 1–5。
+const _dropdownItems = <_NavItem>[
+  _NavItem('了解佛法', AppRoutes.dharmaRealize),
+  _NavItem('應世卷', AppRoutes.yingShiJuan),
+  _NavItem('滅罪卷', AppRoutes.mieZuiJuan),
+  _NavItem('機緣道旨妙法入門卷', AppRoutes.jiYuanDaoZhi),
+  _NavItem('詩摘', AppRoutes.shiZhai),
+];
+const _dropdownStartIndex = 1;
 
-  @override
-  Widget build(BuildContext context) => MouseRegion(
-    cursor: SystemMouseCursors.click,
-    onEnter: (_) => setState(() => _hov = true),
-    onExit: (_) => setState(() => _hov = false),
-    child: GestureDetector(
-      onTap: widget.onTap,
-      child: widget.builder(widget.forceHighlight || _hov),
-    ),
-  );
-}
+// 同排項目：影音開示 / 資源連結 / 佛陀介紹 / 共修直播 / 課堂版影音
+// 對應 main.dart GoRouter 宣告順序中的 index 6–10。
+const _rowItems = <_NavItem>[
+  _NavItem('影音開示', AppRoutes.videoTeachings),
+  _NavItem('資源連結', AppRoutes.resourceLinks),
+  _NavItem('佛陀介紹', AppRoutes.buddhaIntro),
+  _NavItem('共修直播', AppRoutes.liveStream),
+  _NavItem('課堂版影音', AppRoutes.classroomVideoTeachings),
+];
+const _rowStartIndex = 6;
 
-// ── SumeruLogo ─────────────────────────────────────────────────────
-class SumeruLogo extends StatelessWidget {
-  final bool compact;
-  const SumeruLogo({super.key, this.compact = false});
+// 首頁：對應 main.dart GoRouter 宣告順序中的 index 0。
+const _homeItem = _NavItem('首頁', AppRoutes.home);
+const _homeIndex = 0;
 
-  static const _kSubStyle = TextStyle(
-    fontSize: 9,
-    color: Color(0xFFFFF0B0),
-    letterSpacing: 0.8,
-    height: 1.2,
-  );
+// 手機版收合選單顯示的完整清單（依原順序：首頁 + 下拉群組 + 同排群組）。
+const _allNavItems = [_homeItem, ..._dropdownItems, ..._rowItems];
 
-  @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 14),
-    child: Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Image.asset(
-          'assets/images/logo_with_border.png',
-          width: compact ? 36 : 44,
-          height: compact ? 36 : 44,
-          fit: BoxFit.contain,
-          cacheWidth: compact ? 72 : 88,
-        ),
-        const SizedBox(width: 10),
-        Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              '須彌山佛國網',
-              style: TextStyle(
-                fontSize: compact ? 13 : 15,
-                fontWeight: FontWeight.bold,
-                color: kNavTextOnGold,
-                letterSpacing: 1.5,
-                height: 1.2,
-              ),
-            ),
-            if (!compact)
-              const Text('', style: _kSubStyle),
-          ],
-        ),
-      ],
-    ),
-  );
-}
-
-// ── SumeruAppBar 主元件 ─────────────────────────────────────────────
-// ✅ 移除 onPageChanged callback，改由內部直接使用 context.go()
+// ── SumeruAppBar ──────────────────────────────────────────────────
 class SumeruAppBar extends StatelessWidget {
   final int currentIndex;
   const SumeruAppBar({super.key, required this.currentIndex});
 
+  void _navigate(BuildContext context, String path) => context.go(path);
+
   @override
-  Widget build(BuildContext context) => _isMobile(context)
-      ? _MobileAppBar(currentIndex: currentIndex)
-      : _HorizontalAppBar(
-          currentIndex: currentIndex,
-          compact: _isTablet(context),
-        );
+  Widget build(BuildContext context) {
+    return Container(
+      height: 60,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      decoration: _barDeco,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final isWide = constraints.maxWidth >= 760;
+          return Row(
+            children: [
+              _Logo(onTap: () => _navigate(context, AppRoutes.home)),
+              const SizedBox(width: 16),
+              Expanded(
+                child: isWide
+                    ? _WideNav(
+                        currentIndex: currentIndex,
+                        onSelect: (path) => _navigate(context, path),
+                      )
+                    : const SizedBox.shrink(),
+              ),
+              if (!isWide)
+                _CompactNavMenu(
+                  currentIndex: currentIndex,
+                  onSelect: (path) => _navigate(context, path),
+                ),
+            ],
+          );
+        },
+      ),
+    );
+  }
 }
 
-// ── _HorizontalAppBar ──────────────────────────────────────────────
-class _HorizontalAppBar extends StatelessWidget {
+// ── Logo ──────────────────────────────────────────────────────────
+class _Logo extends StatelessWidget {
+  final VoidCallback onTap;
+  const _Logo({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: const Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Image(
+            image: AssetImage('assets/images/logo_with_border.png'),
+            height: 36,
+            width: 36,
+            fit: BoxFit.contain,
+          ),
+          SizedBox(width: 8),
+          Text(
+            '須彌山佛國網',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: _white,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ── 寬螢幕：下拉選單群組 + 同排項目 ──────────────────────────────
+class _WideNav extends StatelessWidget {
   final int currentIndex;
-  final bool compact;
-  const _HorizontalAppBar({
-    required this.currentIndex,
-    required this.compact,
+  final ValueChanged<String> onSelect;
+  const _WideNav({required this.currentIndex, required this.onSelect});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        _NavButton(
+          label: _homeItem.label,
+          selected: currentIndex == _homeIndex,
+          onTap: () => onSelect(_homeItem.path),
+        ),
+        _DropdownNavGroup(currentIndex: currentIndex, onSelect: onSelect),
+        for (int i = 0; i < _rowItems.length; i++)
+          _NavButton(
+            label: _rowItems[i].label,
+            selected: _rowStartIndex + i == currentIndex,
+            onTap: () => onSelect(_rowItems[i].path),
+          ),
+      ],
+    );
+  }
+}
+
+// 直排導覽按鈕：選中時反轉為白底金字，未選中為透明底白字。
+class _NavButton extends StatelessWidget {
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+  const _NavButton({
+    required this.label,
+    required this.selected,
+    required this.onTap,
   });
 
   @override
-  Widget build(BuildContext context) => _barMaterial(
-    radius: 16,
-    height: compact ? 50 : 56,
-    child: Row(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        SumeruLogo(compact: compact),
-        _kBarDivider,
-        Expanded(
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            physics: const ClampingScrollPhysics(),
-            padding: const EdgeInsets.symmetric(horizontal: 4),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      child: TextButton(
+        onPressed: onTap,
+        style: TextButton.styleFrom(
+          foregroundColor: selected ? _gold : _white,
+          backgroundColor: selected ? _selectedBg : Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        ),
+        child: Text(label, style: _itemLabelStyle),
+      ),
+    );
+  }
+}
+
+// ── 下拉選單群組（觸發文字：文字開示） ───────────────────────────
+// 內容：了解佛法 / 應世卷 / 滅罪卷 / 機緣道旨 / 詩摘
+// 滑鼠移到觸發按鈕上，或點擊觸發按鈕，都會展開金黃色底的選單。
+class _DropdownNavGroup extends StatefulWidget {
+  final int currentIndex;
+  final ValueChanged<String> onSelect;
+  const _DropdownNavGroup({required this.currentIndex, required this.onSelect});
+
+  @override
+  State<_DropdownNavGroup> createState() => _DropdownNavGroupState();
+}
+
+class _DropdownNavGroupState extends State<_DropdownNavGroup> {
+  static const _triggerLabel = '文字開示';
+  static const _closeDelay = Duration(milliseconds: 150);
+  // 選單與觸發按鈕（即 Header）之間的視覺間距。
+  static const _menuGap = 8.0;
+
+  final _link = LayerLink();
+  OverlayEntry? _entry;
+  Timer? _closeTimer;
+
+  bool get _isActive {
+    final offset = widget.currentIndex - _dropdownStartIndex;
+    return offset >= 0 && offset < _dropdownItems.length;
+  }
+
+  void _cancelClose() => _closeTimer?.cancel();
+
+  void _scheduleClose() {
+    _closeTimer?.cancel();
+    _closeTimer = Timer(_closeDelay, _closeMenu);
+  }
+
+  void _closeMenu() {
+    _entry?.remove();
+    _entry = null;
+  }
+
+  void _toggleMenu() {
+    if (_entry == null) {
+      _openMenu();
+    } else {
+      _closeMenu();
+    }
+  }
+
+  void _openMenu() {
+    if (_entry != null) return;
+    // 動態取得觸發按鈕（文字開示）的實際高度，讓選單位移量永遠貼合
+    // Header 高度變化，不會因為寫死的數字而與 Header 重疊或間距跑掉。
+    final renderBox = context.findRenderObject() as RenderBox?;
+    final triggerHeight = renderBox?.size.height ?? 44.0;
+    final overlay = Overlay.of(context);
+    _entry = OverlayEntry(
+      builder: (ctx) => Positioned(
+        width: 220,
+        child: CompositedTransformFollower(
+          link: _link,
+          showWhenUnlinked: false,
+          offset: Offset(0, triggerHeight),
+          // MouseRegion 包住「間距 + 選單本體」，讓滑鼠從觸發按鈕移到選單
+          // 之間，即使中間留白也仍視為懸浮中，不會提前觸發關閉。
+          child: MouseRegion(
+            onEnter: (_) => _cancelClose(),
+            onExit: (_) => _scheduleClose(),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                _NavBtn(
-                  label: '首頁',
-                  compact: compact,
-                  isActive: currentIndex == PageIndex.home,
-                  onTap: () => context.go(AppRoutes.home),
-                ),
-                _DropdownBtn(
-                  isActive: PageIndex.isTextTeachings(currentIndex),
-                  compact: compact,
-                ),
-                _NavBtn(
-                  label: compact ? '影音' : '影音開示',
-                  compact: compact,
-                  isActive: currentIndex == PageIndex.videoTeachings,
-                  onTap: () => context.go(AppRoutes.videoTeachings),
-                ),
-                _NavBtn(
-                  label: compact ? '資源' : '資源連結',
-                  compact: compact,
-                  isActive: currentIndex == PageIndex.resourceLinks,
-                  onTap: () => context.go(AppRoutes.resourceLinks),
-                ),
-                _NavBtn(
-                  label: compact ? '簡介' : '諦深佛陀簡介',
-                  compact: compact,
-                  isActive: currentIndex == PageIndex.buddhaIntro,
-                  onTap: () => context.go(AppRoutes.buddhaIntro),
-                ),
-                _NavBtn(
-                  label: '共修直播',
-                  compact: compact,
-                  isActive: currentIndex == PageIndex.liveStream,
-                  onTap: () => context.go(AppRoutes.liveStream),
+                // 選單與 Header／觸發按鈕之間的間距。
+                const SizedBox(height: _menuGap),
+                Material(
+                  color: Colors.transparent,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: _gold,
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: const [_barShadow],
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 6),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        for (int i = 0; i < _dropdownItems.length; i++)
+                          _DropdownMenuRow(
+                            label: _dropdownItems[i].label,
+                            selected:
+                                _dropdownStartIndex + i == widget.currentIndex,
+                            onTap: () {
+                              widget.onSelect(_dropdownItems[i].path);
+                              _closeMenu();
+                            },
+                          ),
+                      ],
+                    ),
+                  ),
                 ),
               ],
             ),
           ),
         ),
-      ],
-    ),
-  );
-}
-
-// ── _MobileAppBar ──────────────────────────────────────────────────
-class _MobileAppBar extends StatelessWidget {
-  final int currentIndex;
-  const _MobileAppBar({required this.currentIndex});
-
-  void _openDrawer(BuildContext ctx) => showGeneralDialog(
-    context: ctx,
-    barrierDismissible: true,
-    barrierLabel: 'Dismiss',
-    barrierColor: Colors.transparent,
-    transitionDuration: const Duration(milliseconds: 260),
-    pageBuilder: (_, __, ___) => const SizedBox.shrink(),
-    transitionBuilder: (ctx, anim, _, __) {
-      final slide = CurvedAnimation(parent: anim, curve: Curves.easeOutCubic);
-      return Stack(
-        children: [
-          Positioned.fill(
-            child: PointerInterceptor(
-              child: GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: () => Navigator.of(ctx).pop(),
-                child: AnimatedBuilder(
-                  animation: anim,
-                  builder: (_, __) => ColoredBox(
-                    color: Color.fromRGBO(0, 0, 0, 0.54 * anim.value),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          SlideTransition(
-            position: Tween(
-              begin: const Offset(-1, 0),
-              end: Offset.zero,
-            ).animate(slide),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: RepaintBoundary(
-                child: _SidebarPanel(currentIndex: currentIndex),
-              ),
-            ),
-          ),
-        ],
-      );
-    },
-  );
-
-  @override
-  Widget build(BuildContext context) => _barMaterial(
-    radius: 14,
-    height: 52,
-    child: Row(
-      children: [
-        const Expanded(child: SumeruLogo(compact: true)),
-        _IconBtn(Icons.menu_rounded, () => _openDrawer(context)),
-        const SizedBox(width: 8),
-      ],
-    ),
-  );
-}
-
-Widget _barMaterial({
-  required double radius,
-  required double height,
-  required Widget child,
-}) => Material(
-  elevation: 6,
-  shadowColor: _kBlack38,
-  color: kPrimaryGold,
-  borderRadius: BorderRadius.circular(radius),
-  child: SizedBox(
-    height: height,
-    child: ClipRRect(borderRadius: BorderRadius.circular(radius), child: child),
-  ),
-);
-
-// ── _SidebarPanel ──────────────────────────────────────────────────
-class _SidebarPanel extends StatelessWidget {
-  final int currentIndex;
-  const _SidebarPanel({required this.currentIndex});
-
-  static const _kDivider = SizedBox(
-    height: 1,
-    child: ColoredBox(color: Color(0x33FFFFFF)),
-  );
-
-  // 跳轉並關閉 drawer
-  void _navigate(BuildContext ctx, String path) {
-    Navigator.of(ctx).pop();
-    ctx.go(path);
-  }
-
-  @override
-  Widget build(BuildContext context) => Material(
-    elevation: 16,
-    color: kPrimaryGold,
-    borderRadius: const BorderRadius.only(
-      topRight: Radius.circular(20),
-      bottomRight: Radius.circular(20),
-    ),
-    child: SizedBox(
-      width: 270,
-      height: double.infinity,
-      child: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(0, 12, 8, 4),
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: _IconBtn(
-                  Icons.close_rounded,
-                  () => Navigator.of(context).pop(),
-                ),
-              ),
-            ),
-            _kDivider,
-            Expanded(
-              child: ListView(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                physics: const ClampingScrollPhysics(),
-                children: [
-                  _SidebarItem(
-                    '首頁',
-                    currentIndex == PageIndex.home,
-                    () => _navigate(context, AppRoutes.home),
-                  ),
-                  _ExpandGroup(
-                    title: '文字開示',
-                    isActive: PageIndex.isTextTeachings(currentIndex),
-                    initiallyOpen: PageIndex.isTextTeachings(currentIndex),
-                    children: [
-                      for (final e in _kNavItems)
-                        _SidebarItem(
-                          e.label,
-                          currentIndex == AppRoutes.pageIndexOf(e.path),
-                          () => _navigate(context, e.path),
-                          indent: 16,
-                        ),
-                    ],
-                  ),
-                  _SidebarItem(
-                    '影音開示',
-                    currentIndex == PageIndex.videoTeachings,
-                    () => _navigate(context, AppRoutes.videoTeachings),
-                  ),
-                  _SidebarItem(
-                    '資源連結',
-                    currentIndex == PageIndex.resourceLinks,
-                    () => _navigate(context, AppRoutes.resourceLinks),
-                  ),
-                  _SidebarItem(
-                    '諦深佛陀簡介',
-                    currentIndex == PageIndex.buddhaIntro,
-                    () => _navigate(context, AppRoutes.buddhaIntro),
-                  ),
-                  _SidebarItem(
-                    '共修直播',
-                    currentIndex == PageIndex.liveStream,
-                    () => _navigate(context, AppRoutes.liveStream),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
       ),
-    ),
-  );
-}
-
-// ── _SidebarItem ───────────────────────────────────────────────────
-class _SidebarItem extends StatelessWidget {
-  final String label;
-  final bool isActive;
-  final VoidCallback onTap;
-  final double indent;
-
-  const _SidebarItem(this.label, this.isActive, this.onTap, {this.indent = 0});
-
-  @override
-  Widget build(BuildContext context) => _HoverContainer(
-    forceHighlight: isActive,
-    onTap: onTap,
-    builder: (hl) => AnimatedContainer(
-      duration: _dur130,
-      width: double.infinity,
-      margin: const EdgeInsets.symmetric(vertical: 2),
-      padding: EdgeInsets.only(
-        left: 16 + indent,
-        right: 16,
-        top: 12,
-        bottom: 12,
-      ),
-      decoration: _pillDeco(hl, r: 10),
-      child: Text(
-        label,
-        style: TextStyle(
-          fontSize: 15,
-          fontWeight: FontWeight.w600,
-          color: _hlColor(hl),
-        ),
-      ),
-    ),
-  );
-}
-
-// ── _ExpandGroup ───────────────────────────────────────────────────
-class _ExpandGroup extends StatefulWidget {
-  final String title;
-  final bool isActive, initiallyOpen;
-  final List<Widget> children;
-  const _ExpandGroup({
-    required this.title,
-    required this.isActive,
-    this.initiallyOpen = false,
-    required this.children,
-  });
-  @override
-  State<_ExpandGroup> createState() => _ExpandGroupState();
-}
-
-class _ExpandGroupState extends State<_ExpandGroup>
-    with SingleTickerProviderStateMixin {
-  late bool _open;
-  late final AnimationController _ctrl;
-  late final Animation<double> _turns;
-
-  static const _kTitleStyle = TextStyle(
-    fontSize: 15,
-    fontWeight: FontWeight.w600,
-    color: kNavTextOnGold,
-  );
-  static const _kArrow = Icon(
-    Icons.keyboard_arrow_down,
-    size: 20,
-    color: kNavTextOnGold,
-  );
-
-  @override
-  void initState() {
-    super.initState();
-    _open = widget.initiallyOpen;
-    _ctrl = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 200),
-      value: _open ? 1.0 : 0.0,
     );
-    _turns = Tween<double>(begin: 0, end: 0.5)
-        .animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOut));
+    overlay.insert(_entry!);
   }
 
   @override
   void dispose() {
-    _ctrl.dispose();
-    super.dispose();
-  }
-
-  void _toggle() {
-    setState(() => _open = !_open);
-    _open ? _ctrl.forward() : _ctrl.reverse();
-  }
-
-  @override
-  Widget build(BuildContext context) => Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      GestureDetector(
-        onTap: _toggle,
-        child: AnimatedContainer(
-          duration: _dur130,
-          width: double.infinity,
-          margin: const EdgeInsets.symmetric(vertical: 2),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          decoration: BoxDecoration(
-            color: widget.isActive ? _kWhite20 : Colors.transparent,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Row(
-            children: [
-              Expanded(child: Text(widget.title, style: _kTitleStyle)),
-              RotationTransition(turns: _turns, child: _kArrow),
-            ],
-          ),
-        ),
-      ),
-      AnimatedSize(
-        duration: const Duration(milliseconds: 220),
-        curve: Curves.easeOutCubic,
-        child: _open
-            ? Column(children: widget.children)
-            : const SizedBox.shrink(),
-      ),
-    ],
-  );
-}
-
-// ── _NavBtn ────────────────────────────────────────────────────────
-class _NavBtn extends StatelessWidget {
-  final String label;
-  final bool compact, isActive;
-  final VoidCallback onTap;
-  const _NavBtn({
-    required this.label,
-    required this.compact,
-    required this.isActive,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) => _HoverContainer(
-    forceHighlight: isActive,
-    onTap: onTap,
-    builder: (hl) => Center(
-      child: AnimatedContainer(
-        duration: _dur150,
-        margin: EdgeInsets.symmetric(horizontal: compact ? 3 : 4, vertical: 8),
-        padding: EdgeInsets.symmetric(
-          horizontal: compact ? 10 : 14,
-          vertical: 6,
-        ),
-        decoration: _pillDeco(hl),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: compact ? 13 : 14,
-            fontWeight: FontWeight.w600,
-            color: _hlColor(hl),
-          ),
-        ),
-      ),
-    ),
-  );
-}
-
-// ── _MenuHoverRegion ───────────────────────────────────────────────
-class _MenuHoverRegion extends StatefulWidget {
-  final Widget child;
-  final VoidCallback? onEnter;
-  final VoidCallback? onExit;
-  const _MenuHoverRegion({required this.child, this.onEnter, this.onExit});
-  @override
-  State<_MenuHoverRegion> createState() => _MenuHoverRegionState();
-}
-
-class _MenuHoverRegionState extends State<_MenuHoverRegion> {
-  final _key = GlobalKey();
-  bool _inside = false;
-
-  bool _hitTest(Offset global) {
-    final box = _key.currentContext?.findRenderObject() as RenderBox?;
-    if (box == null) return false;
-    return box.size.contains(box.globalToLocal(global));
-  }
-
-  void _onPtr(PointerEvent e) {
-    final inside = _hitTest(e.position);
-    if (inside == _inside) return;
-    _inside = inside;
-    if (inside)
-      widget.onEnter?.call();
-    else
-      widget.onExit?.call();
-  }
-
-  @override
-  Widget build(BuildContext context) => Listener(
-    onPointerMove: _onPtr,
-    onPointerHover: _onPtr,
-    onPointerCancel: (_) {
-      if (_inside) {
-        _inside = false;
-        widget.onExit?.call();
-      }
-    },
-    behavior: HitTestBehavior.translucent,
-    child: KeyedSubtree(key: _key, child: widget.child),
-  );
-}
-
-// ── _FloatingMenu ──────────────────────────────────────────────────
-class _FloatingMenu extends StatefulWidget {
-  final Offset origin;
-  final double triggerHeight;
-  final double menuWidth;
-  final List<Widget> children;
-  final VoidCallback onDismiss;
-  final VoidCallback? onMenuEnter;
-  final VoidCallback? onMenuExit;
-  const _FloatingMenu({
-    required this.origin,
-    required this.triggerHeight,
-    required this.menuWidth,
-    required this.children,
-    required this.onDismiss,
-    this.onMenuEnter,
-    this.onMenuExit,
-  });
-  @override
-  State<_FloatingMenu> createState() => _FloatingMenuState();
-}
-
-class _FloatingMenuState extends State<_FloatingMenu>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _ctrl;
-  late final Animation<double> _fade;
-  late final Animation<Offset> _slide;
-
-  static const _kDeco = BoxDecoration(
-    color: kPrimaryGold,
-    borderRadius: BorderRadius.all(Radius.circular(14)),
-    boxShadow: [
-      BoxShadow(color: _kBlack26, blurRadius: 16, offset: Offset(0, 6)),
-    ],
-  );
-
-  @override
-  void initState() {
-    super.initState();
-    _ctrl = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 160),
-    )..forward();
-    final curved = CurvedAnimation(parent: _ctrl, curve: Curves.easeOut);
-    _fade = curved;
-    _slide = Tween(
-      begin: const Offset(0, -0.04),
-      end: Offset.zero,
-    ).animate(curved);
-  }
-
-  @override
-  void dispose() {
-    _ctrl.dispose();
+    _closeTimer?.cancel();
+    _entry?.remove();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Positioned.fill(
-          child: PointerInterceptor(
-            child: GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: widget.onDismiss,
-              child: const ColoredBox(color: Colors.transparent),
-            ),
-          ),
-        ),
-        Positioned(
-          top: widget.origin.dy + widget.triggerHeight + 10,
-          left: widget.origin.dx,
-          child: FadeTransition(
-            opacity: _fade,
-            child: SlideTransition(
-              position: _slide,
-              child: PointerInterceptor(
-                child: _MenuHoverRegion(
-                  onEnter: widget.onMenuEnter,
-                  onExit: widget.onMenuExit,
-                  child: Material(
-                    elevation: 10,
-                    color: Colors.transparent,
-                    borderRadius: const BorderRadius.all(Radius.circular(14)),
-                    child: RepaintBoundary(
-                      child: Container(
-                        width: widget.menuWidth,
-                        padding: const EdgeInsets.all(8),
-                        decoration: _kDeco,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: widget.children,
-                        ),
-                      ),
+    return CompositedTransformTarget(
+      link: _link,
+      child: MouseRegion(
+        onEnter: (_) {
+          _cancelClose();
+          _openMenu();
+        },
+        onExit: (_) => _scheduleClose(),
+        child: GestureDetector(
+          onTap: _toggleMenu,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+              decoration: BoxDecoration(
+                color: _isActive ? _selectedBg : Colors.transparent,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    _triggerLabel,
+                    style: _itemLabelStyle.copyWith(
+                      color: _isActive ? _gold : _white,
                     ),
                   ),
-                ),
+                  Icon(
+                    Icons.expand_more,
+                    size: 18,
+                    color: _isActive ? _gold : _white,
+                  ),
+                ],
               ),
             ),
           ),
         ),
-      ],
+      ),
     );
   }
 }
 
-// ── _MenuRow ───────────────────────────────────────────────────────
-class _MenuRow extends StatelessWidget {
+// 金黃色下拉選單中的單一選項列，滑過時稍微加深底色。
+class _DropdownMenuRow extends StatefulWidget {
   final String label;
-  final bool isActive;
+  final bool selected;
   final VoidCallback onTap;
-  final double width;
-  const _MenuRow({
+  const _DropdownMenuRow({
     required this.label,
-    this.isActive = false,
+    required this.selected,
     required this.onTap,
-    required this.width,
   });
 
   @override
-  Widget build(BuildContext context) => _HoverContainer(
-    forceHighlight: isActive,
-    onTap: onTap,
-    builder: (hl) => AnimatedContainer(
-      duration: const Duration(milliseconds: 120),
-      width: width,
-      height: 44,
-      padding: const EdgeInsets.symmetric(horizontal: 10),
-      decoration: _pillDeco(hl, r: 8),
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(
-              label,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: _hlColor(hl),
+  State<_DropdownMenuRow> createState() => _DropdownMenuRowState();
+}
+
+class _DropdownMenuRowState extends State<_DropdownMenuRow> {
+  bool _hovering = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      onEnter: (_) => setState(() => _hovering = true),
+      onExit: (_) => setState(() => _hovering = false),
+      child: GestureDetector(
+        onTap: widget.onTap,
+        behavior: HitTestBehavior.opaque,
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          color: _hovering
+              ? Colors.white.withOpacity(0.18)
+              : Colors.transparent,
+          child: Row(
+            children: [
+              if (widget.selected)
+                const Padding(
+                  padding: EdgeInsets.only(right: 8),
+                  child: Icon(Icons.check, size: 16, color: _white),
+                )
+              else
+                const SizedBox(width: 24),
+              Expanded(
+                child: Text(
+                  widget.label,
+                  softWrap: true,
+                  style: _itemLabelStyle.copyWith(color: _white),
+                ),
               ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ── 窄螢幕：漢堡選單（依序列出下拉群組 + 同排群組） ─────────────────
+class _CompactNavMenu extends StatelessWidget {
+  final int currentIndex;
+  final ValueChanged<String> onSelect;
+  const _CompactNavMenu({required this.currentIndex, required this.onSelect});
+
+  @override
+  Widget build(BuildContext context) {
+    return PopupMenuButton<String>(
+      tooltip: '導覽選單',
+      icon: const Icon(Icons.menu, color: _white),
+      offset: const Offset(0, 44),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      color: Colors.white,
+      onSelected: onSelect,
+      itemBuilder: (ctx) => [
+        for (int i = 0; i < _allNavItems.length; i++) ...[
+          // 首頁之後、同排群組之前各加一條分隔線，維持與桌面版一致的分組。
+          if (i == 1 || i == 1 + _dropdownItems.length)
+            const PopupMenuDivider(),
+          PopupMenuItem<String>(
+            value: _allNavItems[i].path,
+            child: Row(
+              children: [
+                if (i == currentIndex)
+                  const Padding(
+                    padding: EdgeInsets.only(right: 8),
+                    child: Icon(Icons.check, size: 16, color: _gold),
+                  )
+                else
+                  const SizedBox(width: 24),
+                Text(_allNavItems[i].label),
+              ],
             ),
           ),
-          if (isActive)
-            Icon(Icons.check_rounded, size: 15, color: _hlColor(hl)),
         ],
-      ),
-    ),
-  );
-}
-
-// ── _OverlayTrigger mixin ──────────────────────────────────────────
-mixin _OverlayTrigger<T extends StatefulWidget> on State<T> {
-  OverlayEntry? _entry;
-  bool overlayOpen = false;
-  Timer? _hideTimer;
-  bool _menuHovered = false;
-
-  void showOverlay(OverlayEntry e) {
-    _hideTimer?.cancel();
-    _hideTimer = null;
-    if (_entry != null) return;
-    _entry = e;
-    setState(() => overlayOpen = true);
-    Overlay.of(context).insert(_entry!);
-  }
-
-  void _immediateHide() {
-    _entry?.remove();
-    _entry = null;
-    _menuHovered = false;
-    if (mounted) setState(() => overlayOpen = false);
-  }
-
-  void hideOverlay() {
-    _hideTimer?.cancel();
-    _hideTimer = null;
-    _immediateHide();
-  }
-
-  void onMenuEnter() {
-    _menuHovered = true;
-    _hideTimer?.cancel();
-    _hideTimer = null;
-  }
-
-  void onMenuExit() {
-    _menuHovered = false;
-    _hideTimer?.cancel();
-    _hideTimer = Timer(const Duration(milliseconds: 80), () {
-      if (!_menuHovered) _immediateHide();
-    });
-  }
-
-  @override
-  void dispose() {
-    _hideTimer?.cancel();
-    _entry?.remove();
-    _entry = null;
-    super.dispose();
-  }
-
-  OverlayEntry buildEntry(WidgetBuilder b) => OverlayEntry(builder: b);
-
-  (Offset, double, double) triggerMetrics() {
-    final box = context.findRenderObject() as RenderBox;
-    final ovlBox = Overlay.of(context).context.findRenderObject() as RenderBox;
-    return (
-      box.localToGlobal(Offset.zero, ancestor: ovlBox),
-      box.size.width,
-      box.size.height,
+      ],
     );
   }
-}
-
-// ── _DropdownBtn ───────────────────────────────────────────────────
-class _DropdownBtn extends StatefulWidget {
-  final bool isActive, compact;
-  const _DropdownBtn({required this.isActive, this.compact = false});
-  @override
-  State<_DropdownBtn> createState() => _DropdownBtnState();
-}
-
-class _DropdownBtnState extends State<_DropdownBtn>
-    with _OverlayTrigger<_DropdownBtn> {
-  // items 在 build 時才建，這樣才能拿到 context.go
-  List<Widget> _buildItems(BuildContext ctx) => [
-    for (final e in _kNavItems)
-      _MenuRow(
-        label: e.label,
-        width: 190,
-        onTap: () {
-          hideOverlay();
-          ctx.go(e.path);
-        },
-      ),
-  ];
-
-  void _show(BuildContext ctx) {
-    final (origin, _, h) = triggerMetrics();
-    showOverlay(
-      buildEntry(
-        (_) => _FloatingMenu(
-          origin: origin,
-          triggerHeight: h,
-          menuWidth: 190,
-          onDismiss: hideOverlay,
-          onMenuEnter: onMenuEnter,
-          onMenuExit: onMenuExit,
-          children: _buildItems(ctx),
-        ),
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) => _HoverContainer(
-    forceHighlight: widget.isActive || overlayOpen,
-    onTap: () => overlayOpen ? hideOverlay() : _show(context),
-    builder: (hl) => Center(
-      child: AnimatedContainer(
-        duration: _dur150,
-        margin: EdgeInsets.symmetric(
-          horizontal: widget.compact ? 3 : 4,
-          vertical: 8,
-        ),
-        padding: EdgeInsets.symmetric(
-          horizontal: widget.compact ? 10 : 14,
-          vertical: 6,
-        ),
-        decoration: _pillDeco(hl),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              '文字開示',
-              style: TextStyle(
-                fontSize: widget.compact ? 13 : 14,
-                fontWeight: FontWeight.w600,
-                color: _hlColor(hl),
-              ),
-            ),
-            const SizedBox(width: 4),
-            Icon(Icons.keyboard_arrow_down, size: 18, color: _hlColor(hl)),
-          ],
-        ),
-      ),
-    ),
-  );
-}
-
-// ── _IconBtn ───────────────────────────────────────────────────────
-class _IconBtn extends StatelessWidget {
-  final IconData icon;
-  final VoidCallback onTap;
-  const _IconBtn(this.icon, this.onTap);
-
-  @override
-  Widget build(BuildContext context) => _HoverContainer(
-    onTap: onTap,
-    builder: (hl) => AnimatedContainer(
-      duration: _dur130,
-      width: 40,
-      height: 40,
-      decoration: BoxDecoration(
-        color: hl ? Colors.white : Colors.transparent,
-        shape: BoxShape.circle,
-      ),
-      child: Icon(icon, color: _hlColor(hl), size: 26),
-    ),
-  );
 }

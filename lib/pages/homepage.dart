@@ -11,10 +11,10 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class LinkItem {
+class VideoLink {
   final String title;
   final String url;
-  const LinkItem(this.title, this.url);
+  const VideoLink(this.title, this.url);
 }
 
 class _HomePageState extends State<HomePage> {
@@ -59,60 +59,50 @@ class _HomePageState extends State<HomePage> {
 
   static bool _iframeRegistered = false;
 
-  static const List<LinkItem> _news = [
-    LinkItem('2026年5月最新開示公告', 'https://example.com'),
-    LinkItem('近期修持活動說明', 'https://example.com'),
-  ];
+  static const String _announcementText =
+      '法務處關於成立 世界佛法修證靈異協會理事會的通知：\n\n'
+      '報名條件\n\n'
+      '真正的出家或受菩薩戒大居士並具有以下修行境地的\n'
+      '1. 能禪坐兩天以上，並能入定不起於座的僧人、大居士；\n'
+      '2. 能嚴淨毗尼法，能行神變、能給大眾無時間間隔治病，並隨時演示驗證於當事人的僧人、大居士；\n'
+      '3. 能演說經法不起於座的僧人！所謂演說經法是：將釋迦牟尼佛所說經法，現場演示給廣大眾生看，並與經中所說對應，稱為演說！\n\n'
+      '另外，諦深和尚的資深弟子，亦可作為報名資格條件！\n\n'
+      '須彌山佛國網、妙湛寺流亡僧侶法務處！2026.9.3';
 
-  static const List<LinkItem> _videos = [
-    LinkItem('諦深佛陀開示 2020年3月7日', 'https://youtu.be/2z26miBEBkA'),
-    LinkItem('諦深佛陀開示 2020年3月14日', 'https://youtu.be/aYdmafP7HMY'),
-    LinkItem('諦深佛陀開示 2020年3月21日', 'https://youtu.be/3uGgjYDmhUA'),
-    LinkItem('諦深佛陀開示 2020年3月28日', 'https://youtu.be/stTdG5iHhjE'),
-    LinkItem('諦深佛陀開示 2020年4月4日', 'https://youtu.be/5C4nQcL9LQQ'),
-    LinkItem('諦深佛陀開示 2020年4月11日', 'https://youtu.be/H1lleUTetsQ'),
-    LinkItem('諦深佛陀開示 2020年4月18日', 'https://youtu.be/aBnWRe6MuMo'),
-    LinkItem('諦深佛陀開示 2020年4月25日', 'https://youtu.be/LJyHPuiF8UQ'),
-    LinkItem('諦深佛陀開示 2020年4月26日', 'https://youtu.be/yPiOy9NjS_c'),
-    LinkItem('諦深佛陀開示 2020年5月2日', 'https://youtu.be/eqKls8wUiPY'),
-    LinkItem('諦深佛陀開示 2020年5月9日', 'https://youtu.be/XBeCi0JORV0'),
-    LinkItem('諦深佛陀開示 2020年5月16日', 'https://youtu.be/nj711RpHviw'),
-    LinkItem('諦深佛陀開示 2020年5月23日', 'https://youtu.be/QuQSeUm7N9M'),
-    LinkItem('諦深佛陀開示 2020年5月30日', 'https://youtu.be/rfsX-E7Il5w'),
-    LinkItem('諦深佛陀開示 2020年6月6日', 'https://youtu.be/dJhRgdfS6iU'),
-    LinkItem('諦深佛陀開示 2020年6月13日', 'https://youtu.be/262NEBlWEqg'),
-    LinkItem('諦深佛陀開示 2020年6月20日', 'https://youtu.be/j6mM4OQ9MCk'),
-    LinkItem('諦深佛陀開示 2020年6月27日', 'https://youtu.be/H3VNj1IN6cQ'),
-    LinkItem('諦深佛陀開示 2020年7月4日', 'https://youtu.be/rX3999zfw00'),
-    LinkItem('諦深佛陀開示 2020年7月11日', 'https://youtu.be/DnQG3YtISs8'),
-    LinkItem('諦深佛陀開示 2020年7月18日', 'https://youtu.be/g28d1S926Rc'),
-    LinkItem('諦深佛陀開示 2020年7月25日', 'https://youtu.be/txzLgfTEPXk'),
-    LinkItem('諦深佛陀開示 2020年8月1日', 'https://youtu.be/Xa8oQYBxK9Q'),
-    LinkItem('諦深佛陀開示 2020年8月8日', 'https://youtu.be/AOAS242oUlE'),
-    LinkItem('諦深佛陀開示 2020年8月15日', 'https://youtu.be/oDjIuDkA9tg'),
-    LinkItem('諦深佛陀開示 2020年8月22日', 'https://youtu.be/pIRPa9gNFqA'),
-    LinkItem('諦深佛陀開示 2020年8月29日', 'https://youtu.be/jIv-IhC-RHM'),
-    LinkItem('諦深佛陀開示 2020年9月5日', 'https://youtu.be/gIpKP3KP48c'),
-    LinkItem('諦深佛陀開示 2020年9月12日', 'https://youtu.be/G3Ncx7iwImU'),
-    LinkItem('諦深佛陀開示 2020年9月19日', 'https://youtu.be/vnzcDNC4XFg'),
-    LinkItem('諦深佛陀開示 2020年9月26日', 'https://youtu.be/NugoxAuPvzA'),
-    LinkItem('諦深佛陀開示 2020年10月3日', 'https://youtu.be/RRopQZdX45k'),
-    LinkItem('諦深佛陀開示 2020年10月10日', 'https://youtu.be/Kk_GO7LC8q0'),
-    LinkItem('諦深佛陀開示 2020年10月17日', 'https://youtu.be/M5wu_DWiPS8'),
-    LinkItem('諦深佛陀開示 2020年10月24日', 'https://youtu.be/IqhBwhYHC_k'),
-    LinkItem('諦深佛陀開示 2020年10月31日', 'https://youtu.be/Vhm19TQjp68'),
-    LinkItem('諦深佛陀開示 2020年11月7日', 'https://youtu.be/Y_dzD41G7ow'),
-    LinkItem('諦深佛陀開示 2020年11月14日', 'https://youtu.be/7Vd8-bBqEoM'),
-    LinkItem('諦深佛陀開示 2020年11月21日', 'https://youtu.be/3PKymWBy4xg'),
-    LinkItem('諦深佛陀開示 2020年11月28日', 'https://youtu.be/nday-JJ-Cww'),
-    LinkItem('諦深佛陀開示 2020年12月5日', 'https://youtu.be/w3_FQTXuqFg'),
-    LinkItem('諦深佛陀開示 2020年12月12日', 'https://youtu.be/eWIi69l28dE'),
-    LinkItem('諦深佛陀開示 2020年12月19日', 'https://youtu.be/W684lpOKESQ'),
-    LinkItem('諦深佛陀開示 2020年12月26日', 'https://youtu.be/XQVCQvpi3RM'),
-    LinkItem('諦深佛陀開示 2020年12月31日', 'https://youtu.be/AwoN9zqdpHE'),
-    LinkItem('諦深佛陀開示 2021年1月2日', 'https://youtu.be/ffC1-37WU5U'),
-    LinkItem('諦深佛陀開示 2021年1月9日', 'https://youtu.be/e-T5aXiY4Fc'),
-    LinkItem('諦深佛陀開示 2021年1月16日', 'https://youtu.be/MzoUsZvr4Us'),
+  static const List<VideoLink> _videoCards = [
+    VideoLink('諦深佛陀開示 2026/8/30 權力使徒 ', 'https://youtu.be/25I07fOtbUY'),
+    VideoLink('諦深佛陀開示 2026/2/6 台灣獲救 ', 'https://youtu.be/poPIFKQdEJQ'),
+    VideoLink('諦深佛陀開示 2026/4/19 世界未來的走向、修行人如何修行', 'https://youtu.be/IM7mE1US8'),
+    VideoLink('諦深佛陀開示 2026/4/1 伊朗戰爭給美國給世界帶來了什麼?', 'https://youtu.be/d-aCek8pEbc'),
+    VideoLink('諦深佛陀開示 2026/3/20 願聽不聽', 'https://youtu.be/d-aCek8pEbc'),
+    VideoLink('諦深佛陀開示 2025/10/15 聯合國為什麼認不清共產黨', 'https://youtu.be/n__oPcKZ3xQ'),
+    VideoLink('諦深佛陀開示 2026/3/28 如何積功德', 'https://youtu.be/wj_zju3ms8Q'),
+    VideoLink('諦深佛陀開示 2025/6/15 建爐(煉丹品 二)', 'https://youtu.be/Nk0y9x0AXf0'),
+    VideoLink('諦深佛陀開示 2025/8/5 傳承與如何獲得傳承', 'https://youtu.be/9fms2VVgBWU'),
+    VideoLink('諦深佛陀開示 2025/8/5 傳承與如何獲得傳承', 'https://youtu.be/9fms2VVgBWU'),
+    VideoLink('諦深佛陀開示 2025/8/26 中國佛教協會通告不能誹謗國主', 'https://youtu.be/N7O_NRdzb2s'),
+    VideoLink('諦深佛陀開示 2025/9/28 達爾文進化論的科學與夢是什麼', 'https://youtu.be/YNOJvc28Fck'),
+    VideoLink('諦深佛陀開示 2025/10/12 須彌山與相對論', 'https://youtu.be/IceEbJQjLRk'),
+    VideoLink('諦深佛陀開示 2026/3/24 實妄、理妄、現實妄、不定報', 'https://youtu.be/7l6sop15BCM'),
+    VideoLink('諦深佛陀開示 2025/12/1 概率AI都是因果', 'https://youtu.be/PfGXXqWSAx0'),
+    VideoLink('諦深佛陀開示 2025/7/31 佛難之時不能斷滅慈悲種', 'https://youtu.be/txY3AObl34Q'),
+    VideoLink('諦深佛陀開示 2025/8/19 談AI與硅基生命', 'https://youtu.be/XXz8UZbGXEQ'),
+    VideoLink('諦深佛陀開示 2026/2/2 張又俠為什麼不能造反 中國軍隊為什麼不會造反?', 'https://youtu.be/r6PRti3gCRo'),
+    VideoLink('諦深佛陀開示 2026/5/1 人類滅亡的三大本質', 'https://youtu.be/AbOQCAM1yLY'),
+    VideoLink('諦深佛陀開示 2026/4/16 消滅共產黨 建立民主國家', 'https://youtu.be/6OrrrXTL1y4'),
+    VideoLink('諦深佛陀開示 2026/4/11 嚴厲批評鄭麗文拜見習近平', 'https://youtu.be/LipQH3HQMTA'),
+    VideoLink('諦深佛陀開示 2026/4/2 給美國、歐盟 各個國家文明陣營中的政要們最後一個慈悲開示', 'https://youtu.be/DpVzYUMunDw'),
+    VideoLink('諦深佛陀開示 2025/12/23 什麼是權力與政治', 'https://youtu.be/W-_EWKOqzho'),
+    VideoLink('諦深佛陀開示 2026/3/21 師父為什麼關注戰爭', 'https://youtu.be/d2fx4qIFeNs'),
+    VideoLink('諦深佛陀開示 2026/3/24 共產黨的惡犬遍布全世界', 'https://youtu.be/Xp9UHcq5N7Q'),
+    VideoLink('諦深佛陀開示 2026/3/21 川普攻打伊朗會怎麼收場', 'https://youtu.be/4ls4gi_uLW0'),
+    VideoLink('諦深佛陀開示 2026/1/30 菩薩道-信任', 'https://youtu.be/2kSmOjFkYMo'),
+    VideoLink('諦深佛陀開示 2026/1/11 共產黨的報應快到', 'https://youtu.be/SHql6vKHZxk'),
+    VideoLink('諦深佛陀開示 2025/12/30 修清淨法 台灣發生戰爭怎麼辦?', 'https://youtu.be/s_YgO0zz6n8'),
+    VideoLink('諦深佛陀開示 2026/12/21 在家修行能成就嗎?', 'https://youtu.be/PpY5VQ_vkK0'),
+    VideoLink('諦深佛陀開示 2025/11/1 如何往去善世界', 'https://youtu.be/N2aQqTl1d0U'),
+    VideoLink('諦深佛陀開示 2025/10/30 養殖業的緣分', 'https://youtu.be/b8D2icesbfM'),
+    VideoLink('諦深佛陀開示 2025/10/19 公平與和平', 'https://youtu.be/Zpqis7rMq3Y'),
   ];
 
   @override
@@ -160,13 +150,6 @@ class _HomePageState extends State<HomePage> {
     _carouselTimer?.cancel();
     _carouselController.dispose();
     super.dispose();
-  }
-
-  Future<void> _launchURL(String url) async {
-    final uri = Uri.parse(url);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    }
   }
 
   // ── 輪播圖 ────────────────────────────────────────────────
@@ -345,10 +328,10 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // ── 內容區塊（最新消息 / 影音開示）────────────────────────
+  // ── 內容區塊（最新公告，純文字布告欄）──────────────────────
   Widget _buildSection({
     required String title,
-    required List<LinkItem> items,
+    required String content,
     required IconData icon,
   }) {
     return Container(
@@ -384,51 +367,146 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
           ),
-          // 清單
-          SizedBox(
-            height: 300,
-            child: ListView.separated(
-              padding: const EdgeInsets.symmetric(vertical: 4),
-              itemCount: items.length,
-              separatorBuilder: (_, __) => Divider(
-                color: _goldDim,
-                height: 1,
-                indent: 16,
-                endIndent: 16,
+          // 公告內容（純文字）
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            child: Text(
+              content,
+              style: TextStyle(
+                color: _gold,
+                fontSize: 15,
+                fontWeight: FontWeight.w500,
+                height: 1.7,
               ),
-              itemBuilder: (_, i) {
-                final item = items[i];
-                return InkWell(
-                  borderRadius: BorderRadius.circular(8),
-                  onTap: () => _launchURL(item.url),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 13,
-                      horizontal: 16,
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(Icons.chevron_right, color: _gold, size: 18),
-                        const SizedBox(width: 6),
-                        Expanded(
-                          child: Text(
-                            item.title,
-                            style: TextStyle(
-                              color: _gold,
-                              fontSize: 15,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                        Icon(Icons.open_in_new, color: _goldDim, size: 15),
-                      ],
-                    ),
-                  ),
-                );
-              },
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Future<void> _launchURL(String url) async {
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  }
+
+  // ── 從 YouTube 連結取得影片 ID ─────────────────────────────
+  String? _extractYoutubeId(String url) {
+    final uri = Uri.tryParse(url);
+    if (uri == null) return null;
+    if (uri.host.contains('youtu.be')) {
+      return uri.pathSegments.isNotEmpty ? uri.pathSegments.first : null;
+    }
+    if (uri.queryParameters.containsKey('v')) {
+      return uri.queryParameters['v'];
+    }
+    return null;
+  }
+
+  // ── 影片卡片區塊（仿 video_teaching 卡片樣式：縮圖 + 標題）───
+  Widget _buildVideoIconCards(double contentWidth, List<VideoLink> videos) {
+    const crossAxisCount = 4;
+    const spacing = 16.0;
+    final cardWidth =
+        (contentWidth - spacing * (crossAxisCount - 1)) / crossAxisCount;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(Icons.play_circle_outline, color: _gold, size: 20),
+            const SizedBox(width: 8),
+            Text(
+              '最新開示',
+              style: TextStyle(
+                color: _gold,
+                fontSize: 17,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.2,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        Wrap(
+          spacing: spacing,
+          runSpacing: spacing,
+          children: [
+            for (final v in videos)
+              SizedBox(width: cardWidth, child: _videoIconCard(v)),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _videoIconCard(VideoLink video) {
+    final videoId = _extractYoutubeId(video.url);
+    return GestureDetector(
+      onTap: () => _launchURL(video.url),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0x12000000),
+              blurRadius: 20,
+              offset: Offset(0, 4),
+            ),
+            BoxShadow(
+              color: Color(0x0A000000),
+              blurRadius: 6,
+              offset: Offset(0, 1),
+            ),
+          ],
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            AspectRatio(
+              aspectRatio: 16 / 9,
+              child: videoId == null
+                  ? Container(
+                      color: const Color(0xFFF0F0F0),
+                      child: const Icon(
+                        Icons.broken_image,
+                        size: 40,
+                        color: Colors.grey,
+                      ),
+                    )
+                  : Image.network(
+                      'https://img.youtube.com/vi/$videoId/hqdefault.jpg',
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => Container(
+                        color: const Color(0xFFF0F0F0),
+                        child: const Icon(
+                          Icons.broken_image,
+                          size: 40,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              child: Text(
+                video.title,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: _gold,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -437,7 +515,6 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final double w = MediaQuery.of(context).size.width;
     final double contentWidth = w > 1100 ? 1000 : w * 0.95;
-    final bool isWide = w > 720;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(vertical: 28),
@@ -476,50 +553,27 @@ class _HomePageState extends State<HomePage> {
                   const SizedBox(height: 32),
 
                   // ── 輪播圖（RWD）────────────────────────────────
-                  SizedBox(width: contentWidth, child: _buildCarousel(contentWidth)),
-                  const SizedBox(height: 36),
-
-                  // ── 最新消息 & 影音開示 ──────────────────────────
                   SizedBox(
                     width: contentWidth,
-                    child: isWide
-                        ? IntrinsicHeight(
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                Expanded(
-                                  child: _buildSection(
-                                    title: '最新消息',
-                                    items: _news,
-                                    icon: Icons.campaign_outlined,
-                                  ),
-                                ),
-                                const SizedBox(width: 20),
-                                Expanded(
-                                  child: _buildSection(
-                                    title: '影音開示',
-                                    items: _videos,
-                                    icon: Icons.play_circle_outline,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          )
-                        : Column(
-                            children: [
-                              _buildSection(
-                                title: '最新消息',
-                                items: _news,
-                                icon: Icons.campaign_outlined,
-                              ),
-                              const SizedBox(height: 24),
-                              _buildSection(
-                                title: '影音開示',
-                                items: _videos,
-                                icon: Icons.play_circle_outline,
-                              ),
-                            ],
-                          ),
+                    child: _buildCarousel(contentWidth),
+                  ),
+                  const SizedBox(height: 36),
+
+                  // ── 最新公告 ──────────────────────────────────────
+                  SizedBox(
+                    width: contentWidth,
+                    child: _buildSection(
+                      title: '最新公告',
+                      content: _announcementText,
+                      icon: Icons.campaign_outlined,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+
+                  // ── 影片小卡片（圖示 + 標題）────────────────────
+                  SizedBox(
+                    width: contentWidth,
+                    child: _buildVideoIconCards(contentWidth, _videoCards),
                   ),
                 ],
               ),

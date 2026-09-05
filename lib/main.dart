@@ -12,6 +12,7 @@ import 'pages/jiyuandaozhi.dart';
 import 'pages/miezuijuan.dart';
 import 'pages/shizhai.dart';
 import 'pages/video_teaching.dart';
+import 'pages/classroomvideo_teaching.dart';
 import 'pages/resource_links.dart';
 import 'pages/buddha_intro.dart';
 import 'translation_service.dart' hide TranslationService;
@@ -31,21 +32,50 @@ final _router = GoRouter(
   initialLocation: AppRoutes.home,
   routes: [
     ShellRoute(
-      builder: (context, state, child) => MainShell(
-        location: state.matchedLocation,
-        child: child,
-      ),
+      builder: (context, state, child) =>
+          MainShell(location: state.matchedLocation, child: child),
       routes: [
-        GoRoute(path: AppRoutes.home,           builder: (_, __) => const HomePage()),
-        GoRoute(path: AppRoutes.dharmaRealize,  builder: (_, __) => const DharmaRealizePage()),
-        GoRoute(path: AppRoutes.yingShiJuan,    builder: (_, __) => const YingShiJuanPage()),
-        GoRoute(path: AppRoutes.mieZuiJuan,     builder: (_, __) => const MieZuiJuanPage()),
-        GoRoute(path: AppRoutes.jiYuanDaoZhi,   builder: (_, __) => const JiYuanDaoZhiPage()),
-        GoRoute(path: AppRoutes.shiZhai,        builder: (_, __) => const ShiZhaiPage()),
-        GoRoute(path: AppRoutes.videoTeachings, builder: (_, __) => const VideoTeachingsPage()),
-        GoRoute(path: AppRoutes.resourceLinks,  builder: (_, __) => const ResourceLinksPage()),
-        GoRoute(path: AppRoutes.buddhaIntro,    builder: (_, __) => const BuddhaIntroPage()),
-        GoRoute(path: AppRoutes.liveStream,     builder: (_, __) => const LiveStreamPage()),
+        GoRoute(path: AppRoutes.home, builder: (_, __) => const HomePage()),
+        GoRoute(
+          path: AppRoutes.dharmaRealize,
+          builder: (_, __) => const DharmaRealizePage(),
+        ),
+        GoRoute(
+          path: AppRoutes.yingShiJuan,
+          builder: (_, __) => const YingShiJuanPage(),
+        ),
+        GoRoute(
+          path: AppRoutes.mieZuiJuan,
+          builder: (_, __) => const MieZuiJuanPage(),
+        ),
+        GoRoute(
+          path: AppRoutes.jiYuanDaoZhi,
+          builder: (_, __) => const JiYuanDaoZhiPage(),
+        ),
+        GoRoute(
+          path: AppRoutes.shiZhai,
+          builder: (_, __) => const ShiZhaiPage(),
+        ),
+        GoRoute(
+          path: AppRoutes.videoTeachings,
+          builder: (_, __) => const VideoTeachingsPage(),
+        ),
+        GoRoute(
+          path: AppRoutes.resourceLinks,
+          builder: (_, __) => const ResourceLinksPage(),
+        ),
+        GoRoute(
+          path: AppRoutes.buddhaIntro,
+          builder: (_, __) => const BuddhaIntroPage(),
+        ),
+        GoRoute(
+          path: AppRoutes.liveStream,
+          builder: (_, __) => const LiveStreamPage(),
+        ),
+        GoRoute(
+          path: AppRoutes.classroomVideoTeachings,
+          builder: (_, __) => const ClassroomVideoTeachingsPage(),
+        ),
       ],
     ),
   ],
@@ -118,14 +148,11 @@ class _MainShellState extends State<MainShell> {
       backgroundColor: const Color.fromARGB(255, 255, 254, 254),
       body: Stack(
         children: [
-
           // ── 頁面主體 + Footer：用 CustomScrollView 確保 Footer 完整顯示 ──
           CustomScrollView(
             slivers: [
               // AppBar 佔位
-              const SliverToBoxAdapter(
-                child: SizedBox(height: 80),
-              ),
+              const SliverToBoxAdapter(child: SizedBox(height: 80)),
               // 頁面內容：撐滿剩餘空間
               SliverFillRemaining(
                 hasScrollBody: false,
