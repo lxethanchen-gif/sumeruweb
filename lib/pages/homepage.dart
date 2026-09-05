@@ -59,6 +59,7 @@ class _HomePageState extends State<HomePage> {
 
   // ── 影片分頁狀態 ──────────────────────────────────────────
   int _videoPage = 0;
+  int _videoPage2 = 0; // 第二個「最新開示」版面的獨立分頁狀態
   static const int _videosPerPage = 16;
 
   static bool _iframeRegistered = false;
@@ -203,6 +204,52 @@ class _HomePageState extends State<HomePage> {
     VideoLink('諦深佛陀開示 2025/5/29 共產黨血洗佛門', 'https://youtu.be/IlzAa-OOgeM'),
     VideoLink('諦深佛陀開示 2025/5/25 煉丹的基礎(煉丹品 二)', 'https://youtu.be/wR7dVoHC890'),
     VideoLink('諦深佛陀開示 2024/4/17 在台灣玉山為佛陀建寺院', 'https://youtu.be/DrY6G623UC0'),
+  ];
+
+  // ── 「座下弟子實修實證」影片清單 ───────────────────────────
+  // 在下面依同樣格式新增 VideoLink('標題', '網址') 即可加入更多影片
+  static const List<VideoLink> _discipleVideoCards = [
+    VideoLink('座下弟子智心 實修實證', 'https://youtu.be/Wi0iu41-d-4'),
+    VideoLink('座下弟子智禪境 實修實證', 'https://youtu.be/IIjqBOApcDk'),
+    VideoLink('座下弟子智印連 實修實證', 'https://youtu.be/wZM4MgDzJ3g'),
+    VideoLink('座下弟子智禪妙 實修實證', 'https://youtu.be/xKEAh3-NTrY'),
+    VideoLink('座下弟子從萍 實修實證', 'https://youtu.be/8xHCwBh9r10'),
+    VideoLink('座下弟子智確 實修實證', 'https://youtu.be/OaibjOrscB8'),
+    VideoLink('座下弟子智確 實修實證', 'https://youtu.be/LvFaj60MyKU'),
+    VideoLink('座下弟子智法常 實修實證', 'https://youtu.be/qQK6KMk4LfY'),
+    VideoLink('座下弟子智明常 實修實證', 'https://youtu.be/GAMdxgtD2l0'),
+    VideoLink('座下弟子智恩 實修實證', 'https://youtu.be/TXP5cudivYc'),
+    VideoLink('座下弟子智道宜 實修實證', 'https://youtu.be/AHot-enbJgE'),
+    VideoLink('座下弟子智法哲 實修實證', 'https://youtu.be/vxnVx8JMjsU'),
+    VideoLink('座下弟子智本田 實修實證', 'https://youtu.be/bnt6-kcyagw'),
+    VideoLink('座下弟子智禪妙 實修實證', 'https://youtu.be/sHroZ-en-wo'),
+    VideoLink('座下弟子智法敏 實修實證', 'https://youtu.be/QduiRIMRkIg'),
+    VideoLink('座下弟子智田 實修實證', 'https://youtu.be/o-BLudxH-NM'),
+    VideoLink('座下弟子智田 實修實證', 'https://youtu.be/o-BLudxH-NM'),
+    VideoLink('座下弟子智印蓮 實修實證', 'https://youtu.be/fFjblXrZUYA'),
+    VideoLink('座下弟子智宜 實修實證', 'https://youtu.be/YlxVslOAJUk'),
+    VideoLink('座下弟子智宜 實修實證', 'https://youtu.be/YlxVslOAJUk'),
+    VideoLink('座下弟子智法覺 實修實證', 'https://youtu.be/tTCncy0h4TE'),
+    VideoLink('座下弟子智法明 實修實證', 'https://youtu.be/ZJL-137s7Cs'),
+    VideoLink('座下弟子智禪覺 實修實證', 'https://youtu.be/_-r8AFhx8rw'),
+    VideoLink('座下弟子智道剛 實修實證', 'https://youtu.be/_mZjHeGKSVY'),
+    VideoLink('座下弟子智道剛 實修實證', 'https://youtu.be/_mZjHeGKSVY'),
+    VideoLink('座下弟子智安 實修實證', 'https://youtu.be/94OlFzwVnv0'),
+    VideoLink('座下弟子智蓉 實修實證', 'https://youtu.be/nuZMWcc3__4'),
+    VideoLink('座下弟子智禪律 實修實證', 'https://youtu.be/m8smoi97uf0'),
+    VideoLink('座下弟子智禪元 實修實證', 'https://youtu.be/OsJF7SGhhmQ'),
+    VideoLink('座下弟子智定圓 實修實證', 'https://youtu.be/19thohxXxzs'),
+    VideoLink('座下弟子智演樂 實修實證', 'https://youtu.be/8jbR437HqP8'),
+    VideoLink('座下弟子智檀實 實修實證', 'https://youtu.be/27G0QHHA6i4'),
+    VideoLink('座下弟子智道曉 實修實證', 'https://youtu.be/RuFqOr3lMeM'),
+    VideoLink('座下弟子智屬 實修實證', 'https://youtu.be/HPfAvfY-5UA'),
+    VideoLink('座下弟子智道是 實修實證', 'https://youtu.be/mnxiPjEjvDU'),
+    VideoLink('座下弟子智道真 實修實證', 'https://youtu.be/LSLnqQG2xQE'),
+    VideoLink('座下弟子智然 實修實證', 'https://youtu.be/r_bcg3t_-3w'),
+    VideoLink('生命可以再來一次', 'https://youtu.be/C-wW-Q2P_7s'),
+    VideoLink('座下弟子智道觀 實修實證', 'https://youtu.be/3CQV7DwfSik'),
+    VideoLink('座下弟子智瀾 實修實證', 'https://youtu.be/1zxbudPTAo0'),
+    VideoLink('座下弟子智法照 實修實證', 'https://youtu.be/3m__Z2LbAOg'),
   ];
 
   @override
@@ -512,20 +559,32 @@ class _HomePageState extends State<HomePage> {
     return 4; // 桌機
   }
 
-  void _goToVideoPage(int page, int pageCount) {
-    if (page < 0 || page >= pageCount || page == _videoPage) return;
-    setState(() => _videoPage = page);
+  void _goToVideoPage(
+    int page,
+    int pageCount,
+    int currentPage,
+    ValueChanged<int> onPageChanged,
+  ) {
+    if (page < 0 || page >= pageCount || page == currentPage) return;
+    onPageChanged(page);
   }
 
   // ── 影片卡片區塊（RWD 欄數 + 每頁 24 部分頁）───────────────
-  Widget _buildVideoIconCards(double contentWidth, List<VideoLink> videos) {
+  // page / onPageChanged 讓同一個版面可以被重複使用、各自維護獨立的分頁狀態
+  Widget _buildVideoIconCards(
+    double contentWidth,
+    List<VideoLink> videos, {
+    String title = '最新開示',
+    required int page,
+    required ValueChanged<int> onPageChanged,
+  }) {
     final crossAxisCount = _videoCrossAxisCount(contentWidth);
     const spacing = 16.0;
     final cardWidth =
         (contentWidth - spacing * (crossAxisCount - 1)) / crossAxisCount;
 
     final pageCount = (videos.length / _videosPerPage).ceil().clamp(1, 1 << 30);
-    final safePage = _videoPage.clamp(0, pageCount - 1);
+    final safePage = page.clamp(0, pageCount - 1);
     final start = safePage * _videosPerPage;
     final end = (start + _videosPerPage).clamp(0, videos.length);
     final pageVideos = videos.sublist(start, end);
@@ -544,7 +603,7 @@ class _HomePageState extends State<HomePage> {
             Icon(Icons.play_circle_outline, color: _gold, size: 20),
             const SizedBox(width: 8),
             Text(
-              '最新開示',
+              title,
               style: TextStyle(
                 color: _gold,
                 fontSize: 17,
@@ -574,13 +633,23 @@ class _HomePageState extends State<HomePage> {
                 _videoPageButton(
                   icon: Icons.chevron_left,
                   enabled: hasPrev,
-                  onTap: () => _goToVideoPage(safePage - 1, pageCount),
+                  onTap: () => _goToVideoPage(
+                    safePage - 1,
+                    pageCount,
+                    safePage,
+                    onPageChanged,
+                  ),
                 ),
                 const SizedBox(width: 16),
                 _videoPageButton(
                   icon: Icons.chevron_right,
                   enabled: hasNext,
-                  onTap: () => _goToVideoPage(safePage + 1, pageCount),
+                  onTap: () => _goToVideoPage(
+                    safePage + 1,
+                    pageCount,
+                    safePage,
+                    onPageChanged,
+                  ),
                 ),
               ],
             ),
@@ -604,7 +673,12 @@ class _HomePageState extends State<HomePage> {
                 child: _videoPageButton(
                   icon: Icons.chevron_left,
                   enabled: hasPrev,
-                  onTap: () => _goToVideoPage(safePage - 1, pageCount),
+                  onTap: () => _goToVideoPage(
+                    safePage - 1,
+                    pageCount,
+                    safePage,
+                    onPageChanged,
+                  ),
                 ),
               ),
               Positioned(
@@ -612,7 +686,12 @@ class _HomePageState extends State<HomePage> {
                 child: _videoPageButton(
                   icon: Icons.chevron_right,
                   enabled: hasNext,
-                  onTap: () => _goToVideoPage(safePage + 1, pageCount),
+                  onTap: () => _goToVideoPage(
+                    safePage + 1,
+                    pageCount,
+                    safePage,
+                    onPageChanged,
+                  ),
                 ),
               ),
             ],
@@ -782,7 +861,25 @@ class _HomePageState extends State<HomePage> {
                   // ── 影片小卡片（RWD 欄數 + 分頁）────────────────
                   SizedBox(
                     width: contentWidth,
-                    child: _buildVideoIconCards(contentWidth, _videoCards),
+                    child: _buildVideoIconCards(
+                      contentWidth,
+                      _videoCards,
+                      page: _videoPage,
+                      onPageChanged: (p) => setState(() => _videoPage = p),
+                    ),
+                  ),
+                  const SizedBox(height: 36),
+
+                  // ── 影片小卡片（第二版面：座下弟子實修實證）─────
+                  SizedBox(
+                    width: contentWidth,
+                    child: _buildVideoIconCards(
+                      contentWidth,
+                      _discipleVideoCards,
+                      title: '座下弟子實修實證',
+                      page: _videoPage2,
+                      onPageChanged: (p) => setState(() => _videoPage2 = p),
+                    ),
                   ),
                 ],
               ),
