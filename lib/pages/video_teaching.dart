@@ -435,11 +435,6 @@ const _videos = <VideoData>[
     'https://youtu.be/Vjajl5I010M',
   ),
   VideoData(
-    'Vjajl5I010M',
-    '2021年7月28日',
-    'https://youtu.be/Vjajl5I010M',
-  ),
-  VideoData(
     '0B2V8lvOPKQ',
     '諦深佛陀開示 如何修止觀',
     'https://youtu.be/0B2V8lvOPKQ',
