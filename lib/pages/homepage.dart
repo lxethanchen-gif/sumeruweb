@@ -57,6 +57,10 @@ class _HomePageState extends State<HomePage> {
   Timer? _carouselTimer;
   bool _userInteracting = false;
 
+  // ── 影片分頁狀態 ──────────────────────────────────────────
+  int _videoPage = 0;
+  static const int _videosPerPage = 16;
+
   static bool _iframeRegistered = false;
 
   static const String _announcementText =
@@ -72,11 +76,20 @@ class _HomePageState extends State<HomePage> {
   static const List<VideoLink> _videoCards = [
     VideoLink('諦深佛陀開示 2026/8/30 權力使徒 ', 'https://youtu.be/25I07fOtbUY'),
     VideoLink('諦深佛陀開示 2026/5/1 人類滅亡的三大本質', 'https://youtu.be/AbOQCAM1yLY'),
-    VideoLink('諦深佛陀開示 2026/4/19 世界未來的走向、修行人如何修行', 'https://youtu.be/IM7mE1US8'),
+    VideoLink(
+      '諦深佛陀開示 2026/4/19 世界未來的走向、修行人如何修行',
+      'https://youtu.be/IM7mE1US8-0',
+    ),
     VideoLink('諦深佛陀開示 2026/4/16 消滅共產黨 建立民主國家', 'https://youtu.be/6OrrrXTL1y4'),
     VideoLink('諦深佛陀開示 2026/4/11 嚴厲批評鄭麗文拜見習近平', 'https://youtu.be/LipQH3HQMTA'),
-    VideoLink('諦深佛陀開示 2026/4/2 給美國、歐盟 各個國家文明陣營中的政要們最後一個慈悲開示', 'https://youtu.be/DpVzYUMunDw'),
-    VideoLink('諦深佛陀開示 2026/4/1 伊朗戰爭給美國給世界帶來了什麼?', 'https://youtu.be/d-aCek8pEbc'),
+    VideoLink(
+      '諦深佛陀開示 2026/4/2 給美國、歐盟 各個國家文明陣營中的政要們最後一個慈悲開示',
+      'https://youtu.be/DpVzYUMunDw',
+    ),
+    VideoLink(
+      '諦深佛陀開示 2026/4/1 伊朗戰爭給美國給世界帶來了什麼?',
+      'https://youtu.be/d-aCek8pEbc',
+    ),
     VideoLink('諦深佛陀開示 2026/3/28 如何積功德', 'https://youtu.be/wj_zju3ms8Q'),
     VideoLink('諦深佛陀開示 2026/3/24 實妄、理妄、現實妄、不定報', 'https://youtu.be/7l6sop15BCM'),
     VideoLink('諦深佛陀開示 2026/3/24 共產黨的惡犬遍布全世界', 'https://youtu.be/Xp9UHcq5N7Q'),
@@ -84,11 +97,17 @@ class _HomePageState extends State<HomePage> {
     VideoLink('諦深佛陀開示 2026/3/21 川普攻打伊朗會怎麼收場', 'https://youtu.be/4ls4gi_uLW0'),
     VideoLink('諦深佛陀開示 2026/3/20 願聽不聽', 'https://youtu.be/d-aCek8pEbc'),
     VideoLink('諦深佛陀開示 2026/2/6 台灣獲救 ', 'https://youtu.be/poPIFKQdEJQ'),
-    VideoLink('諦深佛陀開示 2026/2/2 張又俠為什麼不能造反 中國軍隊為什麼不會造反?', 'https://youtu.be/r6PRti3gCRo'),
+    VideoLink(
+      '諦深佛陀開示 2026/2/2 張又俠為什麼不能造反 中國軍隊為什麼不會造反?',
+      'https://youtu.be/r6PRti3gCRo',
+    ),
     VideoLink('諦深佛陀開示 2026/1/30 菩薩道-信任', 'https://youtu.be/2kSmOjFkYMo'),
     VideoLink('諦深佛陀開示 2026/1/11 共產黨的報應快到', 'https://youtu.be/SHql6vKHZxk'),
     // 2026------------------------------------------------------------------------------------------
-    VideoLink('諦深佛陀開示 2025/12/30 修清淨法 台灣發生戰爭怎麼辦?', 'https://youtu.be/s_YgO0zz6n8'),
+    VideoLink(
+      '諦深佛陀開示 2025/12/30 修清淨法 台灣發生戰爭怎麼辦?',
+      'https://youtu.be/s_YgO0zz6n8',
+    ),
     VideoLink('諦深佛陀開示 2025/12/23 什麼是權力與政治', 'https://youtu.be/W-_EWKOqzho'),
     VideoLink('諦深佛陀開示 2025/12/21 在家修行能成就嗎?', 'https://youtu.be/PpY5VQ_vkK0'),
     VideoLink('諦深佛陀開示 2025/12/1 概率AI都是因果', 'https://youtu.be/PfGXXqWSAx0'),
@@ -96,30 +115,63 @@ class _HomePageState extends State<HomePage> {
     VideoLink('諦深佛陀開示 2025/10/30 養殖業的緣分', 'https://youtu.be/b8D2icesbfM'),
     VideoLink('諦深佛陀開示 2025/10/19 公平與和平', 'https://youtu.be/Zpqis7rMq3Y'),
     VideoLink('諦深佛陀開示 2025/10/15 聯合國為什麼認不清共產黨', 'https://youtu.be/n__oPcKZ3xQ'),
-    VideoLink('諦深佛陀開示 2025/10/15 聯合國為什麼認不清共產黨的邪惡本質', 'https://youtu.be/n__oPcKZ3xQ'),
-    VideoLink('諦深佛陀開示 2025/10/14 共產黨為什麼以殺好人為手段', 'https://youtu.be/K3cOaNDJx6Y'),
+    VideoLink(
+      '諦深佛陀開示 2025/10/15 聯合國為什麼認不清共產黨的邪惡本質',
+      'https://youtu.be/n__oPcKZ3xQ',
+    ),
+    VideoLink(
+      '諦深佛陀開示 2025/10/14 共產黨為什麼以殺好人為手段',
+      'https://youtu.be/K3cOaNDJx6Y',
+    ),
     VideoLink('諦深佛陀開示 2025/10/13 相對論', 'https://youtu.be/POdrB629ISA'),
     VideoLink('諦深佛陀開示 2025/10/13 拯救末世、拯救末世眾生', 'https://youtu.be/MjFHIl9v0uU'),
     VideoLink('諦深佛陀開示 2025/10/12 須彌山與相對論', 'https://youtu.be/IceEbJQjLRk'),
     VideoLink('諦深佛陀開示 2025/10/8 探討維基百科的真實性', 'https://youtu.be/siCUBUzAzkw'),
-    VideoLink('諦深佛陀開示 2025/10/4 為人民服務是共產黨奴役百姓的畫皮工具', 'https://youtu.be/elBbwY2iSyU'),
-    VideoLink('諦深佛陀開示 2025/10/3 認清共產黨的邪惡本質 中國人一定要覺醒', 'https://youtu.be/17EkzQ0PrEU'),
-    VideoLink('諦深佛陀開示 2025/9/28 達爾文進化論的科學與夢是什麼', 'https://youtu.be/YNOJvc28Fck'),
-    VideoLink('諦深佛陀開示 2025/9/21 共產黨邪惡的罪證--無業遊民', 'https://youtu.be/q9rL3W_vfpY'),
+    VideoLink(
+      '諦深佛陀開示 2025/10/4 為人民服務是共產黨奴役百姓的畫皮工具',
+      'https://youtu.be/elBbwY2iSyU',
+    ),
+    VideoLink(
+      '諦深佛陀開示 2025/10/3 認清共產黨的邪惡本質 中國人一定要覺醒',
+      'https://youtu.be/17EkzQ0PrEU',
+    ),
+    VideoLink(
+      '諦深佛陀開示 2025/9/28 達爾文進化論的科學與夢是什麼',
+      'https://youtu.be/YNOJvc28Fck',
+    ),
+    VideoLink(
+      '諦深佛陀開示 2025/9/21 共產黨邪惡的罪證--無業遊民',
+      'https://youtu.be/q9rL3W_vfpY',
+    ),
     VideoLink('諦深佛陀開示 2025/9/20 愚蠢是社會進步的唯一動力', 'https://youtu.be/VhwpQZJDNJ0'),
     VideoLink('諦深佛陀開示 2025/9/19 地獄的本質', 'https://youtu.be/N185Rh_g1mg'),
-    VideoLink('諦深佛陀開示 2025/9/18 冤冤相報何時了(台灣應該如何立足)', 'https://youtu.be/7ZwpMvNvaZU'),
+    VideoLink(
+      '諦深佛陀開示 2025/9/18 冤冤相報何時了(台灣應該如何立足)',
+      'https://youtu.be/7ZwpMvNvaZU',
+    ),
     VideoLink('諦深佛陀開示 2025/9/17 面對共產黨該怎麼做', 'https://youtu.be/kiEUrtPpx5c'),
     VideoLink('諦深佛陀開示 2025/9/13 六道輪迴', 'https://youtu.be/dgHys5_6Baw'),
     VideoLink('諦深佛陀開示 2025/9/7 為什麼全世界都在屏蔽佛陀', 'https://youtu.be/n8cEM_RwQKg'),
-    VideoLink('諦深佛陀開示 2025/9/7 共產黨的活人器官足以供給全世界', 'https://youtu.be/IDn64Uct7V0'),
+    VideoLink(
+      '諦深佛陀開示 2025/9/7 共產黨的活人器官足以供給全世界',
+      'https://youtu.be/IDn64Uct7V0',
+    ),
     VideoLink('諦深佛陀開示 2025/9/5 寧做一秒人 不做萬年龜', 'https://youtu.be/fNvnlwVndko'),
-    VideoLink('諦深佛陀開示 2025/9/5 希望全世界認清共產黨遠超納粹法西斯反人類罪的真面目', 'https://youtu.be/Mkwnuzub5JI'),
+    VideoLink(
+      '諦深佛陀開示 2025/9/5 希望全世界認清共產黨遠超納粹法西斯反人類罪的真面目',
+      'https://youtu.be/Mkwnuzub5JI',
+    ),
     VideoLink('諦深佛陀開示 2025/8/29 共產黨的邪惡本質', 'https://youtu.be/SptcymCE1Jg'),
     VideoLink('諦深佛陀開示 2025/8/28 靜電屏蔽帶 堅決不能使用', 'https://youtu.be/TmraX3CYIIs'),
-    VideoLink('諦深佛陀開示 2025/8/27 天機不可洩漏(台灣為何始終擺脫不了共產黨)', 'https://youtu.be/XaFOsbqevs4'),
+    VideoLink(
+      '諦深佛陀開示 2025/8/27 天機不可洩漏(台灣為何始終擺脫不了共產黨)',
+      'https://youtu.be/XaFOsbqevs4',
+    ),
     VideoLink('諦深佛陀開示 2025/8/27 佛陀為什麼不移民日本', 'https://youtu.be/bYUvecGK1y0'),
-    VideoLink('諦深佛陀開示 2025/8/26 中國佛教協會通告不能誹謗國主', 'https://youtu.be/N7O_NRdzb2s'),
+    VideoLink(
+      '諦深佛陀開示 2025/8/26 中國佛教協會通告不能誹謗國主',
+      'https://youtu.be/N7O_NRdzb2s',
+    ),
     VideoLink('諦深佛陀開示 2025/8/19 談AI與硅基生命', 'https://youtu.be/XXz8UZbGXEQ'),
     VideoLink('諦深佛陀開示 2025/8/16 修行要關羅漢地品', 'https://youtu.be/e6ZOV4lSCGY'),
     VideoLink('諦深佛陀開示 2025/8/7 如何不看視頻', 'https://youtu.be/eZa029yv49Y'),
@@ -129,11 +181,23 @@ class _HomePageState extends State<HomePage> {
     VideoLink('諦深佛陀開示 2025/7/30 修行一定不要落入邪途', 'https://youtu.be/ZXTUIg7xQ80'),
     VideoLink('諦深佛陀開示 2025/7/28 釋永信被抓 出家人怎麼說', 'https://youtu.be/YCE4snpAW_8'),
     VideoLink('諦深佛陀開示 2025/7/18 審判習近平', 'https://youtu.be/mXG-oEj8tG8'),
-    VideoLink('諦深佛陀開示 2025/7/17 文明底線 道德底線 人性底線', 'https://youtu.be/a3G7rVsdd8Y'),
-    VideoLink('諦深佛陀開示 2025/7/13 如何消滅獨裁組織是人類進步的關鍵', 'https://youtu.be/A6_9E6Momh0'),
-    VideoLink('諦深佛陀開示 2025/6/29 (5/29)佛難的因緣與未來世界的果報', 'https://youtu.be/s9A_-aH3z6Y'),
+    VideoLink(
+      '諦深佛陀開示 2025/7/17 文明底線 道德底線 人性底線',
+      'https://youtu.be/a3G7rVsdd8Y',
+    ),
+    VideoLink(
+      '諦深佛陀開示 2025/7/13 如何消滅獨裁組織是人類進步的關鍵',
+      'https://youtu.be/A6_9E6Momh0',
+    ),
+    VideoLink(
+      '諦深佛陀開示 2025/6/29 (5/29)佛難的因緣與未來世界的果報',
+      'https://youtu.be/s9A_-aH3z6Y',
+    ),
     VideoLink('諦深佛陀開示 2025/6/15 建爐(煉丹品 二)', 'https://youtu.be/Nk0y9x0AXf0'),
-    VideoLink('諦深佛陀開示 2025/6/9 為什麼油管以政治、宗教的理由屏蔽佛陀', 'https://youtu.be/v9GITeBvtbY'),
+    VideoLink(
+      '諦深佛陀開示 2025/6/9 為什麼油管以政治、宗教的理由屏蔽佛陀',
+      'https://youtu.be/v9GITeBvtbY',
+    ),
     VideoLink('諦深佛陀開示 2025/6/6 佛門事件 地獄成品', 'https://youtu.be/gsS8Iw3kOL4'),
     VideoLink('諦深佛陀開示 2025/6/5 台灣會怎麼滅亡', 'https://youtu.be/Zmp1xcra2Gk'),
     VideoLink('諦深佛陀開示 2025/5/29 共產黨血洗佛門', 'https://youtu.be/IlzAa-OOgeM'),
@@ -441,12 +505,36 @@ class _HomePageState extends State<HomePage> {
     return null;
   }
 
-  // ── 影片卡片區塊（仿 video_teaching 卡片樣式：縮圖 + 標題）───
+  // ── 響應式欄數：依內容寬度決定每列顯示幾張卡片 ───────────────
+  int _videoCrossAxisCount(double contentWidth) {
+    if (contentWidth < 480) return 2; // 手機
+    if (contentWidth < 800) return 3; // 平板
+    return 4; // 桌機
+  }
+
+  void _goToVideoPage(int page, int pageCount) {
+    if (page < 0 || page >= pageCount || page == _videoPage) return;
+    setState(() => _videoPage = page);
+  }
+
+  // ── 影片卡片區塊（RWD 欄數 + 每頁 24 部分頁）───────────────
   Widget _buildVideoIconCards(double contentWidth, List<VideoLink> videos) {
-    const crossAxisCount = 4;
+    final crossAxisCount = _videoCrossAxisCount(contentWidth);
     const spacing = 16.0;
     final cardWidth =
         (contentWidth - spacing * (crossAxisCount - 1)) / crossAxisCount;
+
+    final pageCount = (videos.length / _videosPerPage).ceil().clamp(1, 1 << 30);
+    final safePage = _videoPage.clamp(0, pageCount - 1);
+    final start = safePage * _videosPerPage;
+    final end = (start + _videosPerPage).clamp(0, videos.length);
+    final pageVideos = videos.sublist(start, end);
+
+    final hasPrev = safePage > 0;
+    final hasNext = safePage < pageCount - 1;
+
+    // 窄螢幕時箭頭改放在網格外側上方，避免蓋住卡片
+    final isNarrow = contentWidth < 480;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -464,18 +552,96 @@ class _HomePageState extends State<HomePage> {
                 letterSpacing: 1.2,
               ),
             ),
+            const Spacer(),
+            if (pageCount > 1)
+              Text(
+                '${safePage + 1} / $pageCount',
+                style: TextStyle(
+                  color: _gold,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
           ],
         ),
         const SizedBox(height: 16),
-        Wrap(
-          spacing: spacing,
-          runSpacing: spacing,
+        if (isNarrow && pageCount > 1)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _videoPageButton(
+                  icon: Icons.chevron_left,
+                  enabled: hasPrev,
+                  onTap: () => _goToVideoPage(safePage - 1, pageCount),
+                ),
+                const SizedBox(width: 16),
+                _videoPageButton(
+                  icon: Icons.chevron_right,
+                  enabled: hasNext,
+                  onTap: () => _goToVideoPage(safePage + 1, pageCount),
+                ),
+              ],
+            ),
+          ),
+        Stack(
+          alignment: Alignment.center,
+          clipBehavior: Clip.none,
           children: [
-            for (final v in videos)
-              SizedBox(width: cardWidth, child: _videoIconCard(v)),
+            Wrap(
+              spacing: spacing,
+              runSpacing: spacing,
+              children: [
+                for (final v in pageVideos)
+                  SizedBox(width: cardWidth, child: _videoIconCard(v)),
+              ],
+            ),
+            // 寬螢幕：箭頭疊在網格左右兩側
+            if (!isNarrow && pageCount > 1) ...[
+              Positioned(
+                left: -20,
+                child: _videoPageButton(
+                  icon: Icons.chevron_left,
+                  enabled: hasPrev,
+                  onTap: () => _goToVideoPage(safePage - 1, pageCount),
+                ),
+              ),
+              Positioned(
+                right: -20,
+                child: _videoPageButton(
+                  icon: Icons.chevron_right,
+                  enabled: hasNext,
+                  onTap: () => _goToVideoPage(safePage + 1, pageCount),
+                ),
+              ),
+            ],
           ],
         ),
       ],
+    );
+  }
+
+  Widget _videoPageButton({
+    required IconData icon,
+    required bool enabled,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: enabled ? onTap : null,
+      child: Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          color: enabled ? Colors.black45 : Colors.black12,
+          shape: BoxShape.circle,
+        ),
+        child: Icon(
+          icon,
+          color: enabled ? Colors.white : Colors.white38,
+          size: 26,
+        ),
+      ),
     );
   }
 
@@ -550,7 +716,14 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final double w = MediaQuery.of(context).size.width;
-    final double contentWidth = w > 1100 ? 1000 : w * 0.95;
+    double contentWidth = w > 1100 ? 1000 : w * 0.95;
+    // 寬螢幕時，最新開示的換頁箭頭會疊在卡片區塊外側（左右各凸出 20px 的按鈕半徑），
+    // 因此需要較大的外側留白讓箭頭完整顯示，不被邊界擋住；窄螢幕箭頭改放在網格上方，維持原本留白即可。
+    final double hPadding = contentWidth < 480 ? 24 : 44;
+    // 校正：contentWidth 不能超過扣除左右留白後的實際可用寬度，
+    // 否則手機版卡片寬度算法（cardWidth／crossAxisCount）會用到比實際容器還寬的數值，
+    // 導致每列只塞得下 1 張卡片、右側出現大片空白。
+    contentWidth = contentWidth.clamp(0.0, w - hPadding * 2).toDouble();
 
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(vertical: 28),
@@ -558,7 +731,7 @@ class _HomePageState extends State<HomePage> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
+            padding: EdgeInsets.symmetric(horizontal: hPadding),
             child: Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -606,7 +779,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                   const SizedBox(height: 24),
 
-                  // ── 影片小卡片（圖示 + 標題）────────────────────
+                  // ── 影片小卡片（RWD 欄數 + 分頁）────────────────
                   SizedBox(
                     width: contentWidth,
                     child: _buildVideoIconCards(contentWidth, _videoCards),
