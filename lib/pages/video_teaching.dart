@@ -505,16 +505,6 @@ const _videos = <VideoData>[
     'https://youtu.be/FnxWxHmFr4k',
   ),
   VideoData(
-    'FnxWxHmFr4k',
-    '2023年1月21日',
-    'https://youtu.be/FnxWxHmFr4k',
-  ),
-  VideoData(
-    'FnxWxHmFr4k',
-    '2023年1月21日',
-    'https://youtu.be/FnxWxHmFr4k',
-  ),
-  VideoData(
     'eGO6FHpQdk8',
     '2023年3月10日',
     'https://youtu.be/eGO6FHpQdk8',
