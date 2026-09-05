@@ -121,7 +121,7 @@ class _Logo extends StatelessWidget {
           Text(
             '須彌山佛國網',
             style: TextStyle(
-              fontSize: 16,
+              fontSize: 24,
               fontWeight: FontWeight.w700,
               color: _white,
             ),

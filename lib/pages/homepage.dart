@@ -249,7 +249,7 @@ class _HomePageState extends State<HomePage> {
     VideoLink('生命可以再來一次', 'https://youtu.be/C-wW-Q2P_7s'),
     VideoLink('座下弟子智道觀 實修實證', 'https://youtu.be/3CQV7DwfSik'),
     VideoLink('座下弟子智瀾 實修實證', 'https://youtu.be/1zxbudPTAo0'),
-    VideoLink('座下弟子智法照 實修實證', 'https://youtu.be/3m__Z2LbAOg'),
+    VideoLink('座下弟子智法照 實修實證', 'https://youtu.be/1zxbudPTAo0'),
   ];
 
   @override
