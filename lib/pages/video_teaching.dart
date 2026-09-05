@@ -656,7 +656,7 @@ const _videos = <VideoData>[
   ),
   VideoData(
     'ew0PgNXOrQk',
-    '2026年8月29日',
+    '2026年8月1日',
     'https://www.youtube.com/live/ew0PgNXOrQk',
   ),
 ];
