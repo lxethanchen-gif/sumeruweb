@@ -581,13 +581,8 @@ const _videos = <VideoData>[
   ),
   VideoData(
     '3vLj1EJtmbU',
-    '2024年10月21日',
+    '2024年10月22日',
     'https://youtu.be/3vLj1EJtmbU',
-  ),
-  VideoData(
-    '8L0y7F3mvBM',
-    '2024年12月17日',
-    'https://youtu.be/8L0y7F3mvBM',
   ),
   VideoData(
     '8L0y7F3mvBM',
