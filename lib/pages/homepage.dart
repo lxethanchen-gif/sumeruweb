@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:ui_web' as ui;
 import 'dart:html' as html;
+import 'dart:js' as js;
 import 'dart:async';
 import 'footer.dart';
 
@@ -63,6 +64,15 @@ class _HomePageState extends State<HomePage> {
   static const int _videosPerPage = 16;
 
   static bool _iframeRegistered = false;
+
+  // ── 直播串流網址 ──────────────────────────────────────────
+  // ⚠️ 注意：這裡必須放「公開可連線」的網址，觀眾自己的瀏覽器會直接
+  // 連到這個網址讀取影像；localhost 只有你自己的電腦連得到，
+  // 換成別人的手機/電腦一定看不到畫面。
+  // 部署後網站是走 https（GitHub Pages），所以這個網址也必須是
+  // https 開頭，否則瀏覽器會擋下「混合內容」而播放失敗。
+  static const String _liveStreamUrl =
+      'http://localhost:8888/live/test/index.m3u8';
 
   static const String _announcementText =
       '法務處關於成立 世界佛法修證靈異協會理事會的通知：\n\n'
@@ -258,6 +268,7 @@ class _HomePageState extends State<HomePage> {
     _carouselController = PageController();
     _startCarouselTimer();
     _registerIframe();
+    _registerLivePlayer();
   }
 
   void _startCarouselTimer() {
@@ -290,6 +301,49 @@ class _HomePageState extends State<HomePage> {
         )
         ..allowFullscreen = true,
     );
+  }
+
+  // ── HLS 直播播放器（m3u8）───────────────────────────────────
+  void _registerLivePlayer() {
+    ui.platformViewRegistry.registerViewFactory('live-hls-player', (
+      int viewId,
+    ) {
+      final video = html.VideoElement()
+        ..id = 'hls-video-$viewId'
+        ..controls = true
+        ..autoplay = true
+        ..muted =
+            true // 大多數瀏覽器要求「靜音」才允許自動播放
+        ..style.width = '100%'
+        ..style.height = '100%'
+        ..style.backgroundColor = '#000'
+        ..setAttribute('playsinline', 'true');
+
+      // 等元素真正掛進 DOM 後再初始化，避免 hls.js 抓不到 <video>
+      Future.delayed(Duration.zero, () => _initHlsPlayer(video));
+
+      return video;
+    });
+  }
+
+  void _initHlsPlayer(html.VideoElement video) {
+    final canPlayNative = video.canPlayType('application/vnd.apple.mpegurl');
+    if (canPlayNative == 'probably' || canPlayNative == 'maybe') {
+      // Safari / iOS 原生支援 HLS，不需要 hls.js
+      video.src = _liveStreamUrl;
+      return;
+    }
+
+    if (js.context.hasProperty('Hls') &&
+        (js.context['Hls'] as js.JsObject).callMethod('isSupported') == true) {
+      final hls = js.JsObject(js.context['Hls'] as js.JsFunction, []);
+      hls.callMethod('loadSource', [_liveStreamUrl]);
+      hls.callMethod('attachMedia', [video]);
+    } else {
+      // 瀏覽器不支援且 hls.js 沒載入成功時，顯示錯誤方便除錯
+      // ignore: avoid_print
+      print('此瀏覽器不支援 HLS，且 hls.js 未載入成功。');
+    }
   }
 
   @override
@@ -829,13 +883,13 @@ class _HomePageState extends State<HomePage> {
                   ),
                   const SizedBox(height: 24),
 
-                  // ── YouTube 影片 ─────────────────────────────────
+                  // ── 現場直播（HLS m3u8）──────────────────────────
                   ClipRRect(
                     borderRadius: BorderRadius.circular(16),
                     child: SizedBox(
                       width: contentWidth,
                       height: contentWidth * 9 / 16,
-                      child: const HtmlElementView(viewType: 'youtube-player'),
+                      child: const HtmlElementView(viewType: 'live-hls-player'),
                     ),
                   ),
                   const SizedBox(height: 32),

@@ -43,9 +43,9 @@ const _dropdownStartIndex = 1;
 // 對應 main.dart GoRouter 宣告順序中的 index 6–10。
 const _rowItems = <_NavItem>[
   _NavItem('影音開示', AppRoutes.videoTeachings),
-  _NavItem('資源連結', AppRoutes.resourceLinks),
-  _NavItem('佛陀介紹', AppRoutes.buddhaIntro),
-  _NavItem('共修直播', AppRoutes.liveStream),
+  // _NavItem('資源連結', AppRoutes.resourceLinks),
+  _NavItem('諦深佛陀介紹', AppRoutes.buddhaIntro),
+  _NavItem('早晚課時間', AppRoutes.liveStream),
   _NavItem('課堂版影音', AppRoutes.classroomVideoTeachings),
 ];
 const _rowStartIndex = 6;
