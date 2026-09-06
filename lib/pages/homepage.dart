@@ -72,7 +72,7 @@ class _HomePageState extends State<HomePage> {
   // 部署後網站是走 https（GitHub Pages），所以這個網址也必須是
   // https 開頭，否則瀏覽器會擋下「混合內容」而播放失敗。
   static const String _liveStreamUrl =
-      'http://localhost:8888/live/test/index.m3u8';
+      'https://www.youtube.com/live/I_5_r28DKlo';
 
   static const String _announcementText =
       '法務處關於成立 世界佛法修證靈異協會理事會的通知：\n\n'
@@ -86,6 +86,7 @@ class _HomePageState extends State<HomePage> {
 
   static const List<VideoLink> _videoCards = [
     VideoLink('諦深佛陀開示 2026/8/30 權力使徒 ', 'https://youtu.be/25I07fOtbUY'),
+    VideoLink('諦深佛陀開示 韋馱菩薩 因地做何行 立何願而成就 ', 'https://youtu.be/3pnUaLfWNjw'),
     VideoLink('諦深佛陀開示 2026/5/1 人類滅亡的三大本質', 'https://youtu.be/AbOQCAM1yLY'),
     VideoLink(
       '諦深佛陀開示 2026/4/19 世界未來的走向、修行人如何修行',
