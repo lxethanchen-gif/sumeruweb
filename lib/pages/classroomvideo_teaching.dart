@@ -388,7 +388,7 @@ class ClassroomVideoTeachingsPage extends StatefulWidget {
 
 class _ClassroomVideoTeachingsPageState
     extends State<ClassroomVideoTeachingsPage> {
-  static const _perPage = 24;
+  static const _perPage = 25;
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   Timer? _searchDebounceTimer;

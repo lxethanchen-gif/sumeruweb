@@ -8,7 +8,7 @@ import 'footer.dart';
 // ── 常數 ────────────────────────────────────────────────────────
 const _kGold    = Color(0xFFF5C518);
 const _kGoldDim = Color(0xFFB8960E);
-const _kPageSize = 18;
+const _kPageSize = 24;
 
 const _kGoldBorder    = Color(0x59F5C518);
 const _kGoldBorderNav = Color(0x73F5C518);
