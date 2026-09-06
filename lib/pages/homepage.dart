@@ -214,6 +214,7 @@ class _HomePageState extends State<HomePage> {
     VideoLink('諦深佛陀開示 2025/5/25 煉丹的基礎(煉丹品 二)', 'https://youtu.be/wR7dVoHC890'),
     VideoLink('諦深佛陀開示 2024/4/17 在台灣玉山為佛陀建寺院', 'https://youtu.be/DrY6G623UC0'),
     VideoLink('諦深佛陀開示 2023/11/19 殉道', 'https://youtu.be/WdixrFq6fZs'),
+    VideoLink('諦深佛陀開示 去意障的良藥', 'https://youtu.be/LfvDTilMlYI'),
   ];
 
   // ── 「座下弟子實修實證」影片清單 ───────────────────────────
