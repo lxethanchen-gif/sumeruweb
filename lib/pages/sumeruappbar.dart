@@ -39,14 +39,17 @@ const _dropdownItems = <_NavItem>[
 ];
 const _dropdownStartIndex = 1;
 
-// 同排項目：影音開示 / 資源連結 / 佛陀介紹 / 共修直播 / 課堂版影音
+// 同排項目：影音開示 / 資源連結（暫時停用） / 佛陀介紹 / 共修直播 / 課堂版影音
 // 對應 main.dart GoRouter 宣告順序中的 index 6–10。
-const _rowItems = <_NavItem>[
-  _NavItem('影音開示', AppRoutes.videoTeachings),
-  // _NavItem('資源連結', AppRoutes.resourceLinks),
-  _NavItem('諦深佛陀介紹', AppRoutes.buddhaIntro),
-  _NavItem('早晚課時間', AppRoutes.liveStream),
-  _NavItem('課堂版影音', AppRoutes.classroomVideoTeachings),
+// 「資源連結」目前有問題，先用 null 佔住 index 7 的位置再略過渲染，
+// 這樣後面幾個項目的 index（8、9、10）才不會因為少一筆而全部往前遞補，
+// 導致 currentIndex 對不上、header 反白/勾選跑掉。
+const _rowItems = <_NavItem?>[
+  _NavItem('影音開示', AppRoutes.videoTeachings), // index 6
+  null, // index 7：資源連結（暫時停用，錯誤排除後再復原）
+  _NavItem('諦深佛陀介紹', AppRoutes.buddhaIntro), // index 8
+  _NavItem('早晚課時間', AppRoutes.liveStream), // index 9
+  _NavItem('課堂版影音', AppRoutes.classroomVideoTeachings), // index 10
 ];
 const _rowStartIndex = 6;
 
@@ -55,7 +58,9 @@ const _homeItem = _NavItem('首頁', AppRoutes.home);
 const _homeIndex = 0;
 
 // 手機版收合選單顯示的完整清單（依原順序：首頁 + 下拉群組 + 同排群組）。
-const _allNavItems = [_homeItem, ..._dropdownItems, ..._rowItems];
+// 型別為 _NavItem? 是為了讓 _rowItems 裡的 null（資源連結）保留原本的
+// index 位置，讓每個項目在陣列中的 index 仍等於 main.dart 的路由 index。
+const _allNavItems = <_NavItem?>[_homeItem, ..._dropdownItems, ..._rowItems];
 
 // ── SumeruAppBar ──────────────────────────────────────────────────
 class SumeruAppBar extends StatelessWidget {
@@ -150,11 +155,12 @@ class _WideNav extends StatelessWidget {
         ),
         _DropdownNavGroup(currentIndex: currentIndex, onSelect: onSelect),
         for (int i = 0; i < _rowItems.length; i++)
-          _NavButton(
-            label: _rowItems[i].label,
-            selected: _rowStartIndex + i == currentIndex,
-            onTap: () => onSelect(_rowItems[i].path),
-          ),
+          if (_rowItems[i] != null)
+            _NavButton(
+              label: _rowItems[i]!.label,
+              selected: _rowStartIndex + i == currentIndex,
+              onTap: () => onSelect(_rowItems[i]!.path),
+            ),
       ],
     );
   }
@@ -424,21 +430,24 @@ class _CompactNavMenu extends StatelessWidget {
           // 首頁之後、同排群組之前各加一條分隔線，維持與桌面版一致的分組。
           if (i == 1 || i == 1 + _dropdownItems.length)
             const PopupMenuDivider(),
-          PopupMenuItem<String>(
-            value: _allNavItems[i].path,
-            child: Row(
-              children: [
-                if (i == currentIndex)
-                  const Padding(
-                    padding: EdgeInsets.only(right: 8),
-                    child: Icon(Icons.check, size: 16, color: _gold),
-                  )
-                else
-                  const SizedBox(width: 24),
-                Text(_allNavItems[i].label),
-              ],
+          // 資源連結目前為 null（暫時停用），略過不顯示，但不影響其他
+          // 項目的 index，currentIndex 比對才會正確。
+          if (_allNavItems[i] != null)
+            PopupMenuItem<String>(
+              value: _allNavItems[i]!.path,
+              child: Row(
+                children: [
+                  if (i == currentIndex)
+                    const Padding(
+                      padding: EdgeInsets.only(right: 8),
+                      child: Icon(Icons.check, size: 16, color: _gold),
+                    )
+                  else
+                    const SizedBox(width: 24),
+                  Text(_allNavItems[i]!.label),
+                ],
+              ),
             ),
-          ),
         ],
       ],
     );
